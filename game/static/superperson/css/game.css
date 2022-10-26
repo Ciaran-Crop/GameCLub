@@ -1,0 +1,29 @@
+.sp-game-menu {
+    width: 100%;
+    height: 100%;
+    background-image: url("http://121.37.197.190:8000/static/superperson/images/menu/hakase.jpg");
+    background-size: 100% 100%;
+
+}
+
+
+.sp-game-menu-field {
+    position: relative;
+    top: 50vh;
+    margin-left: 10vh;
+}
+
+.sp-game-menu-item {
+    font-size: 7vh;
+    font-style: italic;
+    padding: 1vh;
+    color: Wheat;
+    width: fit-content;
+    cursor: pointer;
+}
+
+
+.sp-game-menu-item:hover{
+    transform: translateX(10vh) scale(1.1);
+    transition: 100ms;
+}
