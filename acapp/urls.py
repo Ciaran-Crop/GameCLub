@@ -19,6 +19,6 @@ from .views import index
 
 urlpatterns = [
     path('', index, name='index'),
-    # path('superperson/', include('game.urls')),
+    path('superperson/', include('game.urls.index')),
     path('admin/', admin.site.urls),
 ]

@@ -1,0 +1,5 @@
+class SuperPersonGame {
+    constructor(id){
+    
+    }
+}
