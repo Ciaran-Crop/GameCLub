@@ -1,4 +1,4 @@
-class SuperPersonGame {
+export class SuperPersonGame {
     constructor(id){
         console.log("create new SuperPersonGame");
         this.id = id;
