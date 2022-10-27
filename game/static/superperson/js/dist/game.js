@@ -209,7 +209,7 @@ class SPGamePlayer extends SPGameObject {
             if(e.which === 3){
                 outer.move_to(e.clientX,e.clientY);
             }else if(e.which === 1) {
-                outer.unleash_skills(e.clientX, e.clientY, "fireball");
+                outer.unleash_skills(e.clientX, e.clientY, outer.cur_skill);
 
             }
         });
@@ -226,6 +226,8 @@ class SPGamePlayer extends SPGameObject {
     unleash_skills(tx,ty, skill_name){
         if(skill_name === "fireball"){
             this.shoot_fireball(tx,ty);
+        }else if(skill_name === null){
+            return false;
         }
         this.cur_skill = null;
     }
@@ -307,7 +309,8 @@ class SPGamePlayer extends SPGameObject {
                     this.move_to(tx, ty);
                 }
                 if(this.cur_skill === null && Math.random() < 1 / 300.0){
-                    this.unleash_skills(tx,ty, "fireball");
+                    let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
+                    this.unleash_skills(player.x,player.y, "fireball");
 
                 }
             }
