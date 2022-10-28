@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure--d#94#6d78r*8#x=69kte!g6ypoec8yb$o0zt-*7ri%syi-f3l'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["121.37.197.190"]
+ALLOWED_HOSTS = ["121.37.197.190","app3774.acapp.acwing.com.cn"]
 
 
 # Application definition
@@ -120,10 +120,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static');
 STATICFILES_DIRS = [
-        os.path.join(BASE_DIR, 'superperson', 'static'),
+        os.path.join(BASE_DIR, 'game', 'static'),
 ]
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 MEDIA_URL = '/media/'
