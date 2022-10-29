@@ -10,6 +10,7 @@ class SPGameMenu {
     </div>
 </div>
 `);
+        this.hide();
         this.root.$sp_game_div.append(this.$sp_game_menu);
 
         this.$single_mode = this.$sp_game_menu.find('.sp-game-menu-item-single-mode');

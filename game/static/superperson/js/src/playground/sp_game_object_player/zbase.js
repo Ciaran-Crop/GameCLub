@@ -137,7 +137,7 @@ class SPGamePlayer extends SPGameObject {
                 if(this.move_length < 5){
                     this.move_to(tx, ty);
                 }
-                if(this.cur_skill === null && Math.random() < 1 / 300.0){
+                if(this.cur_skill === null && Math.random() < 1 / (20.0 * this.playground.players.length)){
                     let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
                     this.unleash_skills(player.x,player.y, "fireball");
 

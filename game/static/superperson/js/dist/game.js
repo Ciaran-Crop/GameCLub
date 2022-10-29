@@ -10,6 +10,7 @@ class SPGameMenu {
     </div>
 </div>
 `);
+        this.hide();
         this.root.$sp_game_div.append(this.$sp_game_menu);
 
         this.$single_mode = this.$sp_game_menu.find('.sp-game-menu-item-single-mode');
@@ -306,7 +307,7 @@ class SPGamePlayer extends SPGameObject {
                 if(this.move_length < 5){
                     this.move_to(tx, ty);
                 }
-                if(this.cur_skill === null && Math.random() < 1 / 300.0){
+                if(this.cur_skill === null && Math.random() < 1 / (20.0 * this.playground.players.length)){
                     let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
                     this.unleash_skills(player.x,player.y, "fireball");
 
@@ -440,11 +441,54 @@ class SPGamePlayGround {
         this.$sp_game_playground.show();
     }
 }
+class SPGameLogin{
+    constructor(root, os){
+        this.root = root;
+        this.platform = "WEB";
+        if(this.root.os){
+            this.platform = "AC";
+        }
+        this.start();
+    }
+    start(){
+        this.get_info();
+    }
+
+    login(){
+    }
+
+    register(){
+    }
+
+    get_info(){
+        let outer = this;
+        $.ajax({
+            url : 'https://app3774.acapp.acwing.com.cn/superperson/settings/get_info',
+            type : 'GET',
+            data : {'platform': outer.platform},
+            success : function(rep){
+                if(rep.result === 'success'){
+                    console.log("get_info success");
+                    outer.hide();
+                    outer.root.menu.show();
+                }else {
+                    outer.login();
+                }
+            },
+        });
+    }
+
+    hide(){}
+
+    show(){}
+}
 export class SuperPersonGame {
-    constructor(id){
+    constructor(id, os){
         console.log("create new SuperPersonGame");
         this.id = id;
         this.$sp_game_div = $('#' + id);
+        this.os = os;
+        this.login = new SPGameLogin(this);
         this.menu = new SPGameMenu(this);
         this.playground = new SPGamePlayGround(this);
 
