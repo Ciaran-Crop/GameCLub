@@ -112,6 +112,9 @@ class SPGameMap extends SPGameObject{
         this.ctx.canvas.width = this.playground.width;
         this.ctx.canvas.height = this.playground.height;
         this.playground.$sp_game_playground.append(this.$canvas);
+        this.back_img = new Image();
+        this.back_img.src = "https://app3774.acapp.acwing.com.cn/static/superperson/images/menu/hakase.jpg";
+
     }
     start(){
         this.render();
@@ -120,8 +123,9 @@ class SPGameMap extends SPGameObject{
         this.render();
     }
     render(){
-        this.ctx.fillStyle = "rgba(0,0,0,0.2)";
-        this.ctx.fillRect(0,0,this.playground.width,this.playground.height);
+        this.ctx.drawImage(this.back_img, 0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+        // this.ctx.fillStyle = "rgba(0,0,0,0.2)";
+        // this.ctx.fillRect(0,0,this.playground.width,this.playground.height);
     }
 }
 class SPGameParticle extends SPGameObject {
@@ -186,6 +190,11 @@ class SPGamePlayer extends SPGameObject {
         this.friction = 0.9;
         this.cur_skill = null;
         this.is_robot = is_robot;
+        if(this.is_me && this.playground.root.login.photo !== ' '){
+            this.img = new Image();
+            this.img.src = this.playground.root.login.photo;
+            console.log(this.playground.root.login.photo);
+        }
     }
 
     start(){
@@ -318,10 +327,23 @@ class SPGamePlayer extends SPGameObject {
     }
 
     render(){
-        this.ctx.beginPath();
-        this.ctx.arc(this.x,this.y,this.radius,0,2 * Math.PI, false);
-        this.ctx.fillStyle = this.color;
-        this.ctx.fill();
+        if(this.is_me && this.playground.root.login.photo !== ' '){
+            this.ctx.save();
+            this.ctx.beginPath();
+            this.ctx.arc(this.x,this.y,this.radius,0,Math.PI * 2,false);
+            this.ctx.strokeStyle = "white";
+            this.ctx.stroke();
+            this.ctx.clip();
+            this.ctx.drawImage(this.img, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius* 2);
+            this.ctx.restore();
+        }else{
+            this.ctx.save();
+            this.ctx.beginPath();
+            this.ctx.arc(this.x,this.y,this.radius,0,2 * Math.PI, false);
+            this.ctx.fillStyle = this.color;
+            this.ctx.fill();
+            this.ctx.restore();
+        }
     }
 
     on_destroy(){
@@ -446,8 +468,18 @@ class SPGameLogin{
         this.root = root;
         this.platform = "WEB";
         if(this.root.os){
-            this.platform = "AC";
+            this.platform = "ACAPP";
         }
+        this.$sp_login_page = $(`
+<div>
+    <div class="sp-login-page">
+        
+    </div>
+</div>
+`);
+        this.hide();
+        this.root.$sp_game_div.append(this.$sp_login_page);
+        this.photo = '';
         this.start();
     }
     start(){
@@ -455,6 +487,7 @@ class SPGameLogin{
     }
 
     login(){
+        this.$sp_login_page.show();
     }
 
     register(){
@@ -468,10 +501,13 @@ class SPGameLogin{
             data : {'platform': outer.platform},
             success : function(rep){
                 if(rep.result === 'success'){
-                    console.log("get_info success");
+                    console.log("get_info success with", rep.platform);
+                    outer.username = rep.username;
+                    outer.photo = rep.photo;
                     outer.hide();
                     outer.root.menu.show();
                 }else {
+                    console.log(rep);
                     outer.login();
                 }
             },

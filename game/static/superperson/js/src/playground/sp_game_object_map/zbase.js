@@ -10,6 +10,9 @@ class SPGameMap extends SPGameObject{
         this.ctx.canvas.width = this.playground.width;
         this.ctx.canvas.height = this.playground.height;
         this.playground.$sp_game_playground.append(this.$canvas);
+        this.back_img = new Image();
+        this.back_img.src = "https://app3774.acapp.acwing.com.cn/static/superperson/images/menu/hakase.jpg";
+
     }
     start(){
         this.render();
@@ -18,7 +21,8 @@ class SPGameMap extends SPGameObject{
         this.render();
     }
     render(){
-        this.ctx.fillStyle = "rgba(0,0,0,0.2)";
-        this.ctx.fillRect(0,0,this.playground.width,this.playground.height);
+        this.ctx.drawImage(this.back_img, 0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+        // this.ctx.fillStyle = "rgba(0,0,0,0.2)";
+        // this.ctx.fillRect(0,0,this.playground.width,this.playground.height);
     }
 }

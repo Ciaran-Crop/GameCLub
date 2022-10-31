@@ -16,10 +16,9 @@ class SPGamePlayer extends SPGameObject {
         this.friction = 0.9;
         this.cur_skill = null;
         this.is_robot = is_robot;
-        if(this.is_me && this.playground.root.login.photo !== ' '){
+        if(this.is_me){
             this.img = new Image();
             this.img.src = this.playground.root.login.photo;
-            console.log(this.playground.root.login.photo);
         }
     }
 
@@ -153,11 +152,10 @@ class SPGamePlayer extends SPGameObject {
     }
 
     render(){
-        if(this.is_me && this.playground.root.login.photo !== ' '){
+        if(this.is_me){
             this.ctx.save();
             this.ctx.beginPath();
             this.ctx.arc(this.x,this.y,this.radius,0,Math.PI * 2,false);
-            this.ctx.strokeStyle = "white";
             this.ctx.stroke();
             this.ctx.clip();
             this.ctx.drawImage(this.img, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius* 2);
