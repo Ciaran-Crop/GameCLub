@@ -7,22 +7,23 @@ def get_info_web(request):
         return JsonResponse({
             'result': '未登录',
             })
-    player = Player.objects.all()[0]
     return JsonResponse({
         'result': 'success',
         'username': user.username,
-        'email': player.email,
-        'photo':player.photo,
+        'photo': user.player.photo,
+        'email': user.email,
+        'back_img': user.player.back_img,
         'platform':'WEB',
     })
 
 def get_info_ac(request):
-    player = Player.objects.all()[0]
+    user = Player.objects.all()[0]
     return JsonResponse({
         'result':'success',
-        'username': player.user.username,
-        'email': player.email,
+        'username': user.user.username,
         'photo':' ',
+        'email': user.user.email,
+        'back_img': user.back_img,
         'platform':'ACAPP',
         })
 

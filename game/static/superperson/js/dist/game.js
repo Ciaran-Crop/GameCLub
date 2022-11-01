@@ -6,7 +6,7 @@ class SPGameMenu {
     <div class="sp-game-menu-field">
         <div class="sp-game-menu-item sp-game-menu-item-single-mode">单人模式</div>
         <div class="sp-game-menu-item sp-game-menu-item-multi-mode">多人模式</div>
-        <div class="sp-game-menu-item sp-game-menu-item-settings">设置</div>
+        <div class="sp-game-menu-item sp-game-menu-item-settings">退出</div>
     </div>
 </div>
 `);
@@ -16,7 +16,6 @@ class SPGameMenu {
         this.$single_mode = this.$sp_game_menu.find('.sp-game-menu-item-single-mode');
         this.$multi_mode = this.$sp_game_menu.find('.sp-game-menu-item-multi-mode');
         this.$settings = this.$sp_game_menu.find('.sp-game-menu-item-settings')
-
         this.start();
     }
 
@@ -35,10 +34,24 @@ class SPGameMenu {
             console.log("click multi mode");
         });
         this.$settings.click(function(){
-            console.log("click settings");
+            if(outer.root.login.platform === 'ACAPP'){
+                console.log("ACAPP logout");
+            }else{
+                $.ajax({
+                    url: 'https://app3774.acapp.acwing.com.cn/superperson/settings/user_logout/',
+                    type: 'GET',
+                    success: function(rep){
+                        if(rep.result === 'success'){
+                            location.reload();
+                        }
+                    }
+                });
+            }
         });
     }
     show(){
+        this.back_img = this.root.login.back_img;
+        this.$sp_game_menu.css("background-image","url(" + this.back_img + ")");
         this.$sp_game_menu.show();
     }
 
@@ -113,9 +126,8 @@ class SPGameMap extends SPGameObject{
         this.ctx.canvas.height = this.playground.height;
         this.playground.$sp_game_playground.append(this.$canvas);
         this.back_img = new Image();
-        this.back_img.src = "https://app3774.acapp.acwing.com.cn/static/superperson/images/menu/hakase.jpg";
-
-    }
+        this.back_img.src = this.playground.root.login.back_img;
+}
     start(){
         this.render();
     }
@@ -470,27 +482,211 @@ class SPGameLogin{
         if(this.root.os){
             this.platform = "ACAPP";
         }
-        this.$sp_login_page = $(`
-<div>
+        this.$sp_index_page = $(`
+<div class="sp-index-page">
     <div class="sp-login-page">
-        
+        <div class="sp-login-title">
+            登录
+        </div>
+        <div class="sp-login-item">
+            <div class="sp-login-username-input">
+                <input type='text' placeholder="请输入用户名">
+            </div>
+        </div>
+        <div class="sp-login-item">
+            <div class="sp-login-password-input">
+                <input type='password' placeholder="请输入密码">
+            </div>
+        </div>
+        <div class="sp-login-item">
+            <button class="sp-login-button">登录</button>
+        </div>
+        <div class="sp-login-error-message">
+        </div>
+        <div class="sp-login-to-register">
+            注册
+        </div>
+        <br>
+        <div class="sp-login-other">
+            <div class="sp-login-other-logo">
+                <img width="30" height='30' src="https://app3774.acapp.acwing.com.cn/static/superperson/images/settings/acapp.jpg">
+            </div>
+            <div class="sp-login-other-font">
+                ACWing登录
+            </div>
+        </div>
+    </div>
+    <div class="sp-register-page">
+        <div class="sp-login-title">
+            注册
+        </div>
+        <div class="sp-login-item">
+            <div class="sp-register-username-input">
+                <input type='text' placeholder='请输入用户名'>
+            </div>
+        </div>
+        <div class="sp-login-item">
+            <div class="sp-register-password-input">
+                <input type='password' placeholder='请输入密码'>
+            </div>
+        </div>
+        <div class="sp-login-item">
+            <div class="sp-register-password-confirm-input">
+                <input type='password' placeholder='请再次输入密码'>
+            </div>
+        </div>
+        <div class="sp-login-item">
+            <button class="sp-register-button">注册</button>
+        </div>
+        <div class="sp-register-error-message">
+        </div>
+        <div class="sp-login-to-login">
+                登录
+        </div>
     </div>
 </div>
 `);
         this.hide();
-        this.root.$sp_game_div.append(this.$sp_login_page);
+        this.root.$sp_game_div.append(this.$sp_index_page);
+        this.$sp_login_page = this.$sp_index_page.find('.sp-login-page');
+        this.$sp_register_page = this.$sp_index_page.find('.sp-register-page');
+        this.$sp_login_page.hide();
+        this.$sp_register_page.hide();
+        // login
+        this.$sp_login_button = this.$sp_index_page.find('.sp-login-button');
+        this.$sp_login_username = this.$sp_index_page.find('.sp-login-username-input > input');
+        this.$sp_login_password = this.$sp_index_page.find('.sp-login-password-input > input');
+        this.$sp_login_to_register = this.$sp_index_page.find('.sp-login-to-register');
+        this.$sp_login_error_message = this.$sp_index_page.find('.sp-login-error-message');
+        this.$sp_login_acapp = this.$sp_index_page.find('.sp-login-other-logo > img');
+
+        // register
+        this.$sp_register_button = this.$sp_index_page.find('.sp-register-button');
+        this.$sp_register_username = this.$sp_index_page.find('.sp-register-username-input > input');
+        this.$sp_register_password = this.$sp_index_page.find('.sp-register-password-input > input');
+        this.$sp_register_password_confirm = this.$sp_index_page.find('.sp-register-password-confirm-input > input');
+        this.$sp_login_to_login = this.$sp_index_page.find('.sp-login-to-login');
+        this.$sp_register_error_message = this.$sp_index_page.find('.sp-register-error-message');
+
         this.photo = '';
+        this.back_img = '';
         this.start();
     }
     start(){
         this.get_info();
+        this.add_listening_events_login();
+        this.add_listening_events_register();
+    }
+
+    add_listening_events_login(){
+        let outer = this;
+        this.$sp_login_username.click(function(){
+            outer.$sp_login_error_message.empty();
+        });
+        this.$sp_login_password.click(function(){
+            outer.$sp_login_error_message.empty();
+        });
+        this.$sp_login_to_register.click(function(){
+            outer.register();
+        });
+        this.$sp_login_button.click(function(){
+            outer.remote_login();
+        });
+    }
+
+    add_listening_events_register(){
+        let outer = this;
+        this.$sp_register_username.click(function(){
+            outer.$sp_register_error_message.empty();
+        });
+        this.$sp_register_password.click(function(){
+            outer.$sp_register_error_message.empty();
+        });
+        this.$sp_register_password_confirm.click(function(){
+            outer.$sp_register_error_message.empty();
+        });
+        this.$sp_login_to_login.click(function(){
+            outer.login();
+        });
+        this.$sp_register_button.click(function(){
+            outer.remote_register();
+        });
+    }
+    getCookie(name){
+        let value = '';
+        if(document.cookie && document.cookie !== ''){
+            let cookies = document.cookie.split(';');
+            for(let i = 0;i < cookies.length;i++){
+                let cookie = cookies[i].trim();
+                if(cookie.substring(0,name.length + 1) == (name + '=')){
+                    value = decodeURIComponent(cookie.substring(name.length + 1));
+                }
+            }
+        }
+        return value;
+    }
+    remote_login(){
+        let outer = this;
+        const username = this.$sp_login_username.val();
+        const password = this.$sp_login_password.val();
+        $.ajax({
+            url: 'https://app3774.acapp.acwing.com.cn/superperson/settings/user_login/',
+            type: 'POST',
+            beforeSend: function(request){
+                request.setRequestHeader('X-CSRFToken', outer.getCookie('csrftoken'));
+            },
+            data: {
+                'username': username,
+                'password': password,
+            },
+            success: function(rep){
+                if(rep.result === 'success'){
+                    location.reload();
+                }else{
+                    outer.$sp_login_error_message.html(rep.text);
+                }
+
+            }
+        });
+    }
+
+    remote_register(){
+        let outer = this;
+        const username = this.$sp_register_username.val();
+        const password = this.$sp_register_password.val();
+        const password_confirm = this.$sp_register_password_confirm.val();
+        $.ajax({
+            url: 'https://app3774.acapp.acwing.com.cn/superperson/settings/user_register/',
+            type: 'POST',
+            beforeSend: function(request){
+                request.setRequestHeader('X-CSRFToken', outer.getCookie('csrftoken'));
+            },
+            data: {
+                'username': username,
+                'password': password,
+                'password_confirm': password_confirm,
+            },
+            success: function(rep){
+                if(rep.result === 'success'){
+                    location.reload();
+                }else{
+                    outer.$sp_register_error_message.html(rep.text);
+                }
+
+            }
+        });
     }
 
     login(){
+        this.show();
+        this.$sp_register_page.hide();
         this.$sp_login_page.show();
     }
 
     register(){
+        this.show();
+        this.$sp_login_page.hide();
+        this.$sp_register_page.show();
     }
 
     get_info(){
@@ -502,8 +698,10 @@ class SPGameLogin{
             success : function(rep){
                 if(rep.result === 'success'){
                     console.log("get_info success with", rep.platform);
+                    // console.log(rep);
                     outer.username = rep.username;
                     outer.photo = rep.photo;
+                    outer.back_img = rep.back_img;
                     outer.hide();
                     outer.root.menu.show();
                 }else {
@@ -514,9 +712,13 @@ class SPGameLogin{
         });
     }
 
-    hide(){}
+    hide(){
+        this.$sp_index_page.hide();
+    }
 
-    show(){}
+    show(){
+        this.$sp_index_page.show();
+    }
 }
 export class SuperPersonGame {
     constructor(id, os){

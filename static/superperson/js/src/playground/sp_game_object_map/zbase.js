@@ -11,9 +11,8 @@ class SPGameMap extends SPGameObject{
         this.ctx.canvas.height = this.playground.height;
         this.playground.$sp_game_playground.append(this.$canvas);
         this.back_img = new Image();
-        this.back_img.src = "https://app3774.acapp.acwing.com.cn/static/superperson/images/menu/hakase.jpg";
-
-    }
+        this.back_img.src = this.playground.root.login.back_img;
+}
     start(){
         this.render();
     }
