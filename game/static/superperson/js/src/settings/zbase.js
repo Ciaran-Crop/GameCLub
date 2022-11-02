@@ -115,6 +115,9 @@ class SPGameLogin{
         this.$sp_login_button.click(function(){
             outer.remote_login();
         });
+        this.$sp_login_acapp.click(function(){
+            outer.login_acapp();
+        });
     }
 
     add_listening_events_register(){
@@ -169,6 +172,18 @@ class SPGameLogin{
                     outer.$sp_login_error_message.html(rep.text);
                 }
 
+            }
+        });
+    }
+
+    login_acapp(){
+        $.ajax({
+            url: "https://app3774.acapp.acwing.com.cn/superperson/settings/web/acwing/apply_code/",
+            type: 'GET',
+            success: function(rep){
+                if(rep.result === 'success'){
+                    window.location.replace(rep.url);
+                }
             }
         });
     }
