@@ -96,9 +96,13 @@ class SPGameLogin{
         this.start();
     }
     start(){
-        this.get_info();
-        this.add_listening_events_login();
-        this.add_listening_events_register();
+        if(this.platform === 'ACAPP'){
+            this.acapp_getinfo();
+        }else {
+            this.get_info();
+            this.add_listening_events_login();
+            this.add_listening_events_register();
+        }
     }
 
     add_listening_events_login(){
@@ -182,6 +186,7 @@ class SPGameLogin{
             type: 'GET',
             success: function(rep){
                 if(rep.result === 'success'){
+                    console.log(rep);
                     window.location.replace(rep.url);
                 }
             }
@@ -225,6 +230,39 @@ class SPGameLogin{
         this.show();
         this.$sp_login_page.hide();
         this.$sp_register_page.show();
+    }
+
+    acapp_login(appid, redirect_uri, scope, state){
+        let outer = this;
+        outer.root.os.api.oauth2.authorize(appid, redirect_uri, scope, state, function(rep){
+            if(rep.result === 'success'){
+                outer.username = rep.username;
+                outer.photo = rep.photo;
+                outer.back_img = rep.back_img;
+                outer.hide();
+                outer.root.menu.show();
+            }else{
+                console.log(rep);
+            }
+        });
+    }
+
+    acapp_getinfo(){
+        let outer = this;
+        $.ajax({
+            url: 'https://app3774.acapp.acwing.com.cn/superperson/settings/acwing/acwing/apply_code/',
+            type: 'GET',
+            success: function(rep){
+                if(rep.result === 'success'){
+                    console.log(rep);
+                    let appid = rep.appid;
+                    let redirect_uri = rep.redirect_uri;
+                    let scope = rep.scope;
+                    let state = rep.state;
+                    outer.acapp_login(appid, redirect_uri, scope, state);
+                }
+            }
+        });
     }
 
     get_info(){
