@@ -7,11 +7,11 @@ class SPGameSkillFireBall extends SPGameObject {
         this.y = y;
         this.vx = Math.cos(angle);
         this.vy = Math.sin(angle);
-        this.radius = this.playground.height * 0.01;
-        this.move_length = this.playground.height * 0.5;
-        this.damage = this.playground.height * 0.01;
-        this.speed = this.playground.height * 0.4;
-        this.eps = 0.1;
+        this.radius = 0.01;
+        this.move_length = 0.5;
+        this.damage = 0.01;
+        this.speed = 0.4;
+        this.eps = 0.01;
         this.color = "orange";
         this.player = player;
     }
@@ -56,7 +56,7 @@ class SPGameSkillFireBall extends SPGameObject {
     render(){
         this.ctx.beginPath();
         this.ctx.fillStyle = this.color;
-        this.ctx.arc(this.x,this.y,this.radius, 0, Math.PI * 2, false);
+        this.ctx.arc(this.x * this.playground.scale,this.y * this.playground.scale,this.radius * this.playground.scale, 0, Math.PI * 2, false);
         this.ctx.fill();
     }
 }

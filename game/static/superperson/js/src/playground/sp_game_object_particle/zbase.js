@@ -11,7 +11,7 @@ class SPGameParticle extends SPGameObject {
         this.color = color;
         this.speed = speed;
         this.friction = 0.9;
-        this.eps = 1;
+        this.eps = 0.01;
         this.radius = radius;
         this.move_length = move_length;
     }
@@ -38,7 +38,7 @@ class SPGameParticle extends SPGameObject {
     render(){
         this.ctx.beginPath();
         this.ctx.fillStyle = this.color;
-        this.ctx.arc(this.x,this.y,this.radius,0, Math.PI * 2,false);
+        this.ctx.arc(this.x * this.playground.scale,this.y * this.playground.scale,this.radius * this.playground.scale,0, Math.PI * 2,false);
         this.ctx.fill();
     }
 }

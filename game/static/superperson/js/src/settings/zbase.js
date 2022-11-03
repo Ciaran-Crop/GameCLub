@@ -254,7 +254,6 @@ class SPGameLogin{
             type: 'GET',
             success: function(rep){
                 if(rep.result === 'success'){
-                    console.log(rep);
                     let appid = rep.appid;
                     let redirect_uri = rep.redirect_uri;
                     let scope = rep.scope;

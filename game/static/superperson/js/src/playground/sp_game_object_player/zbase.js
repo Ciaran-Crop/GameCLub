@@ -7,7 +7,7 @@ class SPGamePlayer extends SPGameObject {
         this.y = y;
         this.vx = this.vy = 0;
         this.move_length = 0;
-        this.eps = 0.1;
+        this.eps = 0.01;
         this.color = color;
         this.speed = speed;
         this.other_speed = 0;
@@ -19,7 +19,6 @@ class SPGamePlayer extends SPGameObject {
         if(this.is_me && this.playground.root.login.photo !== ' '){
             this.img = new Image();
             this.img.src = this.playground.root.login.photo;
-            console.log(this.playground.root.login.photo);
         }
     }
 
@@ -28,8 +27,8 @@ class SPGamePlayer extends SPGameObject {
             this.add_listening_events();
         }else{
             if(this.is_robot){
-                let tx = Math.random() * this.playground.width;
-                let ty = Math.random() * this.playground.height;
+                let tx = Math.random() * this.playground.width / this.playground.scale;
+                let ty = Math.random() * this.playground.height / this.playground.scale;
                 this.move_to(tx, ty);
             }
         }
@@ -44,9 +43,9 @@ class SPGamePlayer extends SPGameObject {
         this.playground.sp_game_map.$canvas.mousedown(function(e){
             const rect = outer.ctx.canvas.getBoundingClientRect();
             if(e.which === 3){
-                outer.move_to(e.clientX - rect.left,e.clientY - rect.top);
+                outer.move_to((e.clientX - rect.left) / outer.playground.scale,(e.clientY - rect.top) / outer.playground.scale);
             }else if(e.which === 1) {
-                outer.unleash_skills(e.clientX - rect.left, e.clientY - rect.top, outer.cur_skill);
+                outer.unleash_skills((e.clientX - rect.left) / outer.playground.scale, (e.clientY - rect.top) / outer.playground.scale, outer.cur_skill);
 
             }
         });
@@ -94,14 +93,14 @@ class SPGamePlayer extends SPGameObject {
         this.vx = Math.cos(angle);
         this.vy = Math.sin(angle);
         this.other_speed = this.speed * 2;
-        for(let i = 0;i < 10 + Math.random() * 5;i++){
-            let speed = this.speed * 10 + Math.random() * this.speed;
-            let radius = this.radius * Math.random() * 0.1;
+        for(let i = 0;i < 10 + Math.random() * 15;i++){
+            let speed = this.speed * 10;
+            let radius = 0.01 * Math.random();
             let angle = Math.random() * Math.PI * 2;
             let move_length = this.radius * Math.random() * 10;
             new SPGameParticle(this.playground,angle,this.x, this.y, this.color, speed, radius, move_length);
         }
-        if(this.radius < 10){
+        if(this.radius < this.eps){
             this.destroy();
         }
     }
@@ -116,6 +115,11 @@ class SPGamePlayer extends SPGameObject {
     }
 
     update(){
+        this.update_move();
+        this.render();
+    }
+
+    update_move(){
         for(let i = 0;i < this.playground.players.length;i++){
             let player = this.playground.players[i];
             let distance = this.get_dist(this.x,this.y, player.x, player.y);
@@ -137,9 +141,9 @@ class SPGamePlayer extends SPGameObject {
 
         }else{
             if(this.is_robot){
-                let tx = Math.random() * this.playground.width;
-                let ty = Math.random() * this.playground.height;
-                if(this.move_length < 5){
+                let tx = Math.random() * this.playground.width / this.playground.scale;
+                let ty = Math.random() * this.playground.height / this.playground.scale;
+                if(this.move_length < 5 / this.playground.scale){
                     this.move_to(tx, ty);
                 }
                 if(this.cur_skill === null && Math.random() < 1 / (20.0 * this.playground.players.length)){
@@ -149,23 +153,22 @@ class SPGamePlayer extends SPGameObject {
                 }
             }
         }
-        this.render();
     }
 
     render(){
         if(this.is_me && this.playground.root.login.photo !== ' '){
             this.ctx.save();
             this.ctx.beginPath();
-            this.ctx.arc(this.x,this.y,this.radius,0,Math.PI * 2,false);
+            this.ctx.arc(this.x * this.playground.scale,this.y * this.playground.scale,this.radius * this.playground.scale,0,Math.PI * 2,false);
             this.ctx.strokeStyle = "white";
             this.ctx.stroke();
             this.ctx.clip();
-            this.ctx.drawImage(this.img, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius* 2);
+            this.ctx.drawImage(this.img, (this.x - this.radius) * this.playground.scale, (this.y - this.radius) * this.playground.scale, this.radius * 2 * this.playground.scale, this.radius* 2 * this.playground.scale);
             this.ctx.restore();
         }else{
             this.ctx.save();
             this.ctx.beginPath();
-            this.ctx.arc(this.x,this.y,this.radius,0,2 * Math.PI, false);
+            this.ctx.arc(this.x * this.playground.scale,this.y * this.playground.scale,this.radius * this.playground.scale,0,2 * Math.PI, false);
             this.ctx.fillStyle = this.color;
             this.ctx.fill();
             this.ctx.restore();
