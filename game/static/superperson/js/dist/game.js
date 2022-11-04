@@ -28,10 +28,12 @@ class SPGameMenu {
         this.$single_mode.click(function(){
             console.log("click single mode");
             outer.hide();
-            outer.root.playground.show();
+            outer.root.playground.show('single mode');
         });
         this.$multi_mode.click(function(){
             console.log("click multi mode");
+            outer.hide();
+            outer.root.playground.show('multi mode');
         });
         this.$settings.click(function(){
             if(outer.root.login.platform === 'ACAPP'){
@@ -59,6 +61,51 @@ class SPGameMenu {
         this.$sp_game_menu.hide();
     }
 }
+class MultiPlayerSocket {
+    constructor(playground){
+        this.playground = playground;
+        this.ws = new WebSocket("wss://app3774.acapp.acwing.com.cn/wss/multiplayer/");
+        this.start();
+    }
+    start(){
+        this.receive();
+    }
+
+    receive(){
+        let outer = this;
+        this.ws.onmessage = function(e){
+            let data = JSON.parse(e.data);
+            if(data.uuid === outer.uuid) return false;
+            if(data.event === 'create_player'){
+                outer.receive_create_player(data);
+            }
+        };
+    }
+
+    send_create_player(x, y, username, photo){
+        let outer = this;
+        this.ws.send(JSON.stringify({
+            'uuid': outer.uuid,
+            'x': x,
+            'y': y,
+            'event': 'create_player',
+            'username' : username,
+            'photo' : photo,
+        }));
+    }
+
+    receive_create_player(data){
+        let username = data['username'];
+        let photo = data['photo'];
+        let uuid = data['uuid'];
+        let x = data['x'];
+        let y = data['y'];
+        let playground = this.playground;
+        let player = new SPGamePlayer(playground, x, y, 'white', 0.25, 0.05, false, false, photo, username);
+        playground.players.push(player);
+        player.uuid = uuid;
+    }
+}
 let SP_GAME_OBJECTS = []
 
 class SPGameObject {
@@ -68,7 +115,16 @@ class SPGameObject {
         this.is_called_start = false;
         this.timedelta = 0;
 
+        this.uuid = this.create_uuid();
 
+    }
+
+    create_uuid(){
+        let res = "";
+        for(let i = 0;i < 8; i++){
+            res += Math.floor(Math.random() * 10);
+        }
+        return res;
     }
 
     start() { // 第一帧执行
@@ -194,7 +250,7 @@ class SPGameParticle extends SPGameObject {
     }
 }
 class SPGamePlayer extends SPGameObject {
-    constructor(playground,x,y,color,speed,radius,is_me, is_robot) {
+    constructor(playground,x,y,color,speed,radius,is_me, is_robot, photo, username) {
         super();
         this.playground = playground;
         this.ctx = this.playground.sp_game_map.ctx;
@@ -211,20 +267,33 @@ class SPGamePlayer extends SPGameObject {
         this.friction = 0.9;
         this.cur_skill = null;
         this.is_robot = is_robot;
-        if(this.is_me && this.playground.root.login.photo !== ' '){
+        this.photo = photo;
+        this.username = username;
+        if(this.is_who() === 'me' && this.photo!== ' '){
             this.img = new Image();
-            this.img.src = this.playground.root.login.photo;
+            this.img.src = this.photo;
+        }else if(this.is_who() === 'enemy' && this.photo !== ' '){
+            this.img = new Image();
+            this.img.src = this.photo;
         }
     }
 
+    is_who(){
+        if(this.is_me) return "me";
+        else if(this.is_robot) return "robot";
+        else return "enemy";
+    }
+
     start(){
-        if(this.is_me) {
+        if(this.is_who() === 'me') {
             this.add_listening_events();
         }else{
-            if(this.is_robot){
+            if(this.is_who() === 'robot'){
                 let tx = Math.random() * this.playground.width / this.playground.scale;
                 let ty = Math.random() * this.playground.height / this.playground.scale;
                 this.move_to(tx, ty);
+            }else {
+
             }
         }
     }
@@ -332,10 +401,10 @@ class SPGamePlayer extends SPGameObject {
             this.y += this.vy * moved;
             this.move_length -= moved;
         }
-        if(this.is_me){
+        if(this.is_who() === 'me'){
 
         }else{
-            if(this.is_robot){
+            if(this.is_who() === 'robot'){
                 let tx = Math.random() * this.playground.width / this.playground.scale;
                 let ty = Math.random() * this.playground.height / this.playground.scale;
                 if(this.move_length < 5 / this.playground.scale){
@@ -346,12 +415,14 @@ class SPGamePlayer extends SPGameObject {
                     this.unleash_skills(player.x,player.y, "fireball");
 
                 }
+            }else {
+
             }
         }
     }
 
     render(){
-        if(this.is_me && this.playground.root.login.photo !== ' '){
+        if(this.is_who() === 'me' && this.photo !== ' '){
             this.ctx.save();
             this.ctx.beginPath();
             this.ctx.arc(this.x * this.playground.scale,this.y * this.playground.scale,this.radius * this.playground.scale,0,Math.PI * 2,false);
@@ -360,18 +431,27 @@ class SPGamePlayer extends SPGameObject {
             this.ctx.clip();
             this.ctx.drawImage(this.img, (this.x - this.radius) * this.playground.scale, (this.y - this.radius) * this.playground.scale, this.radius * 2 * this.playground.scale, this.radius* 2 * this.playground.scale);
             this.ctx.restore();
-        }else{
+        }else if(this.is_who() === 'robot'){
             this.ctx.save();
             this.ctx.beginPath();
             this.ctx.arc(this.x * this.playground.scale,this.y * this.playground.scale,this.radius * this.playground.scale,0,2 * Math.PI, false);
             this.ctx.fillStyle = this.color;
             this.ctx.fill();
             this.ctx.restore();
+        }else {
+            this.ctx.save();
+            this.ctx.beginPath();
+            this.ctx.arc(this.x * this.playground.scale,this.y * this.playground.scale,this.radius * this.playground.scale,0,Math.PI * 2,false);
+            this.ctx.strokeStyle = "red";
+            this.ctx.stroke();
+            this.ctx.clip();
+            this.ctx.drawImage(this.img, (this.x - this.radius) * this.playground.scale, (this.y - this.radius) * this.playground.scale, this.radius * 2 * this.playground.scale, this.radius* 2 * this.playground.scale);
+            this.ctx.restore();
         }
     }
 
     on_destroy(){
-        if(this.is_me){
+        if(this.is_who() === 'me'){
             $(window).unbind()
         }
     }
@@ -460,11 +540,25 @@ class SPGamePlayGround {
     }
 
     create_single_mode(color, players_num, speed, radius){
-        let player = new SPGamePlayer(this,Math.random() * this.width / this.scale,Math.random() * this.height / this.scale, color, speed, radius, true, false);
+        let player = new SPGamePlayer(this,Math.random() * this.width / this.scale,Math.random() * this.height / this.scale, color, speed, radius, true, false, this.root.login.photo, this.root.login.username);
         this.players.push(player);
         for(let i = 0;i < players_num - 1;i++){
             let robot = new SPGamePlayer(this,Math.random() * this.width / this.scale, Math.random() * this.height / this.scale, this.colors[i%this.colors.length], speed, radius, false, true);
             this.players.push(robot);
+        }
+    }
+
+    create_multi_mode(color, players_num, speed, radius){
+        let outer = this;
+        let x = Math.random() * this.width / this.scale;
+        let y = Math.random() * this.height / this.scale;
+        let player = new SPGamePlayer(this, x, y, color, speed, radius, true, false, this.root.login.photo, this.root.login.username);
+        this.players.push(player);
+        this.mps = new MultiPlayerSocket(this);
+        this.mps.uuid = this.players[0].uuid;
+
+        this.mps.ws.onopen = function(){
+            outer.mps.send_create_player(x, y, outer.root.login.username, outer.root.login.photo);
         }
     }
 
@@ -490,13 +584,17 @@ class SPGamePlayGround {
         console.log("scale: ", this.scale);
         if(this.sp_game_map) this.sp_game_map.resize();
     }
-    show(){
-        this.resize();
+    show(mode){
         this.sp_game_map = new SPGameMap(this);
         this.players = []
         // this.fireballs = []
+        this.resize();
         this.colors = ["Chocolate","Crimson","DarkGoldenRod","Gainsboro","Gold","NavajoWhite","Salmon","SlateGray"];
-        this.create_single_mode("MidnightBlue",10,0.25, 0.05);
+        if(mode === 'single mode'){
+            this.create_single_mode("MidnightBlue",10,0.25, 0.05);
+        }else if(mode === 'multi mode'){
+            this.create_multi_mode("MidnightBlue",10,0.25, 0.05);
+        }
 
         this.$sp_game_playground.show();
     }

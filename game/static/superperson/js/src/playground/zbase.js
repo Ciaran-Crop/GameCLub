@@ -11,11 +11,25 @@ class SPGamePlayGround {
     }
 
     create_single_mode(color, players_num, speed, radius){
-        let player = new SPGamePlayer(this,Math.random() * this.width / this.scale,Math.random() * this.height / this.scale, color, speed, radius, true, false);
+        let player = new SPGamePlayer(this,Math.random() * this.width / this.scale,Math.random() * this.height / this.scale, color, speed, radius, true, false, this.root.login.photo, this.root.login.username);
         this.players.push(player);
         for(let i = 0;i < players_num - 1;i++){
             let robot = new SPGamePlayer(this,Math.random() * this.width / this.scale, Math.random() * this.height / this.scale, this.colors[i%this.colors.length], speed, radius, false, true);
             this.players.push(robot);
+        }
+    }
+
+    create_multi_mode(color, players_num, speed, radius){
+        let outer = this;
+        let x = Math.random() * this.width / this.scale;
+        let y = Math.random() * this.height / this.scale;
+        let player = new SPGamePlayer(this, x, y, color, speed, radius, true, false, this.root.login.photo, this.root.login.username);
+        this.players.push(player);
+        this.mps = new MultiPlayerSocket(this);
+        this.mps.uuid = this.players[0].uuid;
+
+        this.mps.ws.onopen = function(){
+            outer.mps.send_create_player(x, y, outer.root.login.username, outer.root.login.photo);
         }
     }
 
@@ -41,13 +55,17 @@ class SPGamePlayGround {
         console.log("scale: ", this.scale);
         if(this.sp_game_map) this.sp_game_map.resize();
     }
-    show(){
-        this.resize();
+    show(mode){
         this.sp_game_map = new SPGameMap(this);
         this.players = []
         // this.fireballs = []
+        this.resize();
         this.colors = ["Chocolate","Crimson","DarkGoldenRod","Gainsboro","Gold","NavajoWhite","Salmon","SlateGray"];
-        this.create_single_mode("MidnightBlue",10,0.25, 0.05);
+        if(mode === 'single mode'){
+            this.create_single_mode("MidnightBlue",10,0.25, 0.05);
+        }else if(mode === 'multi mode'){
+            this.create_multi_mode("MidnightBlue",10,0.25, 0.05);
+        }
 
         this.$sp_game_playground.show();
     }

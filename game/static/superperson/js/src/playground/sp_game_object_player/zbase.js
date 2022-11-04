@@ -1,5 +1,5 @@
 class SPGamePlayer extends SPGameObject {
-    constructor(playground,x,y,color,speed,radius,is_me, is_robot) {
+    constructor(playground,x,y,color,speed,radius,is_me, is_robot, photo, username) {
         super();
         this.playground = playground;
         this.ctx = this.playground.sp_game_map.ctx;
@@ -16,20 +16,33 @@ class SPGamePlayer extends SPGameObject {
         this.friction = 0.9;
         this.cur_skill = null;
         this.is_robot = is_robot;
-        if(this.is_me && this.playground.root.login.photo !== ' '){
+        this.photo = photo;
+        this.username = username;
+        if(this.is_who() === 'me' && this.photo!== ' '){
             this.img = new Image();
-            this.img.src = this.playground.root.login.photo;
+            this.img.src = this.photo;
+        }else if(this.is_who() === 'enemy' && this.photo !== ' '){
+            this.img = new Image();
+            this.img.src = this.photo;
         }
     }
 
+    is_who(){
+        if(this.is_me) return "me";
+        else if(this.is_robot) return "robot";
+        else return "enemy";
+    }
+
     start(){
-        if(this.is_me) {
+        if(this.is_who() === 'me') {
             this.add_listening_events();
         }else{
-            if(this.is_robot){
+            if(this.is_who() === 'robot'){
                 let tx = Math.random() * this.playground.width / this.playground.scale;
                 let ty = Math.random() * this.playground.height / this.playground.scale;
                 this.move_to(tx, ty);
+            }else {
+
             }
         }
     }
@@ -137,10 +150,10 @@ class SPGamePlayer extends SPGameObject {
             this.y += this.vy * moved;
             this.move_length -= moved;
         }
-        if(this.is_me){
+        if(this.is_who() === 'me'){
 
         }else{
-            if(this.is_robot){
+            if(this.is_who() === 'robot'){
                 let tx = Math.random() * this.playground.width / this.playground.scale;
                 let ty = Math.random() * this.playground.height / this.playground.scale;
                 if(this.move_length < 5 / this.playground.scale){
@@ -151,12 +164,14 @@ class SPGamePlayer extends SPGameObject {
                     this.unleash_skills(player.x,player.y, "fireball");
 
                 }
+            }else {
+
             }
         }
     }
 
     render(){
-        if(this.is_me && this.playground.root.login.photo !== ' '){
+        if(this.is_who() === 'me' && this.photo !== ' '){
             this.ctx.save();
             this.ctx.beginPath();
             this.ctx.arc(this.x * this.playground.scale,this.y * this.playground.scale,this.radius * this.playground.scale,0,Math.PI * 2,false);
@@ -165,18 +180,27 @@ class SPGamePlayer extends SPGameObject {
             this.ctx.clip();
             this.ctx.drawImage(this.img, (this.x - this.radius) * this.playground.scale, (this.y - this.radius) * this.playground.scale, this.radius * 2 * this.playground.scale, this.radius* 2 * this.playground.scale);
             this.ctx.restore();
-        }else{
+        }else if(this.is_who() === 'robot'){
             this.ctx.save();
             this.ctx.beginPath();
             this.ctx.arc(this.x * this.playground.scale,this.y * this.playground.scale,this.radius * this.playground.scale,0,2 * Math.PI, false);
             this.ctx.fillStyle = this.color;
             this.ctx.fill();
             this.ctx.restore();
+        }else {
+            this.ctx.save();
+            this.ctx.beginPath();
+            this.ctx.arc(this.x * this.playground.scale,this.y * this.playground.scale,this.radius * this.playground.scale,0,Math.PI * 2,false);
+            this.ctx.strokeStyle = "red";
+            this.ctx.stroke();
+            this.ctx.clip();
+            this.ctx.drawImage(this.img, (this.x - this.radius) * this.playground.scale, (this.y - this.radius) * this.playground.scale, this.radius * 2 * this.playground.scale, this.radius* 2 * this.playground.scale);
+            this.ctx.restore();
         }
     }
 
     on_destroy(){
-        if(this.is_me){
+        if(this.is_who() === 'me'){
             $(window).unbind()
         }
     }
