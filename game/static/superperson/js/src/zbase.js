@@ -1,6 +1,5 @@
 export class SuperPersonGame {
     constructor(id, os){
-        console.log("create new SuperPersonGame");
         this.id = id;
         this.$sp_game_div = $('#' + id);
         this.os = os;

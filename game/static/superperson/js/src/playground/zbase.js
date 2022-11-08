@@ -1,6 +1,5 @@
 class SPGamePlayGround {
     constructor(root) {
-        console.log("create new PlayGround");
         this.root = root;
         this.$sp_game_playground = $(`
     <div class="sp-game-playground"></div>
@@ -29,7 +28,7 @@ class SPGamePlayGround {
         this.mps.uuid = this.players[0].uuid;
 
         this.mps.ws.onopen = function(){
-            outer.mps.send_create_player(x, y, outer.root.login.username, outer.root.login.photo);
+            outer.mps.send_create_player(x, y, outer.root.login.username, outer.root.login.photo, 'false');
         }
     }
 
@@ -52,15 +51,16 @@ class SPGamePlayGround {
         this.height = unit * 9;
         this.scale = this.height;
 
-        console.log("scale: ", this.scale);
         if(this.sp_game_map) this.sp_game_map.resize();
     }
     show(mode){
-        this.sp_game_map = new SPGameMap(this);
         this.players = []
-        // this.fireballs = []
+        this.sp_game_map = new SPGameMap(this);
+        this.status = 'waiting' // waiting -> fighting -> over -> end
+        this.sp_game_board = new SPGameBoard(this);
         this.resize();
         this.colors = ["Chocolate","Crimson","DarkGoldenRod","Gainsboro","Gold","NavajoWhite","Salmon","SlateGray"];
+        this.mode = mode;
         if(mode === 'single mode'){
             this.create_single_mode("MidnightBlue",10,0.25, 0.05);
         }else if(mode === 'multi mode'){
@@ -68,5 +68,14 @@ class SPGamePlayGround {
         }
 
         this.$sp_game_playground.show();
+    }
+
+    get_me(){
+        for(let i = 0;i < this.players.length;i++){
+            if(this.players[i].is_who() === 'me'){
+                return this.players[i];
+            }
+        }
+        return null;
     }
 }

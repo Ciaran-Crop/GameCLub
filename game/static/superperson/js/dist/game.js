@@ -26,18 +26,16 @@ class SPGameMenu {
     add_listening_events(){
         let outer = this;
         this.$single_mode.click(function(){
-            console.log("click single mode");
             outer.hide();
             outer.root.playground.show('single mode');
         });
         this.$multi_mode.click(function(){
-            console.log("click multi mode");
             outer.hide();
             outer.root.playground.show('multi mode');
         });
         this.$settings.click(function(){
             if(outer.root.login.platform === 'ACAPP'){
-                console.log("ACAPP logout");
+                outer.root.os.api.window.close();
             }else{
                 $.ajax({
                     url: 'https://app3774.acapp.acwing.com.cn/superperson/settings/user_logout/',
@@ -78,14 +76,21 @@ class MultiPlayerSocket {
             if(data.uuid === outer.uuid) return false;
             if(data.event === 'create_player'){
                 outer.receive_create_player(data);
+            }else if(data.event === 'move_to'){
+                outer.receive_move_to(data);
+            }else if(data.event === 'shoot_fireball'){
+                outer.receive_shoot_fireball(data);
+            }else if(data.event === 'attack'){
+                outer.receive_attack(data);
+            }else if(data.event === 'blink'){
+                outer.receive_blink(data);
             }
         };
     }
 
     send_create_player(x, y, username, photo){
-        let outer = this;
         this.ws.send(JSON.stringify({
-            'uuid': outer.uuid,
+            'uuid': this.uuid,
             'x': x,
             'y': y,
             'event': 'create_player',
@@ -104,7 +109,111 @@ class MultiPlayerSocket {
         let player = new SPGamePlayer(playground, x, y, 'white', 0.25, 0.05, false, false, photo, username);
         playground.players.push(player);
         player.uuid = uuid;
+
     }
+
+    send_move_to(tx, ty){
+        this.ws.send(JSON.stringify({
+            'uuid': this.uuid,
+            'tx': tx,
+            'ty': ty,
+            'event': 'move_to',
+        }));
+    }
+
+    receive_move_to(data){
+        let uuid = data['uuid'];
+        let tx = data['tx'];
+        let ty = data['ty'];
+        let player = this.get_player(uuid);
+        if(player) player.move_to(tx,ty);
+    }
+
+
+    send_shoot_fireball(uuid,ball_uuid, tx, ty){
+        this.ws.send(JSON.stringify({
+            'event': 'shoot_fireball',
+            'uuid': uuid,
+            'ball_uuid': ball_uuid,
+            'tx': tx,
+            'ty': ty,
+        }));
+    }
+
+
+
+    receive_shoot_fireball(data){
+        let uuid = data['uuid'];
+        let ball_uuid = data['ball_uuid'];
+        let tx = data['tx'];
+        let ty = data['ty'];
+        let player = this.get_player(uuid);
+        if(player){
+            let fireball = player.unleash_skills(tx, ty, 'fireball');
+            fireball.uuid = ball_uuid;
+        }
+
+    }
+
+    send_attack(attacker_uuid, attackee_uuid, ball_uuid, angle, damage, x, y){
+        this.ws.send(JSON.stringify({
+            'event': 'attack',
+            'x': x,
+            'y': y,
+            'damage' : damage,
+            'angle': angle,
+            'ball_uuid': ball_uuid,
+            'attackee_uuid': attackee_uuid,
+            'uuid': attacker_uuid,
+        }));
+    }
+
+    receive_attack(data){
+        let x = data['x'];
+        let y = data['y'];
+        let damage = data['damage'];
+        let angle = data['angle'];
+        let ball_uuid = data['ball_uuid'];
+        let attacker_uuid = data['uuid'];
+        let attackee_uuid = data['attackee_uuid'];
+        let attacker = this.get_player(attacker_uuid);
+        let attackee = this.get_player(attackee_uuid);
+        if(attacker && attackee){
+            let fireball = attacker.get_fireball(ball_uuid);
+            fireball.receive_attack(angle, damage, x, y, attackee);
+        }
+    }
+
+    send_blink(uuid, blink_uuid, tx, ty){
+        this.ws.send(JSON.stringify({
+            'event': 'blink',
+            'uuid': uuid,
+            'blink_uuid': blink_uuid,
+            'tx': tx,
+            'ty': ty,
+        }));
+    }
+
+    receive_blink(data){
+        let player = this.get_player(data['uuid']);
+        let tx = data['tx'];
+        let ty = data['ty'];
+        if(player){
+            player.x = tx;
+            player.y = ty;
+        }
+    }
+
+
+    get_player(uuid){
+        let players = this.playground.players;
+        for(let i = 0; i < players.length;i++){
+            if(players[i].uuid === uuid){
+                return players[i];
+            }
+        }
+    }
+
 }
 let SP_GAME_OBJECTS = []
 
@@ -169,6 +278,51 @@ let SP_GAME_ANIMATION = function(timestamp){
 
 
 requestAnimationFrame(SP_GAME_ANIMATION);
+class SPGameBoard extends SPGameObject {
+    constructor(playground){
+        super();
+        this.playground = playground;
+        this.ctx = this.playground.sp_game_map.ctx;
+        this.room_capity = 3;
+        this.text = "Wating! 已就绪: " + this.playground.players.length + "人";
+        this.start();
+    }
+
+    start(){
+
+    }
+
+    write(text){
+        this.text = text;
+    }
+
+    update_text(){
+        if(this.playground.players.length >= 3 && this.playground.status === 'waiting'){
+            this.write("Game Fighting!");
+            this.playground.status = 'fighting';
+        }else if(this.playground.players.length < 3 && this.playground.status === 'waiting') {
+            this.write("Waiting! 已就绪" + this.playground.players.length + "人");
+        }else if(this.playground.get_me() === null && this.playground.status === 'fighting'){
+            this.write("Game Over!");
+            this.playground.status = 'over';
+        }else if(this.playground.players.length === 1){
+            this.write("End!");
+            this.playground.status = 'end';
+        }
+    }
+
+    update(){
+        this.update_text();
+        this.render();
+    }
+
+    render(){
+        this.ctx.font = "48px serif";
+        this.ctx.textBaseline = 'top';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText(this.text, this.playground.width / 2, 0)
+    }
+}
 class SPGameMap extends SPGameObject{
     constructor(playground) {
         super();
@@ -269,6 +423,15 @@ class SPGamePlayer extends SPGameObject {
         this.is_robot = is_robot;
         this.photo = photo;
         this.username = username;
+        this.fireballs = [];
+        this.fireball_cold_time_static = 2;
+        this.fireball_cold_time = this.fireball_cold_time_static;
+        this.fireball_img = new Image();
+        this.fireball_img.src = "https://app3774.acapp.acwing.com.cn/static/superperson/images/playground/fireball.jpg";
+        this.blink_cold_time_static = 10;
+        this.blink_cold_time = 0;
+        this.blink_img = new Image();
+        this.blink_img.src = "https://app3774.acapp.acwing.com.cn/static/superperson/images/playground/blink.jpg";
         if(this.is_who() === 'me' && this.photo!== ' '){
             this.img = new Image();
             this.img.src = this.photo;
@@ -305,18 +468,35 @@ class SPGamePlayer extends SPGameObject {
         });
 
         this.playground.sp_game_map.$canvas.mousedown(function(e){
+            if(outer.playground.status !== 'fighting') return false;
             const rect = outer.ctx.canvas.getBoundingClientRect();
+            let tx = (e.clientX - rect.left) / outer.playground.scale;
+            let ty = (e.clientY - rect.top) / outer.playground.scale;
             if(e.which === 3){
-                outer.move_to((e.clientX - rect.left) / outer.playground.scale,(e.clientY - rect.top) / outer.playground.scale);
+                outer.move_to(tx, ty);
+                if(outer.playground.mode === 'multi mode') outer.playground.mps.send_move_to(tx,ty);
             }else if(e.which === 1) {
-                outer.unleash_skills((e.clientX - rect.left) / outer.playground.scale, (e.clientY - rect.top) / outer.playground.scale, outer.cur_skill);
-
+                let skill = outer.unleash_skills(tx, ty, outer.cur_skill);
+                if(outer.playground.mode === 'multi mode') {
+                    if(skill.name === 'fireball'){
+                        outer.playground.mps.send_shoot_fireball(outer.uuid,skill.uuid, tx, ty);
+                    }else if(skill.name === 'blink'){
+                        outer.playground.mps.send_blink(outer.uuid, skill.uuid, tx, ty);
+                    }
+                }
             }
         });
 
         $(window).keydown(function(e){
+            if(outer.playground.status !== 'fighting') return false;
             if(e.which === 81){ // q
+                if(outer.fireball_cold_time > outer.eps) return false;
                 outer.cur_skill = "fireball";
+                return false;
+            }else if(e.which === 68){
+                console.log('blink');
+                if(outer.blink_cold_time > outer.eps) return false;
+                outer.cur_skill = 'blink';
                 return false;
             }
         });
@@ -324,18 +504,30 @@ class SPGamePlayer extends SPGameObject {
 
 
     unleash_skills(tx,ty, skill_name){
+        let skill;
         if(skill_name === "fireball"){
-            this.shoot_fireball(tx,ty);
+            skill = this.shoot_fireball(tx,ty);
+            this.fireball_cold_time = this.fireball_cold_time_static;
+        }else if(skill_name === 'blink'){
+            skill = this.blink(tx,ty);
+            this.blink_cold_time = this.blink_cold_time_static;
         }else if(skill_name === null){
             return false;
         }
         this.cur_skill = null;
+        return skill;
     }
 
+    blink(tx, ty){
+        this.x = tx;
+        this.y = ty;
+    }
 
     shoot_fireball(tx, ty){
         let angle = Math.atan2(ty - this.y, tx - this.x);
-        new SPGameSkillFireBall(this.playground, this, this.x, this.y, angle);
+        let fireball = new SPGameSkillFireBall(this.playground, this, this.x, this.y, angle);
+        this.fireballs.push(fireball);
+        return fireball;
     }
 
     get_dist(x1,y1,x2,y2){
@@ -369,28 +561,27 @@ class SPGamePlayer extends SPGameObject {
         }
     }
 
-    player_collide(player){
-        if(this.vs === 0) this.vx = player.vx;
-        else this.vx = -this.vx;
-        if(this.vy === 0) this.vy = player.vy;
-        else this.vy = -this.vy;
-        this.move_length = 0;
-        this.other_speed = this.speed * 2;
+    get_fireball(uuid){
+        for(let i = 0;i < this.fireballs.length;i++){
+            if(this.fireballs[i].uuid === uuid){
+                return this.fireballs[i];
+            }
+        }
     }
 
     update(){
         this.update_move();
+        if(this.is_who() !== 'enemy' && this.playground.status === 'fighting') this.update_skill();
         this.render();
     }
 
+    update_skill(){
+        let spent_time = this.timedelta / 1000;
+        this.fireball_cold_time = Math.max(0, this.fireball_cold_time - spent_time);
+        this.blink_cold_time = Math.max(0, this.blink_cold_time - spent_time);
+    }
+
     update_move(){
-        for(let i = 0;i < this.playground.players.length;i++){
-            let player = this.playground.players[i];
-            let distance = this.get_dist(this.x,this.y, player.x, player.y);
-            if(player !== this && distance <= this.radius + player.radius){
-                this.player_collide(player);
-            }
-        }
         if(this.other_speed > this.eps && this.move_length < this.eps){
             this.x += this.vx * this.other_speed * this.timedelta / 1000;
             this.y += this.vy * this.other_speed * this.timedelta / 1000;
@@ -410,10 +601,10 @@ class SPGamePlayer extends SPGameObject {
                 if(this.move_length < 5 / this.playground.scale){
                     this.move_to(tx, ty);
                 }
-                if(this.cur_skill === null && Math.random() < 1 / (20.0 * this.playground.players.length)){
+                if(this.cur_skill === null){
                     let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
-                    this.unleash_skills(player.x,player.y, "fireball");
-
+                    if(this.fireball_cold_time < this.eps) this.unleash_skills(player.x,player.y, "fireball");
+                    if(this.blink_cold_time < this.eps) this.unleash_skills(tx, ty, 'blink');
                 }
             }else {
 
@@ -422,6 +613,64 @@ class SPGamePlayer extends SPGameObject {
     }
 
     render(){
+        this.render_player();
+        if(this.is_who() === 'me'){
+            this.render_skill();
+        }
+    }
+
+    render_skill(){
+        this.render_fireball();
+        this.render_blink();
+    }
+
+
+    render_blink(){
+        let x = 1.7, y = 0.9, r = 0.04;
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.arc(x * this.playground.scale,y * this.playground.scale,r * this.playground.scale,0,Math.PI * 2,false);
+        this.ctx.strokeStyle = "white";
+        this.ctx.stroke();
+        this.ctx.clip();
+        this.ctx.drawImage(this.blink_img, (x - r) * this.playground.scale, (y - r) * this.playground.scale, r * 2 * this.playground.scale, r * 2 * this.playground.scale);
+        this.ctx.restore();
+        if(this.blink_cold_time > this.eps){
+            this.ctx.save();
+            this.ctx.beginPath();
+            this.ctx.moveTo(x * this.playground.scale,y * this.playground.scale);
+            this.ctx.arc(x * this.playground.scale,y * this.playground.scale,r * this.playground.scale,0 - Math.PI / 2 ,2 * Math.PI * (1 - this.blink_cold_time / this.blink_cold_time_static) - Math.PI / 2, true);
+            this.ctx.lineTo(x * this.playground.scale,y * this.playground.scale);
+            this.ctx.fillStyle = "rgba(0,0,255,0.6)";
+            this.ctx.fill();
+            this.ctx.restore();
+        }
+    }
+
+    render_fireball(){
+        let x = 1.5, y = 0.9, r = 0.04;
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.arc(x * this.playground.scale,y * this.playground.scale,r * this.playground.scale,0,Math.PI * 2,false);
+        this.ctx.strokeStyle = "white";
+        this.ctx.stroke();
+        this.ctx.clip();
+        this.ctx.drawImage(this.fireball_img, (x - r) * this.playground.scale, (y - r) * this.playground.scale, r * 2 * this.playground.scale, r * 2 * this.playground.scale);
+        this.ctx.restore();
+        if(this.fireball_cold_time > this.eps){
+            this.ctx.save();
+            this.ctx.beginPath();
+            this.ctx.moveTo(x * this.playground.scale,y * this.playground.scale);
+            this.ctx.arc(x * this.playground.scale,y * this.playground.scale,r * this.playground.scale,0 - Math.PI / 2 ,2 * Math.PI * (1 - this.fireball_cold_time / this.fireball_cold_time_static) - Math.PI / 2, true);
+            this.ctx.lineTo(x * this.playground.scale,y * this.playground.scale);
+            this.ctx.fillStyle = "rgba(0,0,255,0.6)";
+            this.ctx.fill();
+            this.ctx.restore();
+        }
+
+    }
+
+    render_player(){
         if(this.is_who() === 'me' && this.photo !== ' '){
             this.ctx.save();
             this.ctx.beginPath();
@@ -448,6 +697,7 @@ class SPGamePlayer extends SPGameObject {
             this.ctx.drawImage(this.img, (this.x - this.radius) * this.playground.scale, (this.y - this.radius) * this.playground.scale, this.radius * 2 * this.playground.scale, this.radius* 2 * this.playground.scale);
             this.ctx.restore();
         }
+
     }
 
     on_destroy(){
@@ -468,6 +718,7 @@ class SPGamePlayer extends SPGameObject {
 class SPGameSkillFireBall extends SPGameObject {
     constructor(playground, player, x, y, angle) {
         super();
+        this.name = "fireball";
         this.playground = playground;
         this.ctx = this.playground.sp_game_map.ctx;
         this.x = x;
@@ -497,11 +748,38 @@ class SPGameSkillFireBall extends SPGameObject {
     attack(player){
         let angle = Math.atan2(player.y - this.y, player.x - this.x);
         player.attacked(angle, this.damage);
+        if(this.playground.mode === 'multi mode' && this.player.is_who() === 'me'){
+            this.playground.mps.send_attack(this.player.uuid, player.uuid, this.uuid, angle, this.damage, player.x , player.y);
+        }
+        this.destroy();
+    }
+
+    receive_attack(angle, damage, x, y, player){
+        player.x = x;
+        player.y = y;
+        player.attacked(angle, damage);
         this.destroy();
     }
 
     update(){
-        if(this.eps < this.move_length){
+        this.update_move();
+        if(this.player.is_who() !== 'enemy') this.update_attack();
+        this.render();
+    }
+
+
+    update_attack(){
+        for(let i = 0;i < this.playground.players.length;i++){
+            let player = this.playground.players[i];
+            let distance = this.get_dist(player.x, player.y, this.x, this.y);
+            if(player !== this.player && distance <= this.radius + player.radius){
+                this.attack(player);
+            }
+        }
+    }
+
+    update_move(){
+       if(this.eps < this.move_length){
             let moved = Math.min(this.speed * this.timedelta / 1000, this.move_length);
             this.x += this.vx * moved;
             this.y += this.vy * moved;
@@ -510,14 +788,6 @@ class SPGameSkillFireBall extends SPGameObject {
             this.destroy();
             return false;
         }
-        for(let i = 0;i < this.playground.players.length;i++){
-            let player = this.playground.players[i];
-            let distance = this.get_dist(player.x, player.y, this.x, this.y);
-            if(player !== this.player && distance <= this.radius + player.radius){
-                this.attack(player);
-            }
-        }
-        this.render();
     }
 
     render(){
@@ -526,10 +796,19 @@ class SPGameSkillFireBall extends SPGameObject {
         this.ctx.arc(this.x * this.playground.scale,this.y * this.playground.scale,this.radius * this.playground.scale, 0, Math.PI * 2, false);
         this.ctx.fill();
     }
+
+    on_destroy(){
+        let fireballs = this.player.fireballs;
+        for(let i = 0;i < fireballs.length;i++){
+            if(fireballs[i] === this){
+                fireballs.splice(i, 1);
+                break;
+            }
+        }
+    }
 }
 class SPGamePlayGround {
     constructor(root) {
-        console.log("create new PlayGround");
         this.root = root;
         this.$sp_game_playground = $(`
     <div class="sp-game-playground"></div>
@@ -558,7 +837,7 @@ class SPGamePlayGround {
         this.mps.uuid = this.players[0].uuid;
 
         this.mps.ws.onopen = function(){
-            outer.mps.send_create_player(x, y, outer.root.login.username, outer.root.login.photo);
+            outer.mps.send_create_player(x, y, outer.root.login.username, outer.root.login.photo, 'false');
         }
     }
 
@@ -581,15 +860,16 @@ class SPGamePlayGround {
         this.height = unit * 9;
         this.scale = this.height;
 
-        console.log("scale: ", this.scale);
         if(this.sp_game_map) this.sp_game_map.resize();
     }
     show(mode){
-        this.sp_game_map = new SPGameMap(this);
         this.players = []
-        // this.fireballs = []
+        this.sp_game_map = new SPGameMap(this);
+        this.status = 'waiting' // waiting -> fighting -> over -> end
+        this.sp_game_board = new SPGameBoard(this);
         this.resize();
         this.colors = ["Chocolate","Crimson","DarkGoldenRod","Gainsboro","Gold","NavajoWhite","Salmon","SlateGray"];
+        this.mode = mode;
         if(mode === 'single mode'){
             this.create_single_mode("MidnightBlue",10,0.25, 0.05);
         }else if(mode === 'multi mode'){
@@ -597,6 +877,15 @@ class SPGamePlayGround {
         }
 
         this.$sp_game_playground.show();
+    }
+
+    get_me(){
+        for(let i = 0;i < this.players.length;i++){
+            if(this.players[i].is_who() === 'me'){
+                return this.players[i];
+            }
+        }
+        return null;
     }
 }
 class SPGameLogin{
@@ -787,7 +1076,6 @@ class SPGameLogin{
             type: 'GET',
             success: function(rep){
                 if(rep.result === 'success'){
-                    console.log(rep);
                     window.location.replace(rep.url);
                 }
             }
@@ -843,7 +1131,6 @@ class SPGameLogin{
                 outer.hide();
                 outer.root.menu.show();
             }else{
-                console.log(rep);
             }
         });
     }
@@ -873,15 +1160,12 @@ class SPGameLogin{
             data : {'platform': outer.platform},
             success : function(rep){
                 if(rep.result === 'success'){
-                    console.log("get_info success with", rep.platform);
-                    // console.log(rep);
                     outer.username = rep.username;
                     outer.photo = rep.photo;
                     outer.back_img = rep.back_img;
                     outer.hide();
                     outer.root.menu.show();
                 }else {
-                    console.log(rep);
                     outer.login();
                 }
             },
@@ -898,7 +1182,6 @@ class SPGameLogin{
 }
 export class SuperPersonGame {
     constructor(id, os){
-        console.log("create new SuperPersonGame");
         this.id = id;
         this.$sp_game_div = $('#' + id);
         this.os = os;

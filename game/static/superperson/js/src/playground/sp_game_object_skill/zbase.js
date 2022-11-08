@@ -1,6 +1,7 @@
 class SPGameSkillFireBall extends SPGameObject {
     constructor(playground, player, x, y, angle) {
         super();
+        this.name = "fireball";
         this.playground = playground;
         this.ctx = this.playground.sp_game_map.ctx;
         this.x = x;
@@ -30,11 +31,38 @@ class SPGameSkillFireBall extends SPGameObject {
     attack(player){
         let angle = Math.atan2(player.y - this.y, player.x - this.x);
         player.attacked(angle, this.damage);
+        if(this.playground.mode === 'multi mode' && this.player.is_who() === 'me'){
+            this.playground.mps.send_attack(this.player.uuid, player.uuid, this.uuid, angle, this.damage, player.x , player.y);
+        }
+        this.destroy();
+    }
+
+    receive_attack(angle, damage, x, y, player){
+        player.x = x;
+        player.y = y;
+        player.attacked(angle, damage);
         this.destroy();
     }
 
     update(){
-        if(this.eps < this.move_length){
+        this.update_move();
+        if(this.player.is_who() !== 'enemy') this.update_attack();
+        this.render();
+    }
+
+
+    update_attack(){
+        for(let i = 0;i < this.playground.players.length;i++){
+            let player = this.playground.players[i];
+            let distance = this.get_dist(player.x, player.y, this.x, this.y);
+            if(player !== this.player && distance <= this.radius + player.radius){
+                this.attack(player);
+            }
+        }
+    }
+
+    update_move(){
+       if(this.eps < this.move_length){
             let moved = Math.min(this.speed * this.timedelta / 1000, this.move_length);
             this.x += this.vx * moved;
             this.y += this.vy * moved;
@@ -43,14 +71,6 @@ class SPGameSkillFireBall extends SPGameObject {
             this.destroy();
             return false;
         }
-        for(let i = 0;i < this.playground.players.length;i++){
-            let player = this.playground.players[i];
-            let distance = this.get_dist(player.x, player.y, this.x, this.y);
-            if(player !== this.player && distance <= this.radius + player.radius){
-                this.attack(player);
-            }
-        }
-        this.render();
     }
 
     render(){
@@ -58,5 +78,15 @@ class SPGameSkillFireBall extends SPGameObject {
         this.ctx.fillStyle = this.color;
         this.ctx.arc(this.x * this.playground.scale,this.y * this.playground.scale,this.radius * this.playground.scale, 0, Math.PI * 2, false);
         this.ctx.fill();
+    }
+
+    on_destroy(){
+        let fireballs = this.player.fireballs;
+        for(let i = 0;i < fireballs.length;i++){
+            if(fireballs[i] === this){
+                fireballs.splice(i, 1);
+                break;
+            }
+        }
     }
 }

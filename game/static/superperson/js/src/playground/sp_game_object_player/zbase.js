@@ -18,6 +18,15 @@ class SPGamePlayer extends SPGameObject {
         this.is_robot = is_robot;
         this.photo = photo;
         this.username = username;
+        this.fireballs = [];
+        this.fireball_cold_time_static = 2;
+        this.fireball_cold_time = this.fireball_cold_time_static;
+        this.fireball_img = new Image();
+        this.fireball_img.src = "https://app3774.acapp.acwing.com.cn/static/superperson/images/playground/fireball.jpg";
+        this.blink_cold_time_static = 10;
+        this.blink_cold_time = 0;
+        this.blink_img = new Image();
+        this.blink_img.src = "https://app3774.acapp.acwing.com.cn/static/superperson/images/playground/blink.jpg";
         if(this.is_who() === 'me' && this.photo!== ' '){
             this.img = new Image();
             this.img.src = this.photo;
@@ -54,18 +63,35 @@ class SPGamePlayer extends SPGameObject {
         });
 
         this.playground.sp_game_map.$canvas.mousedown(function(e){
+            if(outer.playground.status !== 'fighting') return false;
             const rect = outer.ctx.canvas.getBoundingClientRect();
+            let tx = (e.clientX - rect.left) / outer.playground.scale;
+            let ty = (e.clientY - rect.top) / outer.playground.scale;
             if(e.which === 3){
-                outer.move_to((e.clientX - rect.left) / outer.playground.scale,(e.clientY - rect.top) / outer.playground.scale);
+                outer.move_to(tx, ty);
+                if(outer.playground.mode === 'multi mode') outer.playground.mps.send_move_to(tx,ty);
             }else if(e.which === 1) {
-                outer.unleash_skills((e.clientX - rect.left) / outer.playground.scale, (e.clientY - rect.top) / outer.playground.scale, outer.cur_skill);
-
+                let skill = outer.unleash_skills(tx, ty, outer.cur_skill);
+                if(outer.playground.mode === 'multi mode') {
+                    if(skill.name === 'fireball'){
+                        outer.playground.mps.send_shoot_fireball(outer.uuid,skill.uuid, tx, ty);
+                    }else if(skill.name === 'blink'){
+                        outer.playground.mps.send_blink(outer.uuid, skill.uuid, tx, ty);
+                    }
+                }
             }
         });
 
         $(window).keydown(function(e){
+            if(outer.playground.status !== 'fighting') return false;
             if(e.which === 81){ // q
+                if(outer.fireball_cold_time > outer.eps) return false;
                 outer.cur_skill = "fireball";
+                return false;
+            }else if(e.which === 68){
+                console.log('blink');
+                if(outer.blink_cold_time > outer.eps) return false;
+                outer.cur_skill = 'blink';
                 return false;
             }
         });
@@ -73,18 +99,30 @@ class SPGamePlayer extends SPGameObject {
 
 
     unleash_skills(tx,ty, skill_name){
+        let skill;
         if(skill_name === "fireball"){
-            this.shoot_fireball(tx,ty);
+            skill = this.shoot_fireball(tx,ty);
+            this.fireball_cold_time = this.fireball_cold_time_static;
+        }else if(skill_name === 'blink'){
+            skill = this.blink(tx,ty);
+            this.blink_cold_time = this.blink_cold_time_static;
         }else if(skill_name === null){
             return false;
         }
         this.cur_skill = null;
+        return skill;
     }
 
+    blink(tx, ty){
+        this.x = tx;
+        this.y = ty;
+    }
 
     shoot_fireball(tx, ty){
         let angle = Math.atan2(ty - this.y, tx - this.x);
-        new SPGameSkillFireBall(this.playground, this, this.x, this.y, angle);
+        let fireball = new SPGameSkillFireBall(this.playground, this, this.x, this.y, angle);
+        this.fireballs.push(fireball);
+        return fireball;
     }
 
     get_dist(x1,y1,x2,y2){
@@ -118,28 +156,27 @@ class SPGamePlayer extends SPGameObject {
         }
     }
 
-    player_collide(player){
-        if(this.vs === 0) this.vx = player.vx;
-        else this.vx = -this.vx;
-        if(this.vy === 0) this.vy = player.vy;
-        else this.vy = -this.vy;
-        this.move_length = 0;
-        this.other_speed = this.speed * 2;
+    get_fireball(uuid){
+        for(let i = 0;i < this.fireballs.length;i++){
+            if(this.fireballs[i].uuid === uuid){
+                return this.fireballs[i];
+            }
+        }
     }
 
     update(){
         this.update_move();
+        if(this.is_who() !== 'enemy' && this.playground.status === 'fighting') this.update_skill();
         this.render();
     }
 
+    update_skill(){
+        let spent_time = this.timedelta / 1000;
+        this.fireball_cold_time = Math.max(0, this.fireball_cold_time - spent_time);
+        this.blink_cold_time = Math.max(0, this.blink_cold_time - spent_time);
+    }
+
     update_move(){
-        for(let i = 0;i < this.playground.players.length;i++){
-            let player = this.playground.players[i];
-            let distance = this.get_dist(this.x,this.y, player.x, player.y);
-            if(player !== this && distance <= this.radius + player.radius){
-                this.player_collide(player);
-            }
-        }
         if(this.other_speed > this.eps && this.move_length < this.eps){
             this.x += this.vx * this.other_speed * this.timedelta / 1000;
             this.y += this.vy * this.other_speed * this.timedelta / 1000;
@@ -159,10 +196,10 @@ class SPGamePlayer extends SPGameObject {
                 if(this.move_length < 5 / this.playground.scale){
                     this.move_to(tx, ty);
                 }
-                if(this.cur_skill === null && Math.random() < 1 / (20.0 * this.playground.players.length)){
+                if(this.cur_skill === null){
                     let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
-                    this.unleash_skills(player.x,player.y, "fireball");
-
+                    if(this.fireball_cold_time < this.eps) this.unleash_skills(player.x,player.y, "fireball");
+                    if(this.blink_cold_time < this.eps) this.unleash_skills(tx, ty, 'blink');
                 }
             }else {
 
@@ -171,6 +208,64 @@ class SPGamePlayer extends SPGameObject {
     }
 
     render(){
+        this.render_player();
+        if(this.is_who() === 'me'){
+            this.render_skill();
+        }
+    }
+
+    render_skill(){
+        this.render_fireball();
+        this.render_blink();
+    }
+
+
+    render_blink(){
+        let x = 1.7, y = 0.9, r = 0.04;
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.arc(x * this.playground.scale,y * this.playground.scale,r * this.playground.scale,0,Math.PI * 2,false);
+        this.ctx.strokeStyle = "white";
+        this.ctx.stroke();
+        this.ctx.clip();
+        this.ctx.drawImage(this.blink_img, (x - r) * this.playground.scale, (y - r) * this.playground.scale, r * 2 * this.playground.scale, r * 2 * this.playground.scale);
+        this.ctx.restore();
+        if(this.blink_cold_time > this.eps){
+            this.ctx.save();
+            this.ctx.beginPath();
+            this.ctx.moveTo(x * this.playground.scale,y * this.playground.scale);
+            this.ctx.arc(x * this.playground.scale,y * this.playground.scale,r * this.playground.scale,0 - Math.PI / 2 ,2 * Math.PI * (1 - this.blink_cold_time / this.blink_cold_time_static) - Math.PI / 2, true);
+            this.ctx.lineTo(x * this.playground.scale,y * this.playground.scale);
+            this.ctx.fillStyle = "rgba(0,0,255,0.6)";
+            this.ctx.fill();
+            this.ctx.restore();
+        }
+    }
+
+    render_fireball(){
+        let x = 1.5, y = 0.9, r = 0.04;
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.arc(x * this.playground.scale,y * this.playground.scale,r * this.playground.scale,0,Math.PI * 2,false);
+        this.ctx.strokeStyle = "white";
+        this.ctx.stroke();
+        this.ctx.clip();
+        this.ctx.drawImage(this.fireball_img, (x - r) * this.playground.scale, (y - r) * this.playground.scale, r * 2 * this.playground.scale, r * 2 * this.playground.scale);
+        this.ctx.restore();
+        if(this.fireball_cold_time > this.eps){
+            this.ctx.save();
+            this.ctx.beginPath();
+            this.ctx.moveTo(x * this.playground.scale,y * this.playground.scale);
+            this.ctx.arc(x * this.playground.scale,y * this.playground.scale,r * this.playground.scale,0 - Math.PI / 2 ,2 * Math.PI * (1 - this.fireball_cold_time / this.fireball_cold_time_static) - Math.PI / 2, true);
+            this.ctx.lineTo(x * this.playground.scale,y * this.playground.scale);
+            this.ctx.fillStyle = "rgba(0,0,255,0.6)";
+            this.ctx.fill();
+            this.ctx.restore();
+        }
+
+    }
+
+    render_player(){
         if(this.is_who() === 'me' && this.photo !== ' '){
             this.ctx.save();
             this.ctx.beginPath();
@@ -197,6 +292,7 @@ class SPGamePlayer extends SPGameObject {
             this.ctx.drawImage(this.img, (this.x - this.radius) * this.playground.scale, (this.y - this.radius) * this.playground.scale, this.radius * 2 * this.playground.scale, this.radius* 2 * this.playground.scale);
             this.ctx.restore();
         }
+
     }
 
     on_destroy(){

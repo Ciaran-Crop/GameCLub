@@ -26,18 +26,16 @@ class SPGameMenu {
     add_listening_events(){
         let outer = this;
         this.$single_mode.click(function(){
-            console.log("click single mode");
             outer.hide();
             outer.root.playground.show('single mode');
         });
         this.$multi_mode.click(function(){
-            console.log("click multi mode");
             outer.hide();
             outer.root.playground.show('multi mode');
         });
         this.$settings.click(function(){
             if(outer.root.login.platform === 'ACAPP'){
-                console.log("ACAPP logout");
+                outer.root.os.api.window.close();
             }else{
                 $.ajax({
                     url: 'https://app3774.acapp.acwing.com.cn/superperson/settings/user_logout/',

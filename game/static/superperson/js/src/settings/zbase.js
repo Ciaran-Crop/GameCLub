@@ -186,7 +186,6 @@ class SPGameLogin{
             type: 'GET',
             success: function(rep){
                 if(rep.result === 'success'){
-                    console.log(rep);
                     window.location.replace(rep.url);
                 }
             }
@@ -242,7 +241,6 @@ class SPGameLogin{
                 outer.hide();
                 outer.root.menu.show();
             }else{
-                console.log(rep);
             }
         });
     }
@@ -272,15 +270,12 @@ class SPGameLogin{
             data : {'platform': outer.platform},
             success : function(rep){
                 if(rep.result === 'success'){
-                    console.log("get_info success with", rep.platform);
-                    // console.log(rep);
                     outer.username = rep.username;
                     outer.photo = rep.photo;
                     outer.back_img = rep.back_img;
                     outer.hide();
                     outer.root.menu.show();
                 }else {
-                    console.log(rep);
                     outer.login();
                 }
             },
