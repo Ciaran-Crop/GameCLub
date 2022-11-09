@@ -38,6 +38,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    outline: none;
 }
 
 .sp-game-map-back {
@@ -224,3 +225,41 @@
     font-size: 2vh;
 }
 
+.sp-game-chat-field-input {
+    z-index: 2;
+    position: absolute;
+    top: 86%;
+    left: 20%;
+    transform: translate(-50%, -50%);
+
+    width: 20%;
+    height: 5vh;
+
+    color: black;
+    font-size: 2vh;
+
+    background-color: rgba(255,255,230, 0.2);
+    border-radius: 1vh;
+}
+
+.sp-game-chat-field-history {
+    z-index: 2;
+    position: absolute;
+    top: 66%;
+    left: 20%;
+    transform: translate(-50%, -50%);
+
+    width: 20%;
+    height: 32%;
+
+    color: red;
+
+    font-size: 2vh;
+    padding: 5px;
+    overflow: auto;
+    border-radius: 1vh;
+}
+
+.sp-game-chat-field-history::-webkit-scrollbar {
+      width: 0;
+}

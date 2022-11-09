@@ -62,8 +62,8 @@ class SPGamePlayer extends SPGameObject {
             return false;
         });
 
-        this.playground.sp_game_map.$canvas.mousedown(function(e){
-            if(outer.playground.status !== 'fighting') return false;
+        let func_mousedown = function(e){
+            if(outer.playground.status !== 'fighting') return true;
             const rect = outer.ctx.canvas.getBoundingClientRect();
             let tx = (e.clientX - rect.left) / outer.playground.scale;
             let ty = (e.clientY - rect.top) / outer.playground.scale;
@@ -80,9 +80,19 @@ class SPGamePlayer extends SPGameObject {
                     }
                 }
             }
-        });
+        };
 
-        $(window).keydown(function(e){
+        let func_keydown = function(e){
+            // 13 - enter; 27 - esc; 81 - 1; 68 -d;
+            if(outer.playground.mode === 'multi mode'){
+                if(e.which === 13){
+                    outer.playground.chat.show_input();
+                    return false;
+                }else if(e.which === 27){
+                    outer.playground.chat.hide_input();
+                    return false;
+                }
+            }
             if(outer.playground.status !== 'fighting') return false;
             if(e.which === 81){ // q
                 if(outer.fireball_cold_time > outer.eps) return false;
@@ -94,7 +104,14 @@ class SPGamePlayer extends SPGameObject {
                 outer.cur_skill = 'blink';
                 return false;
             }
-        });
+        };
+
+        this.playground.sp_game_map.$canvas.mousedown(func_mousedown);
+        this.playground.chat.$input.mousedown(func_mousedown);
+        this.playground.chat.$history.mousedown(func_mousedown);
+
+        this.playground.sp_game_map.$canvas.keydown(func_keydown);
+
     }
 
 
@@ -296,12 +313,6 @@ class SPGamePlayer extends SPGameObject {
     }
 
     on_destroy(){
-        if(this.is_who() === 'me'){
-            $(window).unbind()
-        }
-    }
-    destroy(){
-        super.destroy();
         for(let i = 0;i < this.playground.players.length;i++){
             if(this.playground.players[i] === this){
                 this.playground.players.splice(i, 1);

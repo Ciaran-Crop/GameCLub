@@ -59,10 +59,100 @@ class SPGameMenu {
         this.$sp_game_menu.hide();
     }
 }
+class SPGameChatField {
+    constructor(playground) {
+        this.playground = playground;
+
+        this.$history = $(`
+<div class="sp-game-chat-field-history">
+
+</div>
+`);
+        this.$input = $(`
+<input type='text' class="sp-game-chat-field-input">
+`);
+
+        this.hide_input();
+        this.hide_history();
+        this.func_id = null;
+        this.playground.$sp_game_playground.append(this.$history);
+        this.playground.$sp_game_playground.append(this.$input);
+        this.start();
+
+    }
+
+    start(){
+        this.add_listening_events();
+    }
+
+    add_listening_events(){
+        let outer = this;
+        this.$input.on('contextmenu', function(){return false});
+        this.$history.on('contextmenu', function(){return false});
+        this.$input.keydown(function(e){
+            if(e.which === 27){
+                outer.hide_input();
+                return false;
+            }else if(e.which === 13){
+                let username = outer.playground.root.login.username;
+                let text = outer.$input.val();
+                if(text){
+                    outer.$input.val("");
+                    outer.add_message(username,text);
+                    outer.playground.mps.send_message(username, text);
+                }
+                return false;
+            }
+
+        });
+
+    }
+
+    render_message(message, username){
+        if(username === this.playground.root.login.username){
+            return $(`<div style="color: LightPink">${message}</div>`);
+        }
+        return $(`<div>${message}</div>`);
+    }
+
+    add_message(username, text){
+        this.show_history();
+        let message = `[${username}] ${text}`;
+        this.$history.append(this.render_message(message, username));
+        this.$history.scrollTop(this.$history[0].scrollHeight);
+    }
+
+    show_input(){
+        this.show_history();
+        this.$input.show();
+        this.$input.focus();
+    }
+
+    hide_input(){
+        this.$input.hide();
+        this.playground.sp_game_map.$canvas.focus();
+    }
+
+    show_history(){
+        this.$history.fadeIn();
+        let outer = this;
+        if(this.func_id) clearTimeout(this.func_id);
+
+        this.func_id = setTimeout(function(){
+            outer.$history.fadeOut();
+            outer.func_id = null;
+        }, 3000);
+    }
+
+    hide_history(){
+        this.$history.fadeOut();
+    }
+
+}
 class MultiPlayerSocket {
     constructor(playground){
         this.playground = playground;
-        this.ws = new WebSocket("wss://app3774.acapp.acwing.com.cn/wss/multiplayer/");
+        this.ws = new WebSocket("wss://app3774.acapp.acwing.com.cn/wss/superperson/multiplayer/");
         this.start();
     }
     start(){
@@ -84,6 +174,8 @@ class MultiPlayerSocket {
                 outer.receive_attack(data);
             }else if(data.event === 'blink'){
                 outer.receive_blink(data);
+            }else if(data.event === 'send_message'){
+                outer.receive_message(data);
             }
         };
     }
@@ -202,6 +294,22 @@ class MultiPlayerSocket {
             player.x = tx;
             player.y = ty;
         }
+    }
+
+    send_message(username, text){
+        let outer = this;
+        this.ws.send(JSON.stringify({
+            'event': 'send_message',
+            'uuid': outer.uuid,
+            'username': username,
+            'text': text,
+        }));
+    }
+
+    receive_message(data){
+        let username = data['username'];
+        let text = data['text'];
+        this.playground.chat.add_message(username, text);
     }
 
 
@@ -328,7 +436,7 @@ class SPGameMap extends SPGameObject{
         super();
         this.playground = playground;
         // 画布标签
-        this.$canvas = $(`<canvas class="sp-game-map-canvas"></canvas>`);
+        this.$canvas = $(`<canvas class="sp-game-map-canvas" tabindex=0></canvas>`);
         this.$canvas_back = $(`<div class="sp-game-map-back"></div>`);
         // 获取2D画布内容对象
         this.ctx = this.$canvas[0].getContext('2d');
@@ -342,7 +450,7 @@ class SPGameMap extends SPGameObject{
         this.$canvas_back.css("background-image","url(" + this.playground.root.login.back_img + ")");
 }
     start(){
-        this.render();
+        this.$canvas.focus();
     }
     update(){
         this.render();
@@ -467,8 +575,8 @@ class SPGamePlayer extends SPGameObject {
             return false;
         });
 
-        this.playground.sp_game_map.$canvas.mousedown(function(e){
-            if(outer.playground.status !== 'fighting') return false;
+        let func_mousedown = function(e){
+            if(outer.playground.status !== 'fighting') return true;
             const rect = outer.ctx.canvas.getBoundingClientRect();
             let tx = (e.clientX - rect.left) / outer.playground.scale;
             let ty = (e.clientY - rect.top) / outer.playground.scale;
@@ -485,9 +593,19 @@ class SPGamePlayer extends SPGameObject {
                     }
                 }
             }
-        });
+        };
 
-        $(window).keydown(function(e){
+        let func_keydown = function(e){
+            // 13 - enter; 27 - esc; 81 - 1; 68 -d;
+            if(outer.playground.mode === 'multi mode'){
+                if(e.which === 13){
+                    outer.playground.chat.show_input();
+                    return false;
+                }else if(e.which === 27){
+                    outer.playground.chat.hide_input();
+                    return false;
+                }
+            }
             if(outer.playground.status !== 'fighting') return false;
             if(e.which === 81){ // q
                 if(outer.fireball_cold_time > outer.eps) return false;
@@ -499,7 +617,14 @@ class SPGamePlayer extends SPGameObject {
                 outer.cur_skill = 'blink';
                 return false;
             }
-        });
+        };
+
+        this.playground.sp_game_map.$canvas.mousedown(func_mousedown);
+        this.playground.chat.$input.mousedown(func_mousedown);
+        this.playground.chat.$history.mousedown(func_mousedown);
+
+        this.playground.sp_game_map.$canvas.keydown(func_keydown);
+
     }
 
 
@@ -701,12 +826,6 @@ class SPGamePlayer extends SPGameObject {
     }
 
     on_destroy(){
-        if(this.is_who() === 'me'){
-            $(window).unbind()
-        }
-    }
-    destroy(){
-        super.destroy();
         for(let i = 0;i < this.playground.players.length;i++){
             if(this.playground.players[i] === this){
                 this.playground.players.splice(i, 1);
@@ -833,6 +952,7 @@ class SPGamePlayGround {
         let y = Math.random() * this.height / this.scale;
         let player = new SPGamePlayer(this, x, y, color, speed, radius, true, false, this.root.login.photo, this.root.login.username);
         this.players.push(player);
+        this.chat = new SPGameChatField(this);
         this.mps = new MultiPlayerSocket(this);
         this.mps.uuid = this.players[0].uuid;
 

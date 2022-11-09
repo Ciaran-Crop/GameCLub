@@ -24,6 +24,7 @@ class SPGamePlayGround {
         let y = Math.random() * this.height / this.scale;
         let player = new SPGamePlayer(this, x, y, color, speed, radius, true, false, this.root.login.photo, this.root.login.username);
         this.players.push(player);
+        this.chat = new SPGameChatField(this);
         this.mps = new MultiPlayerSocket(this);
         this.mps.uuid = this.players[0].uuid;
 
