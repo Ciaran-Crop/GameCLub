@@ -8,5 +8,6 @@ class Player(models.Model):
     photo = models.CharField(max_length = 256, blank=True)
     back_img = models.CharField(default=DEFAULT_BACK_IMG,max_length = 256, blank=True)
     open_id = models.CharField(default='', max_length = 50, blank = True)
+    score = models.IntegerField(default=1500)
     def __str__(self):
         return str(self.user)
