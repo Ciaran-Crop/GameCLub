@@ -27,6 +27,10 @@ class SPGameObject {
 
     }
 
+    late_update(){
+
+    }
+
     on_destroy(){ // 删除之前的操作
 
     }
@@ -54,6 +58,11 @@ let SP_GAME_ANIMATION = function(timestamp){
             obj.update();
             obj.timedelta = timestamp - last_timestamp;
         }
+    }
+
+    for(let i = 0;i < SP_GAME_OBJECTS.length;i++){
+        let obj = SP_GAME_OBJECTS[i];
+        obj.late_update();
     }
     last_timestamp = timestamp;
     requestAnimationFrame(SP_GAME_ANIMATION);

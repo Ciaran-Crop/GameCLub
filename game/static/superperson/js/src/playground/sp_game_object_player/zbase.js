@@ -19,8 +19,8 @@ class SPGamePlayer extends SPGameObject {
         this.photo = photo;
         this.username = username;
         this.fireballs = [];
-        this.fireball_cold_time_static = 2;
-        this.fireball_cold_time = this.fireball_cold_time_static;
+        this.fireball_cold_time_static = 0.01;
+        this.fireball_cold_time = 0;
         this.fireball_img = new Image();
         this.fireball_img.src = "https://app3774.acapp.acwing.com.cn/static/superperson/images/playground/fireball.jpg";
         this.blink_cold_time_static = 10;
@@ -107,9 +107,10 @@ class SPGamePlayer extends SPGameObject {
         };
 
         this.playground.sp_game_map.$canvas.mousedown(func_mousedown);
-        this.playground.chat.$input.mousedown(func_mousedown);
-        this.playground.chat.$history.mousedown(func_mousedown);
-
+        if(this.playground.mode === 'multi mode'){
+            this.playground.chat.$input.mousedown(func_mousedown);
+            this.playground.chat.$history.mousedown(func_mousedown);
+        }
         this.playground.sp_game_map.$canvas.keydown(func_keydown);
 
     }
@@ -213,7 +214,7 @@ class SPGamePlayer extends SPGameObject {
                 if(this.move_length < 5 / this.playground.scale){
                     this.move_to(tx, ty);
                 }
-                if(this.cur_skill === null){
+                if(this.cur_skill === null && Math.random() < 1 / 100){
                     let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
                     if(this.fireball_cold_time < this.eps) this.unleash_skills(player.x,player.y, "fireball");
                     if(this.blink_cold_time < this.eps) this.unleash_skills(tx, ty, 'blink');

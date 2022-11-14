@@ -18,7 +18,7 @@ class SPGamePlayGround {
         }
     }
 
-    create_multi_mode(color, players_num, speed, radius){
+    create_multi_mode(color, players_nums, speed, radius){
         let outer = this;
         let x = Math.random() * this.width / this.scale;
         let y = Math.random() * this.height / this.scale;
@@ -41,6 +41,28 @@ class SPGamePlayGround {
     };
 
     hide(){
+        while(this.players && this.players.length > 0){
+            this.players[0].destroy();
+        }
+
+        if(this.sp_game_map){
+            this.sp_game_map.destroy();
+            this.sp_game_map = null;
+        }
+
+        if(this.sp_game_board){
+            this.sp_game_board.destroy();
+            this.sp_game_board = null;
+        }
+
+        if(this.sp_game_score_board){
+            this.sp_game_score_board.destroy();
+            this.sp_game_score_board = null;
+        }
+
+       this.$sp_game_playground.empty();
+
+
         this.$sp_game_playground.hide();
     }
 
@@ -59,13 +81,14 @@ class SPGamePlayGround {
         this.sp_game_map = new SPGameMap(this);
         this.status = 'waiting' // waiting -> fighting -> over -> end
         this.sp_game_board = new SPGameBoard(this);
+        this.sp_game_score_board = new SPGameScoreBoard(this);
         this.resize();
         this.colors = ["Chocolate","Crimson","DarkGoldenRod","Gainsboro","Gold","NavajoWhite","Salmon","SlateGray"];
         this.mode = mode;
         if(mode === 'single mode'){
-            this.create_single_mode("MidnightBlue",10,0.25, 0.05);
+            this.create_single_mode("MidnightBlue",3,0.25, 0.05);
         }else if(mode === 'multi mode'){
-            this.create_multi_mode("MidnightBlue",10,0.25, 0.05);
+            this.create_multi_mode("MidnightBlue",3,0.25, 0.05);
         }
 
         this.$sp_game_playground.show();

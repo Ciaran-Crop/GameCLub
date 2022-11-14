@@ -71,8 +71,8 @@ class Pool:
                     'event': 'create_player',
                     'uuid': pr.uuid,
                     'username': pr.username,
-                    'x': pr.y,
-                    'y': pr.x,
+                    'x': pr.x,
+                    'y': pr.y,
                     'photo': pr.photo,
                 }
             )
