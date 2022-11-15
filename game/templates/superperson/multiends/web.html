@@ -13,7 +13,7 @@
     <script type="module">
         import {SuperPersonGame} from "{% static 'superperson/js/dist/game.js' %}";
         $(document).ready(function(){
-            let superperson_game = new SuperPersonGame("superperson_game_1");
+            let superperson_game = new SuperPersonGame("superperson_game_1", null, "{{ access }}", "{{ refresh }}");
         });
     </script>
 </body>

@@ -1,12 +1,18 @@
 from django.urls import path, include
-from game.views.settings.get_info import get_info
-from game.views.settings.user_login import user_login, user_logout, user_register
+from game.views.settings.get_info import InfoView
+from game.views.settings.ranklist import RankList
+from game.views.settings.register import RegisterView
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView
+)
 
 urlpatterns = [
-        path('get_info/', get_info, name = 'get_info'),
-        path('user_login/', user_login, name='user_login'),
-        path('user_logout/', user_logout, name='user_logout'),
-        path('user_register/', user_register, name='user_register'),
+        path('api/token/', TokenObtainPairView.as_view(), name = 'get jwt token'),
+        path('api/token/refresh', TokenRefreshView.as_view(), name = 'refresh jwt token'),
+        path('get_info/', InfoView.as_view(), name = 'get_info'),
+        path('get_ranklist/', RankList.as_view(), name = 'get_ranklist'),
+        path('register/', RegisterView.as_view(), name = 'register user'),
         path('web/', include('game.urls.settings.web.index')),
         path('acwing/', include('game.urls.settings.acwing.index')),
         ]

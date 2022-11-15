@@ -155,27 +155,42 @@ class SPGameLogin{
         }
         return value;
     }
-    remote_login(){
-        let outer = this;
-        const username = this.$sp_login_username.val();
-        const password = this.$sp_login_password.val();
+
+    refresh_jwt_interval(){
+        // refresh access
+        setInterval(() => {
+            $.ajax({
+                url: 'https://app3774.acapp.acwing.com.cn/superperson/settings/api/token/refresh',
+                type: 'post',
+                data: {
+                     "refresh": localStorage.getItem(`superperson-refresh`),
+                },
+                success: rep => {
+                    localStorage.setItem(`superperson-access`, rep.access);
+                },
+            });
+        }, 4.5 * 60 * 1000);
+
+    }
+
+    remote_login(un, pd){
+        const username = un || this.$sp_login_username.val();
+        const password = pd || this.$sp_login_password.val();
         $.ajax({
-            url: 'https://app3774.acapp.acwing.com.cn/superperson/settings/user_login/',
-            type: 'POST',
-            beforeSend: function(request){
-                request.setRequestHeader('X-CSRFToken', outer.getCookie('csrftoken'));
-            },
+            url: 'https://app3774.acapp.acwing.com.cn/superperson/settings/api/token/',
+            type: 'post',
             data: {
                 'username': username,
                 'password': password,
             },
-            success: function(rep){
-                if(rep.result === 'success'){
-                    location.reload();
-                }else{
-                    outer.$sp_login_error_message.html(rep.text);
-                }
-
+            success: rep => {
+                localStorage.setItem(`superperson-access`, rep.access);
+                localStorage.setItem(`superperson-refresh`, rep.refresh);
+                this.get_info();
+                this.refresh_jwt_interval();
+            },
+            error: () => {
+                this.$sp_login_error_message.html("用户名或密码错误");
             }
         });
     }
@@ -198,19 +213,16 @@ class SPGameLogin{
         const password = this.$sp_register_password.val();
         const password_confirm = this.$sp_register_password_confirm.val();
         $.ajax({
-            url: 'https://app3774.acapp.acwing.com.cn/superperson/settings/user_register/',
+            url: 'https://app3774.acapp.acwing.com.cn/superperson/settings/register/',
             type: 'POST',
-            beforeSend: function(request){
-                request.setRequestHeader('X-CSRFToken', outer.getCookie('csrftoken'));
-            },
             data: {
                 'username': username,
                 'password': password,
                 'password_confirm': password_confirm,
             },
-            success: function(rep){
+            success: rep => {
                 if(rep.result === 'success'){
-                    location.reload();
+                    this.remote_login(username, password);
                 }else{
                     outer.$sp_register_error_message.html(rep.text);
                 }
@@ -233,14 +245,16 @@ class SPGameLogin{
 
     acapp_login(appid, redirect_uri, scope, state){
         let outer = this;
-        outer.root.os.api.oauth2.authorize(appid, redirect_uri, scope, state, function(rep){
+        outer.root.os.api.oauth2.authorize(appid, redirect_uri, scope, state, rep => {
             if(rep.result === 'success'){
                 outer.username = rep.username;
                 outer.photo = rep.photo;
                 outer.back_img = rep.back_img;
+                localStorage.setItem(`superperson-access`, rep.access);
+                localStorage.setItem(`superperson-refresh`, rep.refresh);
                 outer.hide();
                 outer.root.menu.show();
-            }else{
+                this.refresh_jwt_interval();
             }
         });
     }
@@ -262,23 +276,37 @@ class SPGameLogin{
         });
     }
 
-    get_info(){
-        let outer = this;
+    get_ranklist(){
         $.ajax({
-            url : 'https://app3774.acapp.acwing.com.cn/superperson/settings/get_info',
-            type : 'GET',
-            data : {'platform': outer.platform},
-            success : function(rep){
-                if(rep.result === 'success'){
-                    outer.username = rep.username;
-                    outer.photo = rep.photo;
-                    outer.back_img = rep.back_img;
-                    outer.hide();
-                    outer.root.menu.show();
-                }else {
-                    outer.login();
-                }
+            url : 'https://app3774.acapp.acwing.com.cn/superperson/settings/get_ranklist/',
+            type: 'get',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem(`superperson-access`),
             },
+            success : rep => {
+                console.log(rep);
+            }
+        });
+    }
+
+    get_info(){
+        $.ajax({
+            url : 'https://app3774.acapp.acwing.com.cn/superperson/settings/get_info/',
+            type : 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem(`superperson-access`),
+            },
+            success : rep => {
+                this.username = rep.username;
+                this.photo = rep.photo;
+                this.back_img = rep.back_img;
+                this.hide();
+                this.root.menu.show();
+
+            },
+            error : () => {
+                this.login();
+            }
         });
     }
 

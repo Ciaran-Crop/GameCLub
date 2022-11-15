@@ -19,7 +19,7 @@ class SPGamePlayer extends SPGameObject {
         this.photo = photo;
         this.username = username;
         this.fireballs = [];
-        this.fireball_cold_time_static = 0.01;
+        this.fireball_cold_time_static = 3;
         this.fireball_cold_time = 0;
         this.fireball_img = new Image();
         this.fireball_img.src = "https://app3774.acapp.acwing.com.cn/static/superperson/images/playground/fireball.jpg";
@@ -283,32 +283,33 @@ class SPGamePlayer extends SPGameObject {
 
     }
 
+    draw_img(){
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.arc(this.x * this.playground.scale,this.y * this.playground.scale,this.radius * this.playground.scale,0,Math.PI * 2,false);
+        this.ctx.strokeStyle = "white";
+        this.ctx.stroke();
+        this.ctx.clip();
+        this.ctx.drawImage(this.img, (this.x - this.radius) * this.playground.scale, (this.y - this.radius) * this.playground.scale, this.radius * 2 * this.playground.scale, this.radius* 2 * this.playground.scale);
+        this.ctx.restore();
+    }
+
+    draw_color(){
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.arc(this.x * this.playground.scale,this.y * this.playground.scale,this.radius * this.playground.scale,0,2 * Math.PI, false);
+        this.ctx.fillStyle = this.color;
+        this.ctx.fill();
+        this.ctx.restore();
+    }
+
     render_player(){
         if(this.is_who() === 'me' && this.photo !== ' '){
-            this.ctx.save();
-            this.ctx.beginPath();
-            this.ctx.arc(this.x * this.playground.scale,this.y * this.playground.scale,this.radius * this.playground.scale,0,Math.PI * 2,false);
-            this.ctx.strokeStyle = "white";
-            this.ctx.stroke();
-            this.ctx.clip();
-            this.ctx.drawImage(this.img, (this.x - this.radius) * this.playground.scale, (this.y - this.radius) * this.playground.scale, this.radius * 2 * this.playground.scale, this.radius* 2 * this.playground.scale);
-            this.ctx.restore();
+            this.draw_img();
         }else if(this.is_who() === 'robot'){
-            this.ctx.save();
-            this.ctx.beginPath();
-            this.ctx.arc(this.x * this.playground.scale,this.y * this.playground.scale,this.radius * this.playground.scale,0,2 * Math.PI, false);
-            this.ctx.fillStyle = this.color;
-            this.ctx.fill();
-            this.ctx.restore();
+            this.draw_color();
         }else {
-            this.ctx.save();
-            this.ctx.beginPath();
-            this.ctx.arc(this.x * this.playground.scale,this.y * this.playground.scale,this.radius * this.playground.scale,0,Math.PI * 2,false);
-            this.ctx.strokeStyle = "red";
-            this.ctx.stroke();
-            this.ctx.clip();
-            this.ctx.drawImage(this.img, (this.x - this.radius) * this.playground.scale, (this.y - this.radius) * this.playground.scale, this.radius * 2 * this.playground.scale, this.radius* 2 * this.playground.scale);
-            this.ctx.restore();
+            this.draw_img();
         }
 
     }

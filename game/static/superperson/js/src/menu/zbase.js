@@ -24,28 +24,22 @@ class SPGameMenu {
     }
 
     add_listening_events(){
-        let outer = this;
-        this.$single_mode.click(function(){
-            outer.hide();
-            outer.root.playground.show('single mode');
+        this.$single_mode.click(() => {
+            this.hide();
+            this.root.playground.show('single mode');
         });
-        this.$multi_mode.click(function(){
-            outer.hide();
-            outer.root.playground.show('multi mode');
+        this.$multi_mode.click(() => {
+            this.hide();
+            this.root.playground.show('multi mode');
         });
-        this.$settings.click(function(){
-            if(outer.root.login.platform === 'ACAPP'){
-                outer.root.os.api.window.close();
+        this.$settings.click(() => {
+            localStorage.setItem(`superperson-access`, "");
+            localStorage.setItem(`superperson-refresh`, "");
+
+            if(this.root.login.platform === 'ACAPP'){
+                this.root.os.api.window.close();
             }else{
-                $.ajax({
-                    url: 'https://app3774.acapp.acwing.com.cn/superperson/settings/user_logout/',
-                    type: 'GET',
-                    success: function(rep){
-                        if(rep.result === 'success'){
-                            location.reload();
-                        }
-                    }
-                });
+                location.reload();
             }
         });
     }

@@ -4,9 +4,10 @@ from django.core.cache import cache
 from django.contrib.auth.models import User
 from game.models.player import Player
 from django.contrib.auth import login
-from django.shortcuts import redirect
+from django.shortcuts import redirect, reverse
 from urllib.parse import quote
 from random import randint
+from rest_framework_simplejwt.tokens import RefreshToken
 
 BASE_URL = "https://app3774.acapp.acwing.com.cn"
 BASE_NAME = "superperson-index"
@@ -60,8 +61,8 @@ def receive_code(request):
     player = Player.objects.filter(open_id = openid)
     if player.exists():
         user = player[0].user
-        login(request, user)
-        return redirect(BASE_NAME)
+        refresh = RefreshToken.for_user(user)
+        return redirect(reverse(BASE_NAME) + "?access={}&refresh={}".format(str(refresh.access_token), str(refresh)))
 
     info_params = {
         'access_token': access_token,
@@ -81,6 +82,5 @@ def receive_code(request):
 
     user = User.objects.create(username=username)
     Player.objects.create(user = user, photo = photo, open_id = openid)
-    login(request,user)
-
-    return redirect(BASE_NAME)
+    refresh = RefreshToken.for_user(user)
+    return redirect(reverse(BASE_NAME) + "?access={}&refresh={}".format(str(refresh.access_token), str(refresh)))

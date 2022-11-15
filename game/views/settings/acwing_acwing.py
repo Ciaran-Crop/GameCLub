@@ -4,9 +4,9 @@ from django.core.cache import cache
 from django.contrib.auth.models import User
 from game.models.player import Player
 from django.contrib.auth import login
-from django.shortcuts import redirect
 from urllib.parse import quote
 from random import randint
+from rest_framework_simplejwt.tokens import RefreshToken
 
 BASE_URL = "https://app3774.acapp.acwing.com.cn"
 BASE_NAME = "superperson-index"
@@ -72,11 +72,14 @@ def receive_code(request):
     player = Player.objects.filter(open_id = openid)
     if player.exists():
         user = player[0].user
+        refresh = RefreshToken.for_user(user)
         return JsonResponse({
             'result': 'success',
             'username': user.username,
             'photo': player[0].photo,
             'back_img': player[0].back_img,
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
             })
 
     info_params = {
@@ -100,11 +103,14 @@ def receive_code(request):
 
     user = User.objects.create(username=username)
     player = Player.objects.create(user = user, photo = photo, open_id = openid)
+    refresh = RefreshToken.for_user(user)
 
     return JsonResponse({
             'result': 'success',
             'username': user.username,
             'photo': player.photo,
             'back_img': player.back_img,
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
             })
 
