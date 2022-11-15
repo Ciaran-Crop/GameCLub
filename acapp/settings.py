@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'game.apps.GameConfig',
+    'gameclub.apps.GameclubConfig',
 ]
 
 MIDDLEWARE = [
@@ -129,6 +130,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static');
 STATICFILES_DIRS = [
         os.path.join(BASE_DIR, 'game', 'static'),
+        os.path.join(BASE_DIR, 'gameclub', 'static'),
 ]
 
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
