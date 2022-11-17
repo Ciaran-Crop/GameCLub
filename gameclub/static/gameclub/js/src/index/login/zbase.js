@@ -31,7 +31,6 @@ class GameClubIndexLogin {
             <button>登录</button>
         </div>
     </div>
-    <br>
     <div class="gc-index-login-box-other">
         <div class="gc-index-login-box-other-register">
             注册
@@ -43,13 +42,9 @@ class GameClubIndexLogin {
             忘记密码?
         </div>
     </div>
-    <br>
     <div class="gc-index-login-box-third">
         <div class="gc-index-login-box-third-logo">
             <img width="30" height="30" src="${BASE_URL}/static/gameclub/images/index/acapp.jpg">
-        </div>
-        <div class="gc-index-login-box-third-name">
-            ACWing 登录
         </div>
     </div>
 

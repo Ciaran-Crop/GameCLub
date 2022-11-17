@@ -37,6 +37,7 @@
 .gc-index-login-box-img {
     border-radius: 12px 0 0 12px;
     flex:1;
+    user-select: none;
 }
 
 .gc-index-login-box-email {
@@ -93,4 +94,89 @@
     padding-left: 10px;
     width: 99%;
     height: 99%;
+}
+
+.gc-index-login-box-login-button {margin-top: 15%;}
+
+.gc-index-login-box-login-button > button {
+    width: 90%;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #3370FF;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    height: 6vh;
+    font-size: 2.5vh;
+    color: #fff;
+    cursor: pointer;
+}
+
+.gc-index-login-box-other {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: space-evenly;
+    padding: 0 5vw;
+    color: #585E6D;
+}
+
+.gc-index-login-box-other-line {
+    color: #dadce0;
+}
+
+.gc-index-login-box-other-register:hover {
+    cursor: pointer;
+    color: #585E50;
+}
+
+.gc-index-login-box-other-forget {
+    cursor: pointer;
+}
+
+.gc-index-login-box-other-forget:hover {
+    cursor: pointer;
+    color: #585E00;
+}
+
+.gc-index-login-box-other-register:hover {
+    cursor: pointer;
+    color: #585E00;
+}
+
+.gc-index-login-box-login-button > button:hover {
+    cursor: pointer;
+    background: #3380ff;
+}
+
+.gc-index-login-box-login-button > button:hover {
+    cursor: pointer;
+    background: #3380ff;
+}
+
+.gc-index-login-box-third {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-top: 2vw;
+}
+
+@media screen and (max-width: 900px) {
+    .gc-index-login-box-img {
+        display: none;
+    }
+}
+
+.gc-index-login-box-third-logo {
+    cursor: pointer;
+}
+
+.gc-index-login-box-input-foucs {
+    border: 1px solid #3370FF;
+}
+
+.gc-index-login-box-input-error {
+    border: 1px solid red;
 }
