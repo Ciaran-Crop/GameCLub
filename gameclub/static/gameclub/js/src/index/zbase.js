@@ -2,10 +2,10 @@ export class GameClubIndex {
     constructor(id, os, access, refresh){
         this.id = id;
         this.os = os;
-        if(localStorage.getItem('gc-access')){
+        if(!localStorage.getItem('gc-access')){
             localStorage.setItem('gc-access', access);
         }
-        if(localStorage.getItem('gc-refresh')){
+        if(!localStorage.getItem('gc-refresh')){
             localStorage.setItem('gc-refresh', refresh);
         }
         this.$gc_index = $(`
