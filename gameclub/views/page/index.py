@@ -7,6 +7,7 @@ class IndexView(APIView):
         data = request.GET
         content = {
             'access': data.get('access', ""),
-            'refresh': data.get('refresh', "")
+            'refresh': data.get('refresh', ""),
+            'redirect': data.get('redirect', '')
         }
         return render(request, 'gameclub/web/index.html', content)

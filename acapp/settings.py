@@ -133,8 +133,9 @@ STATICFILES_DIRS = [
         os.path.join(BASE_DIR, 'gameclub', 'static'),
 ]
 
-MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -207,5 +208,4 @@ EMAIL_HOST = 'smtp.yeah.net'
 EMAIL_PORT = 25
 EMAIL_HOST_PASSWORD = 'QKRDFFWFSJQATJQW'
 EMAIL_USER_TLS = True
-
 

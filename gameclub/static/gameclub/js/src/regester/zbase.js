@@ -94,6 +94,7 @@ export class GameClubRegister {
         this.$other_login = this.$gc_register.find('.gc-index-register-box-other-login');
         this.$other_forget = this.$gc_register.find('.gc-index-register-box-other-forget');
         this.$error_message = this.$gc_register.find('.gc-index-register-box-message');
+        this.$register_box = this.$gc_register.find('.gc-index-register-box');
         this.add_listening_events();
     }
 
@@ -130,10 +131,15 @@ export class GameClubRegister {
             window.location.href = `${BASE_URL}/`;
         });
         this.$other_forget.on('click', () => {
-            console.log('click forget div');
+            window.location.href = `${BASE_URL}/gameclub/page/forget/`;
         });
         this.$confirm_email_send.on('click', () => {
             this.send();
+        });
+        this.$register_box.keydown((e) => {
+            if(e.which === 13){
+                this.$register_button.click();
+            }
         });
     }
 
@@ -188,7 +194,7 @@ export class GameClubRegister {
         }
 
         $.ajax({
-            url : `${BASE_URL}/gameclub/register/signup/`,
+            url : `${BASE_URL}/gameclub/auth/signup/`,
             type: 'post',
             data: {
                 'name': name,
@@ -221,11 +227,13 @@ export class GameClubRegister {
             this.$error_message.show();
             return ;
         }
+
         $.ajax({
-            url: `${BASE_URL}/gameclub/register/send_email/`,
+            url: `${BASE_URL}/gameclub/auth/send_email/`,
             type: 'post',
             data: {
                 'email': email,
+                'change': 'false',
             },
             success : rep => {
                 if(rep.result === 'success'){
@@ -237,6 +245,7 @@ export class GameClubRegister {
                 }
             },
         });
+
     }
 
     change_send_button(){

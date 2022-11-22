@@ -1,17 +1,12 @@
 {% load static %}
-
-<head>
-    <link rel="stylesheet" href="https://cdn.acwing.com/static/jquery-ui-dist/jquery-ui.min.css">
-    <script src="https://cdn.acwing.com/static/jquery/js/jquery-3.3.1.min.js"></script>
-    <link rel="stylesheet" href="{% static 'gameclub/css/gameclub.css' %}">
-</head>
+{% include 'gameclub/web/head.html' %}
 
 <body style='margin:0'>
     <div id="gameclub"></div>
     <script type="module">
         import {GameClubIndex} from "{% static 'gameclub/js/dist/gameclub.js' %}"
         $(document).ready(() => {
-            let gameclub = new GameClubIndex("gameclub", null, "{{ access }}", "{{ refresh }}")
+            let gameclub = new GameClubIndex("gameclub", null, "{{ access }}", "{{ refresh }}", "{{ redirect }}")
         });
     </script>
 

@@ -1,7 +1,7 @@
 class MultiPlayerSocket {
     constructor(playground){
         this.playground = playground;
-        this.ws = new WebSocket("wss://app3774.acapp.acwing.com.cn/wss/superperson/multiplayer/?token=" + localStorage.getItem('superperson-access'));
+        this.ws = new WebSocket("wss://app3774.acapp.acwing.com.cn/wss/superperson/multiplayer/?token=" + localStorage.getItem('gc-access'));
         this.start();
     }
     start(){

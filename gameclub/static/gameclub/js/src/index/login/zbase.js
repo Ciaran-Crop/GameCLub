@@ -4,7 +4,7 @@ class GameClubIndexLogin {
         this.$login_box = $(`
 <div class="gc-index-login-box-wrap">
 <div class="gc-index-login-box-img">
-    <img src="https://app3774.acapp.acwing.com.cn/static/gameclub/images/index/hakase.jpg">
+    <img src="${BASE_URL}/static/gameclub/images/index/hakase.jpg">
 </div>
 <div class="gc-index-login-box">
     <div class="gc-index-login-box-title">
@@ -88,13 +88,31 @@ class GameClubIndexLogin {
             this.login();
         });
         this.$register_div.on('click', () => {
-            window.location.href = `${BASE_URL}/gameclub/register/register/`;
+            window.location.href = `${BASE_URL}/gameclub/page/register`;
         });
         this.$forget_div.on('click', () => {
-            console.log('click forget div');
+            if(this.$email_input.val() === '') window.location.href = `${BASE_URL}/gameclub/page/forget/`;
+            else window.location.href = `${BASE_URL}/gameclub/page/forget/` + "?email=" + this.$email_input.val();
         });
         this.$acwing_div.on('click', () => {
-            console.log('click acwing_div');
+            this.acwing_login();
+        });
+        this.$login_box.keydown((e) => {
+            if(e.which === 13){
+                this.$login_button.click();
+            }
+        });
+    }
+
+    acwing_login(){
+        $.ajax({
+            url: `${BASE_URL}/gameclub/auth/third_login/acwing/apply_code/`,
+            type: 'get',
+            success: rep => {
+                if(rep.result === 'success'){
+                    window.location.href = rep.url;
+                }
+            },
         });
     }
 
@@ -114,7 +132,7 @@ class GameClubIndexLogin {
             return ;
         }
         $.ajax({
-            url: `${BASE_URL}/gameclub/jwt/token/`,
+            url: `${BASE_URL}/gameclub/auth/jwt/token/`,
             type: 'post',
             data: {
                 'username': email,
@@ -182,32 +200,16 @@ class GameClubIndexLogin {
         }
     }
 
-    refresh_tokens(){
-        console.log('start refresh tokens');
-        setInterval(() => {
-            console.log('refresh tokens');
-            $.ajax({
-                url: `${BASE_URL}/gameclub/jwt/token/refresh`,
-                type: 'POST',
-                data: {
-                    'refresh': localStorage.getItem('gc-refresh'),
-                },
-                success: rep => {
-                    localStorage.setItem('gc-access', rep.access);
-                }
-        })}, 5000);
-    }
-
     to_span(){
         $.ajax({
-            url : `${BASE_URL}/gameclub/home/check/`,
+            url : `${BASE_URL}/gameclub/auth/check/`,
             type : 'post',
             headers : {
                 'Authorization': "Bearer " + localStorage.getItem('gc-access'),
             },
             success : rep => {
-                this.refresh_tokens();
-                window.location.href = `${BASE_URL}/gameclub/home/span/`;
+                if(this.root.redirect !== '') window.location.href = this.root.redirect
+                else window.location.href = `${BASE_URL}/gameclub/page/span/`;
             },
             error : () => {
                 this.$login_box.show();

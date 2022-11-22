@@ -1,5 +1,5 @@
 from django.urls import path, include
-from gameclub.views.index.index import IndexView
+from gameclub.views.page.index import IndexView
 
 urlpatterns = [
     path('', IndexView.as_view(), name = 'index_html'),

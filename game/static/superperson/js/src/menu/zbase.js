@@ -33,8 +33,8 @@ class SPGameMenu {
             this.root.playground.show('multi mode');
         });
         this.$settings.click(() => {
-            localStorage.setItem(`superperson-access`, "");
-            localStorage.setItem(`superperson-refresh`, "");
+            localStorage.setItem(`gc-access`, "");
+            localStorage.setItem(`gc-refresh`, "");
 
             if(this.root.login.platform === 'ACAPP'){
                 this.root.os.api.window.close();

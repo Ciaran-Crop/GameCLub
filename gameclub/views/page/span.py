@@ -5,4 +5,5 @@ from django.shortcuts import render
 class SpanView(APIView):
 
     def get(self, request):
+
         return render(request, 'gameclub/web/home/index.html')

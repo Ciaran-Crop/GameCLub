@@ -3,11 +3,11 @@ export class SuperPersonGame {
         this.id = id;
         this.$sp_game_div = $('#' + id);
         this.os = os;
-        if(!localStorage.getItem(`superperson-access`)){
-            localStorage.setItem(`superperson-access`, access);
+        if(!localStorage.getItem(`gc-access`)){
+            localStorage.setItem(`gc-access`, access);
         }
-        if(!localStorage.getItem(`superperson-refresh`)){
-            localStorage.setItem(`superperson-refresh`, refresh);
+        if(!localStorage.getItem(`gc-refresh`)){
+            localStorage.setItem(`gc-refresh`, refresh);
         }
         this.login = new SPGameLogin(this);
         this.menu = new SPGameMenu(this);

@@ -7,12 +7,19 @@ from django.contrib.auth.models import User
 
 class SendEmail(APIView):
     def post(self, request):
-        data = request.POST;
-        email = data['email'];
-        if User.objects.filter(email = email):
-            return Response({
-                'result': '邮箱已被占用',
-            })
+        data = request.POST
+        email = data['email']
+        change = data['change']
+        if change == 'false':
+            if User.objects.filter(username = email):
+                return Response({
+                    'result': '邮箱已被占用',
+                })
+        else:
+            if not User.objects.filter(username = email):
+                return Response({
+                    'result': '邮箱账户不存在'
+                })
         random_state = get_state();
         cache.set(email + '-' + random_state, True, 60 * 5)
         try:

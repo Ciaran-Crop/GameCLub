@@ -1,0 +1,12 @@
+{% load static %}
+{% include 'gameclub/web/head.html' %}
+
+<body style="margin:0">
+    <div id='gameclub-forget'></div>
+    <script type="module">
+        import {GameClubForget} from "{% static 'gameclub/js/dist/gameclub.js' %}"
+        $(document).ready(() => {
+            let gameClubForget = new GameClubForget('gameclub-forget', null, "{{ email }}");
+        });
+    </script>
+</body>

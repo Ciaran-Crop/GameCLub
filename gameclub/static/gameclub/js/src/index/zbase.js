@@ -1,7 +1,8 @@
 export class GameClubIndex {
-    constructor(id, os, access, refresh){
+    constructor(id, os, access, refresh, redirect){
         this.id = id;
         this.os = os;
+        this.redirect = redirect
         if(!localStorage.getItem('gc-access')){
             localStorage.setItem('gc-access', access);
         }

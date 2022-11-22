@@ -7,6 +7,7 @@ from django.contrib.auth import login
 from urllib.parse import quote
 from random import randint
 from rest_framework_simplejwt.tokens import RefreshToken
+from gameclub.models.user_profile import UserProfile
 
 BASE_URL = "https://app3774.acapp.acwing.com.cn"
 BASE_NAME = "superperson-index"
@@ -69,15 +70,17 @@ def receive_code(request):
     openid = access_tokens['openid']
     access_token = access_tokens['access_token']
 
-    player = Player.objects.filter(open_id = openid)
-    if player.exists():
-        user = player[0].user
+    user_profiles = UserProfile.objects.filter(openid = openid)
+    if user_profiles.exists():
+        user_profile = user_profiles[0]
+        user = user_profile.user
+        player = Player.objects.filter(user = user)
         refresh = RefreshToken.for_user(user)
         return JsonResponse({
             'result': 'success',
-            'username': user.username,
-            'photo': player[0].photo,
-            'back_img': player[0].back_img,
+            'username': user_profile.name,
+            'photo': user_profile.photo_url(),
+            'back_img': user_profile.back_url(),
             'access': str(refresh.access_token),
             'refresh': str(refresh),
             })
@@ -98,19 +101,20 @@ def receive_code(request):
     username = infos['username']
     photo = infos['photo']
 
-    while User.objects.filter(username=username).exists():
+    while User.objects.filter(username='{}@gameclub.net'.format(username)).exists():
         username += str(randint(0,9))
 
-    user = User.objects.create(username=username)
-    player = Player.objects.create(user = user, photo = photo, open_id = openid)
+    user = User.objects.create(username = '{}@gameclub.net'.format(username))
+    player = Player.objects.create(user = user)
+    user_profile = UserProfile.objects.create(user = user, name = username, openid = openid)
+    user_profile.get_remote_image(photo)
     refresh = RefreshToken.for_user(user)
-
     return JsonResponse({
-            'result': 'success',
-            'username': user.username,
-            'photo': player.photo,
-            'back_img': player.back_img,
-            'access': str(refresh.access_token),
-            'refresh': str(refresh),
-            })
+        'result': 'success',
+        'username': user_profile.name,
+        'photo': user_profile.photo_url(),
+        'back_img': user_profile.back_url(),
+        'access': str(refresh.access_token),
+        'refresh': str(refresh),
+    })
 

@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from game.models.player import Player
+from gameclub.models.user_profile import UserProfile
 
 
 class RankList(APIView):
@@ -12,10 +13,11 @@ class RankList(APIView):
         resp = []
 
         for pr in players:
+            user_profile = UserProfile.objects.get(user = pr.user)
             resp.append({
-                'username': pr.user.username,
-                'score': pr.score,
-                'photo': pr.photo,
+                'username': user_profile.name,
+                'score': user_profile.photo_url(),
+                'photo': user_profile.back_url(),
             })
         return Response(resp)
 

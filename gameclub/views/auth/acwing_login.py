@@ -1,0 +1,80 @@
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.contrib.auth.models import User
+from django.core.cache import cache
+from urllib.parse import quote
+from django.shortcuts import redirect, reverse
+from rest_framework_simplejwt.tokens import RefreshToken
+from gameclub.views.common import get_state, BASE_URL
+import requests
+import random
+
+class ApplyCode(APIView):
+    def get(self, request):
+        state = get_state()
+        cache.set('applycode-' + state, True, 3600)
+        app_id = 3774
+        redirect_uri = BASE_URL + 'gameclub/auth/third_login/acwing/receive_code/'
+        scope = 'userinfo'
+        apply_url = 'https://www.acwing.com/third_party/api/oauth2/web/authorize/' + '?appid=' + str(app_id) + '&redirect_uri=' + quote(redirect_uri) + '&scope=' + scope + '&state=' + state
+        return Response({
+            'result' : 'success',
+            'url': apply_url,
+        })
+
+
+class ReceiveCode(APIView):
+    def get(self, request):
+        BASE_NAME = 'index_html'
+        data = request.GET
+        code = data['code']
+        state = data['state']
+        if not cache.has_key('applycode-' + state):
+            return redirect(BASE_NAME)
+        cache.delete('applycode-' + state)
+
+
+        app_id = 3774
+        secret = 'aed26a7c5b2c4c16983830b8a47fa186'
+
+        params = {
+            'appid': app_id,
+            'secret': secret,
+            'code': code,
+        }
+        apply_url = 'https://www.acwing.com/third_party/api/oauth2/access_token/'
+        access_token_json = requests.get(apply_url,params = params).json()
+
+        if access_token_json.get('errcode', '') != '':
+            return redirect(BASE_NAME)
+
+        access_token = access_token_json['access_token']
+        open_id = access_token_json['openid']
+
+        if User.objects.filter(email = open_id).exists():
+            user = User.objects.get(email = open_id)
+            refresh = RefreshToken.for_user(user)
+            return redirect(reverse(BASE_NAME) + "?access=" + str(refresh.access_token) + '&refresh=' + str(refresh))
+
+        info_url = 'https://www.acwing.com/third_party/api/meta/identity/getinfo/'
+        info_params = {
+            'access_token': access_token,
+            'openid': open_id,
+        }
+
+        info = requests.get(info_url, params = info_params).json()
+
+        if info.get('errcode', '') != '':
+            return redirect(BASE_NAME)
+
+        name = info['username']
+        photo = info['photo']
+
+        name = name + str(random.randint(1, 99999))
+
+        user = User.objects.create(first_name = name, last_name = photo, email = open_id)
+        user.save()
+
+        refresh = RefreshToken.for_user(user)
+
+        return redirect(reverse(BASE_NAME) + "?access=" + str(refresh.access_token) + '&refresh=' + str(refresh))

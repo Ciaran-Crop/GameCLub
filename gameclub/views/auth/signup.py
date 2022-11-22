@@ -20,6 +20,8 @@ class SignUp(APIView):
         user = User.objects.create_user(username=email, first_name = name, password = password)
         user.save()
         token = RefreshToken.for_user(user = user)
+        if cache.get(email + '-' + confirm):
+            cache.delete(email + '-' + confirm)
         return Response({
                 'result': 'success',
                 'url' : BASE_URL + "?access=" + str(token.access_token) + "&refresh=" + str(token),
