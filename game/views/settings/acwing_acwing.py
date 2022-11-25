@@ -74,7 +74,6 @@ def receive_code(request):
     if user_profiles.exists():
         user_profile = user_profiles[0]
         user = user_profile.user
-        player = Player.objects.filter(user = user)
         refresh = RefreshToken.for_user(user)
         return JsonResponse({
             'result': 'success',
@@ -108,6 +107,7 @@ def receive_code(request):
     player = Player.objects.create(user = user)
     user_profile = UserProfile.objects.create(user = user, name = username, openid = openid)
     user_profile.get_remote_image(photo)
+    user_profile.save()
     refresh = RefreshToken.for_user(user)
     return JsonResponse({
         'result': 'success',

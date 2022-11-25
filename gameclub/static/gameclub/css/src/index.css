@@ -1,5 +1,6 @@
 a, a:active, a:hover, a:visited {
     text-decoration: none;
+    color: inherit;
 }
 
 a, a:hover, a:active, a:focus {

@@ -17,7 +17,6 @@ ROOM_CAPATICY = 3
 class MultiPlayer(AsyncWebsocketConsumer):
     async def connect(self):
         user = self.scope['user']
-        print(user, user.is_authenticated)
         if user.is_authenticated:
             await self.accept()
         else:

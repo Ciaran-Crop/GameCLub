@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from rest_framework_simplejwt.tokens import RefreshToken
 from gameclub.views.common import BASE_URL
+from gameclub.models.user_profile import UserProfile
 
 class SignUp(APIView):
     def post(self, request):
@@ -17,8 +18,10 @@ class SignUp(APIView):
             return Response({
                 'result': '验证码错误',
             })
-        user = User.objects.create_user(username=email, first_name = name, password = password)
+        user = User.objects.create_user(username=email, password = password)
         user.save()
+        user_profile = UserProfile.objects.create(user = user, name = name)
+        user_profile.save()
         token = RefreshToken.for_user(user = user)
         if cache.get(email + '-' + confirm):
             cache.delete(email + '-' + confirm)

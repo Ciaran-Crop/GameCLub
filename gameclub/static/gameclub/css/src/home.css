@@ -1,0 +1,239 @@
+.gc-home-span {
+    position: absolute;
+    width: 100%;
+    height: 760px;
+    min-width: 1400px;
+    min-height: 400px;
+    color: lightpink;
+}
+
+
+.gc-home-span-top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-top: 30px;
+    align-items: center;
+    user-select: none;
+}
+
+.gc-home-span-top-title {
+    font-style: italic;
+    font-size: 40px;
+    line-height: 75px;
+}
+
+.gc-home-span-top-title-trans {
+    transform: translateX(46px);
+    transition-duration: 1s;
+    transition-timing-function: cubic-bezier(0, 1.42, 1, 1);
+}
+
+.gc-home-span-top-opacity > img {
+    width: 38px;
+}
+
+.gc-home-span-top-opacity {
+    box-sizing: border-box;
+    margin-right: 460px;
+    cursor: pointer;
+}
+
+.gc-home-span-top-profile {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-right: -122px;
+}
+
+.gc-home-span-top-profile-name {
+    padding-right: 15px;
+    font-size: 25px;
+    user-select: text;
+}
+
+.gc-home-span-top-profile-photo > img {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+}
+
+.gc-home-span-top-setting-img > img {
+    width: 30px;
+}
+
+.gc-home-span-top-signout > button {
+    background: no-repeat;
+    border: none;
+    color: inherit;
+    font-size: 20px;
+    margin-right: 15px;
+    cursor: pointer;
+}
+
+.gc-home-span-top-setting {
+    cursor: pointer;
+    margin-left: 100px;
+}
+
+.gc-home-span-page-setting {
+    width: 1000px;
+    height: 150px;
+    margin: 0 auto;
+    display: none;
+    user-select: none;
+    overflow: auto;
+}
+
+.button > button {
+    position: relative;
+    width: 60px;
+    height: 30px;
+    border: none;
+    color: inherit;
+    background: none;
+    font-size: 20px;
+    cursor: pointer;
+    margin-top: 10px;
+    padding: 0;
+    text-align: left;
+}
+
+.opacity {
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    width: 25%;
+}
+
+.color{
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    margin-left: -90px;
+    width: 25%;
+}
+
+.setting-title {
+    margin-bottom: 22.5px;
+    width: 100%;
+}
+
+div#opacityslider {
+    width: 100%;
+    height: 10;
+}
+
+.ui-slider .ui-slider-handle {
+    width: 0;
+    height: 0;
+}
+
+#red, #green, #blue {
+    height: 10;
+    width: 100%;
+    margin: 20px 0;
+}
+
+#opacityslider .ui-slider-range { background: black; }
+#red .ui-slider-range { background: #ef2929; }
+#red .ui-slider-handle { border-color: #ef2929; }
+#green .ui-slider-range { background: #8ae234; }
+#green .ui-slider-handle { border-color: #8ae234; }
+#blue .ui-slider-range { background: #729fcf; }
+#blue .ui-slider-handle { border-color: #729fcf; }
+
+.gc-home-span-page-setting::-webkit-scrollbar {
+    width: 0;
+}
+
+.gc-home-span-top-setting-title {
+    width: 100px;
+}
+
+.gc-home-span-top-setting-img > img:hover{
+    transform: rotate(360deg);
+    transition-duration: 2s;
+    transition-timing-function: cubic-bezier(0, 0.88, 0, 1.43);
+}
+
+
+.gc-home-span-game-title {
+    font-size: 25px;
+    text-align: left;
+    font-style: oblique;
+    padding: 40px 0;
+}
+.gc-home-span-game {
+    margin:auto;
+    padding: 0 40px;
+}
+
+div#game-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.gc-home-setting-flex{
+    display: flex !important;
+    justify-content: space-evenly;
+    align-items: flex-start;
+}
+
+
+.gc-home-game-element {
+    padding: 10px 10px 0 10px;
+    margin: 0 20px;
+    border-radius: 12px;
+    width: 200px;
+    height: 135px;
+}
+
+.gc-home-game-element-photo {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto;
+}
+
+.gc-home-game-element-photo > img {
+    width: 100%;
+    height: 100%;
+}
+
+.gc-home-game-element-title {
+    font-size: 20px;
+    overflow: hidden;
+    line-height: 50px;
+}
+
+.gc-home-game-element-type {
+    border: 1px solid #dadce0;
+    border-radius: 10px;
+    padding: 3px 3px;
+    background: #d3d3d378;
+    margin: 0 5px;
+}
+.gc-home-game-element-types {
+    padding-top: 20px;
+    display: flex;
+    color: black;
+    justify-content: space-evenly;
+}
+
+.gc-home-game-element-date {
+    text-align: center;
+    padding-top: 5px;
+    font-style: italic;
+    font-size: 15px;
+}
+
+.gc-home-game-element-top {
+    display: flex;
+}
+
+.button {
+    display: flex;
+    flex-direction: column;
+    margin-top: 50px;
+    margin-left: -90px;
+}

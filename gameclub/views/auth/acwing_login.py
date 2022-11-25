@@ -8,6 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from gameclub.views.common import get_state, BASE_URL
 import requests
 import random
+from gameclub.models.user_profile import UserProfile
 
 class ApplyCode(APIView):
     def get(self, request):
@@ -49,17 +50,19 @@ class ReceiveCode(APIView):
             return redirect(BASE_NAME)
 
         access_token = access_token_json['access_token']
-        open_id = access_token_json['openid']
+        openid = access_token_json['openid']
 
-        if User.objects.filter(email = open_id).exists():
-            user = User.objects.get(email = open_id)
+        user_profiles = UserProfile.objects.filter(openid = openid)
+        if user_profiles.exists():
+            user_profile = user_profiles[0]
+            user = user_profile.user
             refresh = RefreshToken.for_user(user)
             return redirect(reverse(BASE_NAME) + "?access=" + str(refresh.access_token) + '&refresh=' + str(refresh))
 
         info_url = 'https://www.acwing.com/third_party/api/meta/identity/getinfo/'
         info_params = {
             'access_token': access_token,
-            'openid': open_id,
+            'openid': openid,
         }
 
         info = requests.get(info_url, params = info_params).json()
@@ -67,14 +70,18 @@ class ReceiveCode(APIView):
         if info.get('errcode', '') != '':
             return redirect(BASE_NAME)
 
-        name = info['username']
+        username = info['username']
         photo = info['photo']
 
-        name = name + str(random.randint(1, 99999))
+        while User.objects.filter(username='{}@gameclub.net'.format(username)).exists():
+            username += str(randint(0,9))
 
-        user = User.objects.create(first_name = name, last_name = photo, email = open_id)
+        user = User.objects.create(username = '{}@gameclub.net'.format(username))
         user.save()
-
+        user_profile = UserProfile.objects.create(user = user, name = username, openid = openid)
+        user_profile.get_remote_image(photo)
+        user_profile.save()
         refresh = RefreshToken.for_user(user)
 
         return redirect(reverse(BASE_NAME) + "?access=" + str(refresh.access_token) + '&refresh=' + str(refresh))
+

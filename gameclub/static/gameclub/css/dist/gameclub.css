@@ -1,5 +1,245 @@
+.gc-home-span {
+    position: absolute;
+    width: 100%;
+    height: 760px;
+    min-width: 1400px;
+    min-height: 400px;
+    color: lightpink;
+}
+
+
+.gc-home-span-top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-top: 30px;
+    align-items: center;
+    user-select: none;
+}
+
+.gc-home-span-top-title {
+    font-style: italic;
+    font-size: 40px;
+    line-height: 75px;
+}
+
+.gc-home-span-top-title-trans {
+    transform: translateX(46px);
+    transition-duration: 1s;
+    transition-timing-function: cubic-bezier(0, 1.42, 1, 1);
+}
+
+.gc-home-span-top-opacity > img {
+    width: 38px;
+}
+
+.gc-home-span-top-opacity {
+    box-sizing: border-box;
+    margin-right: 460px;
+    cursor: pointer;
+}
+
+.gc-home-span-top-profile {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-right: -122px;
+}
+
+.gc-home-span-top-profile-name {
+    padding-right: 15px;
+    font-size: 25px;
+    user-select: text;
+}
+
+.gc-home-span-top-profile-photo > img {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+}
+
+.gc-home-span-top-setting-img > img {
+    width: 30px;
+}
+
+.gc-home-span-top-signout > button {
+    background: no-repeat;
+    border: none;
+    color: inherit;
+    font-size: 20px;
+    margin-right: 15px;
+    cursor: pointer;
+}
+
+.gc-home-span-top-setting {
+    cursor: pointer;
+    margin-left: 100px;
+}
+
+.gc-home-span-page-setting {
+    width: 1000px;
+    height: 150px;
+    margin: 0 auto;
+    display: none;
+    user-select: none;
+    overflow: auto;
+}
+
+.button > button {
+    position: relative;
+    width: 60px;
+    height: 30px;
+    border: none;
+    color: inherit;
+    background: none;
+    font-size: 20px;
+    cursor: pointer;
+    margin-top: 10px;
+    padding: 0;
+    text-align: left;
+}
+
+.opacity {
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    width: 25%;
+}
+
+.color{
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    margin-left: -90px;
+    width: 25%;
+}
+
+.setting-title {
+    margin-bottom: 22.5px;
+    width: 100%;
+}
+
+div#opacityslider {
+    width: 100%;
+    height: 10;
+}
+
+.ui-slider .ui-slider-handle {
+    width: 0;
+    height: 0;
+}
+
+#red, #green, #blue {
+    height: 10;
+    width: 100%;
+    margin: 20px 0;
+}
+
+#opacityslider .ui-slider-range { background: black; }
+#red .ui-slider-range { background: #ef2929; }
+#red .ui-slider-handle { border-color: #ef2929; }
+#green .ui-slider-range { background: #8ae234; }
+#green .ui-slider-handle { border-color: #8ae234; }
+#blue .ui-slider-range { background: #729fcf; }
+#blue .ui-slider-handle { border-color: #729fcf; }
+
+.gc-home-span-page-setting::-webkit-scrollbar {
+    width: 0;
+}
+
+.gc-home-span-top-setting-title {
+    width: 100px;
+}
+
+.gc-home-span-top-setting-img > img:hover{
+    transform: rotate(360deg);
+    transition-duration: 2s;
+    transition-timing-function: cubic-bezier(0, 0.88, 0, 1.43);
+}
+
+
+.gc-home-span-game-title {
+    font-size: 25px;
+    text-align: left;
+    font-style: oblique;
+    padding: 40px 0;
+}
+.gc-home-span-game {
+    margin:auto;
+    padding: 0 40px;
+}
+
+div#game-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.gc-home-setting-flex{
+    display: flex !important;
+    justify-content: space-evenly;
+    align-items: flex-start;
+}
+
+
+.gc-home-game-element {
+    padding: 10px 10px 0 10px;
+    margin: 0 20px;
+    border-radius: 12px;
+    width: 200px;
+    height: 135px;
+}
+
+.gc-home-game-element-photo {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto;
+}
+
+.gc-home-game-element-photo > img {
+    width: 100%;
+    height: 100%;
+}
+
+.gc-home-game-element-title {
+    font-size: 20px;
+    overflow: hidden;
+    line-height: 50px;
+}
+
+.gc-home-game-element-type {
+    border: 1px solid #dadce0;
+    border-radius: 10px;
+    padding: 3px 3px;
+    background: #d3d3d378;
+    margin: 0 5px;
+}
+.gc-home-game-element-types {
+    padding-top: 20px;
+    display: flex;
+    color: black;
+    justify-content: space-evenly;
+}
+
+.gc-home-game-element-date {
+    text-align: center;
+    padding-top: 5px;
+    font-style: italic;
+    font-size: 15px;
+}
+
+.gc-home-game-element-top {
+    display: flex;
+}
+
+.button {
+    display: flex;
+    flex-direction: column;
+    margin-top: 50px;
+    margin-left: -90px;
+}
 a, a:active, a:hover, a:visited {
     text-decoration: none;
+    color: inherit;
 }
 
 a, a:hover, a:active, a:focus {
@@ -679,3 +919,187 @@ div#gameclub-register {
     color: red;
     display: none;
 }
+* {
+  box-sizing: border-box;
+}
+
+.wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #fff;
+}
+
+.rubik-loader {
+  width: 64px;
+  height: 64px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-image: url(/static/gameclub/images/home/loading.gif);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.gc-home-setting-page {
+    position: absolute;
+    z-index: 2;
+    background: rgba(0,0,0,0.2);
+    width: 100%;
+    height: 760px;
+    min-width: 1400px;
+    min-height: 400px;
+}
+
+.gc-home-setting-div {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;
+    background: white;
+    border: 1px solid #dadce0;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px 0 rgb(0 0 0 / 10%);
+}
+
+.gc-home-setting-top {
+    padding: 10px 10px 0 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.gc-home-setting-title {
+    font-size: 20px;
+}
+
+.gc-home-setting-cancel > img {
+    width: 100%;
+    height: 100%;
+}
+
+.gc-home-setting-cancel {
+    width: 25px;
+    height: 25px;
+}
+
+.gc-home-setting-cancel > img:hover {
+    transform: rotate(360deg);
+    transition-duration: 2s;
+    transition-timing-function: cubic-bezier(0, 0.88, 0, 1.43);
+}
+
+.gc-home-setting-content {
+    padding: 45px 46px;
+    font-size: 20px;
+    color: #9ca0a3;
+}
+
+span.gc-home-setting-span {
+    padding: 0 20px;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.gc-home-setting-name {padding: 20px 0;display: flex;justify-content: space-between;align-items: center;}
+
+.gc-home-setting-email {padding: 20px 0;display: flex;justify-content: space-between;align-items: center;}
+
+.gc-home-setting-photo {
+    padding: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.gc-home-setting-photo > img {
+    width: 60px;
+    height: 60px;
+    user-select: none;
+}
+
+.gc-home-setting-back {
+    padding: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+
+.gc-home-setting-back > img {
+    width: 320px;
+    height: 180px;
+    user-select: none;
+    margin: 0 50px;
+}
+
+.gc-home-setting-confirm {
+    background: #3370FF;
+    border: 1px solid #dadce0;
+    border-radius: 5px;
+    font-size: 20px;
+    color: #fff;
+    cursor: pointer;
+    padding: 10px 10px;
+    white-space: nowrap;
+    height: 3%;
+}
+
+.gc-home-setting-name > img {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+
+.disabled-click {
+    background: #dadee0;
+    cursor: not-allowed;
+}
+
+.gc-home-setting-name > input:disabled {
+    border: none;
+    color: #a4a6a7;
+    font-size: 20px;
+    background: white;
+}
+
+.gc-home-setting-name > input {
+    border: 1px solid #dadce0;
+    border-radius: 3px;
+    padding: 10px 10px;
+    font-size: 18px;
+}
+
+
+button#name {
+    margin-left: 60px;
+    margin-right: 60px;
+}
+
+.gc-home-error-message {
+    position: absolute;
+    display: none;
+    z-index: 3;
+    color: white;
+    background: #ea2929ad;
+    font-size: 15px;
+    border-radius: 10px;
+    padding: 3px 20px;
+}
+
+.gc-home-success-message {
+    position: absolute;
+    display: none;
+    z-index: 3;
+    color: white;
+    background: #00d061ad;
+    font-size: 15px;
+    border-radius: 10px;
+    padding: 3px 20px;
+}
+
+

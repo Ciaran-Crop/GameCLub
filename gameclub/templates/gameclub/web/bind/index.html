@@ -1,0 +1,12 @@
+{% load static %}
+{% include 'gameclub/web/head.html' %}
+
+<body style="margin:0">
+    <div id='gameclub-bind'></div>
+    <script type="module">
+        import {GameClubBind} from "{% static 'gameclub/js/dist/gameclub.js' %}"
+        $(document).ready(() => {
+            let gameClubBind = new GameClubBind('gameclub-bind', null, "{{ email }}");
+        });
+    </script>
+</body>

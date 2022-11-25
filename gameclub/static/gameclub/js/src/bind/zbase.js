@@ -1,4 +1,4 @@
-export class GameClubForget {
+export class GameClubBind {
     constructor(id, os, email){
         this.id = id;
         this.os = os;
@@ -38,32 +38,14 @@ export class GameClubForget {
        <div class="gc-index-forget-box-message">
        </div>
        <div class="gc-index-forget-box-next-change">
-            <button>下一步</button>
-       </div>
-    </section>
-    <section class="gc-index-forget-box-change-section">
-        <div class="gc-index-forget-box-title">
-            设置密码
-       </div>
-       <div class="gc-index-forget-box-change">
-            <input type="password" placeholder = "请输入密码">
-       </div>
-       <div class="gc-index-forget-box-change-confirm">
-            <input type="password" placeholder = "请再次输入密码">
-       </div>
-       <div class="gc-index-forget-box-message">
-       </div>
-       <div class="gc-index-forget-box-next-complete">
-            <button>修改密码</button>
+            <button>完成</button>
        </div>
     </section>
 </div>
 `);
         this.$gc_forget_email = this.$gc_forget.find('.gc-index-forget-box-email-section');
         this.$gc_forget_validate = this.$gc_forget.find('.gc-index-forget-box-validate-section');
-        this.$gc_forget_change = this.$gc_forget.find('.gc-index-forget-box-change-section');
         this.$gc_forget_validate.hide();
-        this.$gc_forget_change.hide();
         this.$root_div.append(this.$gc_forget);
         this.start();
     }
@@ -73,10 +55,6 @@ export class GameClubForget {
         this.$validate_input = this.$gc_forget_validate.find('.gc-index-forget-box-validate > input');
         this.$next_to_change = this.$gc_forget_validate.find('.gc-index-forget-box-next-change > button');
         this.$send_email = this.$gc_forget_validate.find('.gc-index-forget-box-send-button');
-        this.$password_input = this.$gc_forget_change.find('.gc-index-forget-box-change > input');
-        this.$password_confirm_input = this.$gc_forget_change.find('.gc-index-forget-box-change-confirm > input');
-        this.$next_to_complete = this.$gc_forget_change.find('.gc-index-forget-box-next-complete');
-        this.$error_message = this.$gc_forget_change.find('.gc-index-forget-box-message');
         this.$error_message2 = this.$gc_forget_validate.find('.gc-index-forget-box-message');
         if(this.email){
             let email_input = this.$gc_forget_email.find('.gc-index-forget-box-email > input');
@@ -96,11 +74,6 @@ export class GameClubForget {
             }
         });
 
-        this.$gc_forget_change.keydown((e) => {
-            if(e.which === 13){
-                this.$next_to_complete.click();
-            }
-        });
         this.$next_to_validate.on('click', () => {
             if(this.check_email()){
                 this.$gc_forget_email.hide();
@@ -116,24 +89,11 @@ export class GameClubForget {
         });
         this.$next_to_change.on('click', () => {
             if(this.check_confirm()){
-                this.$gc_forget_validate.hide();
-                this.$gc_forget_change.show();
+                this.change_email(this.$validate_input.val());
             }else{
                 this.$validate_input.css('border', '1px solid red');
                 setTimeout(() => {
                     this.$validate_input.css('border', '1px solid #dcdee2');
-                }, 500);
-            }
-        });
-        this.$next_to_complete.on('click', () => {
-            if(this.check_password()){
-                this.change_password(this.$validate_input.val(), this.$password_input.val());
-            }else{
-                this.$password_input.css('border', '1px solid red');
-                this.$password_confirm_input.css('border', '1px solid red');
-                setTimeout(() => {
-                    this.$password_input.css('border', '1px solid #dcdee2');
-                    this.$password_confirm_input.css('border', '1px solid #dcdee2');
                 }, 500);
             }
         });
@@ -148,13 +108,13 @@ export class GameClubForget {
             type: 'post',
             data: {
                 'email': email,
-                'change': 'true',
+                'change': 'false',
             },
             success : rep => {
                 if(rep.result === 'success'){
                     this.change_send_button();
                 }else{
-                    this.show_error_message(rep.result, '2');
+                    this.show_error_message(rep.result);
                 }
             },
         });
@@ -177,20 +137,23 @@ export class GameClubForget {
 
     }
 
-    change_password(validate, password){
+    change_email(validate){
         $.ajax({
-            url: `${BASE_URL}/gameclub/auth/change_password/`,
+            url: `${BASE_URL}/gameclub/auth/change/`,
             type: 'post',
             data: {
+                'type': 'email',
                 'email': this.email,
                 'validate': validate,
-                'password': password,
+            },
+            headers: {
+                'Authorization' : 'Bearer ' + localStorage.getItem('gc-access'),
             },
             success: rep => {
                 if(rep.result === 'success'){
                     window.location.href = `${BASE_URL}/`;
                 }else{
-                    this.show_error_message(rep.result, '1');
+                    this.show_error_message(rep.result);
                 }
             }
         });
@@ -203,33 +166,12 @@ export class GameClubForget {
         return true;
     }
 
-    check_password(){
-        const password = this.$password_input.val();
-        const password_confirm = this.$password_confirm_input.val();
-        if(password === '' || password_confirm === ''){
-            return false;
-        }
-        if(password !== password_confirm){
-            this.show_error_message('密码不一致', '1');
-            return false;
-        }
-        return true;
-    }
-
-    show_error_message(text, pos){
-        if(pos === '1'){
-            this.$error_message.text(text);
-            this.$error_message.show();
-            setTimeout(() => {
-                this.$error_message.hide();
-            }, 1000);
-        }else{
-            this.$error_message2.text(text);
-            this.$error_message2.show();
-            setTimeout(() => {
-                this.$error_message2.hide();
-            }, 1000);
-        }
+    show_error_message(text){
+        this.$error_message2.text(text);
+        this.$error_message2.show();
+        setTimeout(() => {
+            this.$error_message2.hide();
+        }, 1000);
     }
 
     check_email(){
@@ -245,3 +187,4 @@ export class GameClubForget {
         }
     }
 }
+

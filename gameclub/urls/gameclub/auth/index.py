@@ -4,9 +4,11 @@ from gameclub.views.auth.check import CheckView
 from gameclub.views.auth.send_email import SendEmail
 from gameclub.views.auth.signup import SignUp
 from gameclub.views.auth.change_password import ChangePassword
+from gameclub.views.auth.change import ChangeView
 
 
 urlpatterns = [
+        path('change/', ChangeView.as_view(), name='change_info'),
         path('jwt/',include('gameclub.urls.gameclub.auth.jwt.index'), name = 'refresh_token'),
         path('third_login/',include('gameclub.urls.gameclub.auth.third_login.index'), name = 'third_login'),
         path('get_info/', InfoView.as_view(), name="user_info"),

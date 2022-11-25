@@ -85,6 +85,7 @@ class GameClubIndexLogin {
             this.clear_email_password();
         });
         this.$login_button.on('click', () => {
+            clear_tokens();
             this.login();
         });
         this.$register_div.on('click', () => {
@@ -95,6 +96,7 @@ class GameClubIndexLogin {
             else window.location.href = `${BASE_URL}/gameclub/page/forget/` + "?email=" + this.$email_input.val();
         });
         this.$acwing_div.on('click', () => {
+            clear_tokens();
             this.acwing_login();
         });
         this.$login_box.keydown((e) => {

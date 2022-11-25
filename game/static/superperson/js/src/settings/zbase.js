@@ -39,7 +39,7 @@ class SPGameLogin{
 
     add_listening_events_login(){
         this.$sp_login_to.on('click', () => {
-            window.location.href = 'https://app3774.acapp.acwing.com.cn/?redirect=https://app3774.acapp.acwing.com.cn/superperson/';
+            window.location.href = 'https://app3774.acapp.acwing.com.cn/?redirect=' + window.location.href;
         })
     }
 

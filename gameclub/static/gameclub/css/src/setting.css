@@ -1,0 +1,160 @@
+.gc-home-setting-page {
+    position: absolute;
+    z-index: 2;
+    background: rgba(0,0,0,0.2);
+    width: 100%;
+    height: 760px;
+    min-width: 1400px;
+    min-height: 400px;
+}
+
+.gc-home-setting-div {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;
+    background: white;
+    border: 1px solid #dadce0;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px 0 rgb(0 0 0 / 10%);
+}
+
+.gc-home-setting-top {
+    padding: 10px 10px 0 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.gc-home-setting-title {
+    font-size: 20px;
+}
+
+.gc-home-setting-cancel > img {
+    width: 100%;
+    height: 100%;
+}
+
+.gc-home-setting-cancel {
+    width: 25px;
+    height: 25px;
+}
+
+.gc-home-setting-cancel > img:hover {
+    transform: rotate(360deg);
+    transition-duration: 2s;
+    transition-timing-function: cubic-bezier(0, 0.88, 0, 1.43);
+}
+
+.gc-home-setting-content {
+    padding: 45px 46px;
+    font-size: 20px;
+    color: #9ca0a3;
+}
+
+span.gc-home-setting-span {
+    padding: 0 20px;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.gc-home-setting-name {padding: 20px 0;display: flex;justify-content: space-between;align-items: center;}
+
+.gc-home-setting-email {padding: 20px 0;display: flex;justify-content: space-between;align-items: center;}
+
+.gc-home-setting-photo {
+    padding: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.gc-home-setting-photo > img {
+    width: 60px;
+    height: 60px;
+    user-select: none;
+}
+
+.gc-home-setting-back {
+    padding: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+
+.gc-home-setting-back > img {
+    width: 320px;
+    height: 180px;
+    user-select: none;
+    margin: 0 50px;
+}
+
+.gc-home-setting-confirm {
+    background: #3370FF;
+    border: 1px solid #dadce0;
+    border-radius: 5px;
+    font-size: 20px;
+    color: #fff;
+    cursor: pointer;
+    padding: 10px 10px;
+    white-space: nowrap;
+    height: 3%;
+}
+
+.gc-home-setting-name > img {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+
+.disabled-click {
+    background: #dadee0;
+    cursor: not-allowed;
+}
+
+.gc-home-setting-name > input:disabled {
+    border: none;
+    color: #a4a6a7;
+    font-size: 20px;
+    background: white;
+}
+
+.gc-home-setting-name > input {
+    border: 1px solid #dadce0;
+    border-radius: 3px;
+    padding: 10px 10px;
+    font-size: 18px;
+}
+
+
+button#name {
+    margin-left: 60px;
+    margin-right: 60px;
+}
+
+.gc-home-error-message {
+    position: absolute;
+    display: none;
+    z-index: 3;
+    color: white;
+    background: #ea2929ad;
+    font-size: 15px;
+    border-radius: 10px;
+    padding: 3px 20px;
+}
+
+.gc-home-success-message {
+    position: absolute;
+    display: none;
+    z-index: 3;
+    color: white;
+    background: #00d061ad;
+    font-size: 15px;
+    border-radius: 10px;
+    padding: 3px 20px;
+}
+
+

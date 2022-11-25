@@ -24,6 +24,33 @@ class UserProfile(models.Model):
         else:
             return '/media/default/user.jpg'
 
+    def set_photo(self, f):
+        try:
+            img_temp = NamedTemporaryFile(delete=True)
+            img_temp.write(f.read())
+            img_temp.flush()
+            self.photo.save(
+                    os.path.basename(f.name),
+                    File(img_temp)
+                    )
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
+    def set_back(self, f):
+        try:
+            img_temp = NamedTemporaryFile(delete=True)
+            img_temp.write(f.read())
+            img_temp.flush()
+            self.back.save(
+                    os.path.basename(f.name),
+                    File(img_temp)
+                    )
+            return True
+        except Exception as e:
+            return False
+
     def back_url(self):
         if self.back and hasattr(self.back, 'url'):
             return self.back.url
@@ -41,6 +68,18 @@ class UserProfile(models.Model):
                     )
             self.save()
 
+    def set_email(self, email):
+        self.user.username = email
+        self.user.save()
+        self.save()
 
+    def set_password(self, password):
+        self.user.set_password(password)
+        self.user.save()
+        self.save()
+
+    def set_name(self, name):
+        self.name = name
+        self.save()
 
 
