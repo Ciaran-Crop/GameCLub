@@ -33,12 +33,13 @@ class SPGameChatField {
                 outer.hide_input();
                 return false;
             }else if(e.which === 13){
-                let username = outer.playground.root.login.username;
+                let email = outer.playground.root.login.email;
+                let name = outer.playground.root.login.name;
                 let text = outer.$input.val();
                 if(text){
                     outer.$input.val("");
-                    outer.add_message(username,text);
-                    outer.playground.mps.send_message(username, text);
+                    outer.add_message(name, email ,text);
+                    outer.playground.mps.send_message(name,email,text);
                 }
                 return false;
             }
@@ -47,17 +48,17 @@ class SPGameChatField {
 
     }
 
-    render_message(message, username){
-        if(username === this.playground.root.login.username){
+    render_message(message, name, email){
+        if(email === this.playground.root.login.email){
             return $(`<div style="color: LightPink">${message}</div>`);
         }
         return $(`<div>${message}</div>`);
     }
 
-    add_message(username, text){
+    add_message(name, email, text){
         this.show_history();
-        let message = `[${username}] ${text}`;
-        this.$history.append(this.render_message(message, username));
+        let message = `[${name}] ${text}`;
+        this.$history.append(this.render_message(message, name, email));
         this.$history.scrollTop(this.$history[0].scrollHeight);
     }
 

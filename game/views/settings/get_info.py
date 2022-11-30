@@ -24,7 +24,8 @@ class InfoView(APIView):
         user_game_record.save()
         return Response({
             'result': 'success',
-            'username' : user_profiles.name,
+            'email': user.username,
+            'name' : user_profiles.name,
             'photo': user_profiles.photo_url(),
             'back_img': user_profiles.back_url(),
         })

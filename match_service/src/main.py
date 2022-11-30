@@ -47,18 +47,19 @@ class Pool:
         return dis <= pr1_max_dis and dis <= pr2_max_dis
 
     def match_success(self, mplayers):
-        print("match success: ",[player.username for player in mplayers])
+        print("match success: ",[player.name for player in mplayers])
         room_name = "room-" + "-".join([player.uuid for player in mplayers])
         players = []
         for pr in mplayers:
             async_to_sync(channel_layer.group_add)(room_name, pr.channel_name)
             players.append({
                 'uuid': pr.uuid,
-                'username': pr.username,
+                'name': pr.name,
                 'photo': pr.photo,
                 'hp': 100,
                 'x': pr.x,
                 'y': pr.y,
+                'email': pr.email,
                 })
 
         cache.set(room_name, players, 3600)
@@ -70,7 +71,8 @@ class Pool:
                     'type': 'group_send_event',
                     'event': 'create_player',
                     'uuid': pr.uuid,
-                    'username': pr.username,
+                    'name': pr.name,
+                    'email': pr.email,
                     'x': pr.x,
                     'y': pr.y,
                     'photo': pr.photo,
@@ -88,7 +90,7 @@ class Pool:
 
 class MatchHandler:
     def add_player(self, player):
-        print("add player {} {} ".format(player.username, player.score))
+        print("add player {} {} ".format(player.name, player.score))
         queue.put(player)
         return 0
 

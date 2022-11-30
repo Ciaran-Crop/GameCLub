@@ -2,13 +2,14 @@ namespace py match_service
 
 struct Player {
     1: string uuid,
-    2: string username,
+    2: string name,
     3: string channel_name,
     4: i32 score,
     5: i32 waiting_time,
     6: double x,
     7: double y,
-    8: string photo
+    8: string photo,
+    9: string email,
 }
 
 service Match {

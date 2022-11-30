@@ -28,7 +28,7 @@ class SPGameMenu {
             this.hide();
             this.root.playground.show('single mode');
         });
-        this.$multi_mode.click(() => {
+       this.$multi_mode.click(() => {
             this.hide();
             this.root.playground.show('multi mode');
         });

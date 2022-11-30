@@ -10,10 +10,10 @@ class SPGamePlayGround {
     }
 
     create_single_mode(color, players_num, speed, radius){
-        let player = new SPGamePlayer(this,Math.random() * this.width / this.scale,Math.random() * this.height / this.scale, color, speed, radius, true, false, this.root.login.photo, this.root.login.username);
+        let player = new SPGamePlayer(this,Math.random() * this.width / this.scale,Math.random() * this.height / this.scale, color, speed, radius, true, false, this.root.login.photo, this.root.login.name, this.root.login.email);
         this.players.push(player);
         for(let i = 0;i < players_num - 1;i++){
-            let robot = new SPGamePlayer(this,Math.random() * this.width / this.scale, Math.random() * this.height / this.scale, this.colors[i%this.colors.length], speed, radius, false, true);
+            let robot = new SPGamePlayer(this,Math.random() * this.width / this.scale, Math.random() * this.height / this.scale, this.colors[i%this.colors.length], speed, radius, false, true, 'none');
             this.players.push(robot);
         }
     }
@@ -22,14 +22,14 @@ class SPGamePlayGround {
         let outer = this;
         let x = Math.random() * this.width / this.scale;
         let y = Math.random() * this.height / this.scale;
-        let player = new SPGamePlayer(this, x, y, color, speed, radius, true, false, this.root.login.photo, this.root.login.username);
+        let player = new SPGamePlayer(this, x, y, color, speed, radius, true, false, this.root.login.photo, this.root.login.name, this.root.login.email);
         this.players.push(player);
         this.chat = new SPGameChatField(this);
         this.mps = new MultiPlayerSocket(this);
         this.mps.uuid = this.players[0].uuid;
 
         this.mps.ws.onopen = function(){
-            outer.mps.send_create_player(x, y, outer.root.login.username, outer.root.login.photo, 'false');
+            outer.mps.send_create_player(x, y);
         }
     }
 
@@ -60,7 +60,7 @@ class SPGamePlayGround {
             this.sp_game_score_board = null;
         }
 
-       this.$sp_game_playground.empty();
+        this.$sp_game_playground.empty();
 
 
         this.$sp_game_playground.hide();

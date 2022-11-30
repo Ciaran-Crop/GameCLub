@@ -66,40 +66,6 @@ class SPGameLogin{
         this.$sp_login_page.show();
     }
 
-
-    acapp_login(appid, redirect_uri, scope, state){
-        let outer = this;
-        outer.root.os.api.oauth2.authorize(appid, redirect_uri, scope, state, rep => {
-            if(rep.result === 'success'){
-                outer.username = rep.username;
-                outer.photo = "https://app3774.acapp.acwing.com.cn" + rep.photo;
-                outer.back_img = "https://app3774.acapp.acwing.com.cn" + rep.back_img;
-                localStorage.setItem(`gc-access`, rep.access);
-                localStorage.setItem(`gc-refresh`, rep.refresh);
-                outer.hide();
-                outer.root.menu.show();
-                this.refresh_jwt_interval();
-            }
-        });
-    }
-
-    acapp_getinfo(){
-        let outer = this;
-        $.ajax({
-            url: 'https://app3774.acapp.acwing.com.cn/superperson/settings/acwing/acwing/apply_code/',
-            type: 'GET',
-            success: function(rep){
-                if(rep.result === 'success'){
-                    let appid = rep.appid;
-                    let redirect_uri = rep.redirect_uri;
-                    let scope = rep.scope;
-                    let state = rep.state;
-                    outer.acapp_login(appid, redirect_uri, scope, state);
-                }
-            }
-        });
-    }
-
     get_ranklist(){
         $.ajax({
             url : 'https://app3774.acapp.acwing.com.cn/superperson/settings/get_ranklist/',
@@ -121,7 +87,9 @@ class SPGameLogin{
                 'Authorization': 'Bearer ' + localStorage.getItem(`gc-access`),
             },
             success : rep => {
-                this.username = rep.username;
+                console.log(rep);
+                this.email = rep.email;
+                this.name = rep.name;
                 this.photo = rep.photo;
                 this.back_img = rep.back_img;
                 this.hide();

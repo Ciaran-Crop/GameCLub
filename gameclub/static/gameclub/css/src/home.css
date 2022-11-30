@@ -168,7 +168,7 @@ div#opacityslider {
     padding: 0 40px;
 }
 
-div#game-list {
+.gc-home-span-game-list {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;

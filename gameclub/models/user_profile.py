@@ -4,9 +4,11 @@ import os
 from django.core.files import File
 from urllib.request import urlopen
 from tempfile import NamedTemporaryFile
+from gameclub.views.common import remove_file, new_filename
 
 def user_directory_path(instance, filename):
     return os.path.join('user', str(instance.user.id), filename)
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -25,12 +27,14 @@ class UserProfile(models.Model):
             return '/media/default/user.jpg'
 
     def set_photo(self, f):
+        if self.photo_url() != '/media/default/user.jpg':
+            remove_file(self.photo_url())
         try:
             img_temp = NamedTemporaryFile(delete=True)
             img_temp.write(f.read())
             img_temp.flush()
             self.photo.save(
-                    os.path.basename(f.name),
+                    new_filename(),
                     File(img_temp)
                     )
             return True
@@ -39,12 +43,14 @@ class UserProfile(models.Model):
             return False
 
     def set_back(self, f):
+        if self.photo_url() != '/media/default/back.jpg':
+            remove_file(self.back_url())
         try:
             img_temp = NamedTemporaryFile(delete=True)
             img_temp.write(f.read())
             img_temp.flush()
             self.back.save(
-                    os.path.basename(f.name),
+                    new_filename(),
                     File(img_temp)
                     )
             return True
@@ -58,12 +64,14 @@ class UserProfile(models.Model):
             return '/media/default/back.jpg'
 
     def get_remote_image(self, url):
+        if self.photo_url() != '/media/default/user.jpg':
+            remove_file(self.photo_url())
         if url and not self.photo:
             img_temp = NamedTemporaryFile(delete=True)
             img_temp.write(urlopen(url).read())
             img_temp.flush()
             self.photo.save(
-                    os.path.basename(url),
+                    new_filename(),
                     File(img_temp)
                     )
             self.save()

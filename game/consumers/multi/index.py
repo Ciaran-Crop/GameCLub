@@ -73,13 +73,13 @@ class MultiPlayer(AsyncWebsocketConsumer):
         self.uuid = data['uuid']
 
         def get_player_from_db():
-            return Player.objects.get(user__username=data['username'])
+            return Player.objects.get(user__username=data['email'])
 
         player = await database_sync_to_async(get_player_from_db)()
 
         score = player.score
 
-        client.add_player(MatchPlayer(uuid=data['uuid'], username=data['username'], channel_name=self.channel_name, score=score, waiting_time = 0, x=data['x'], y = data['y'], photo=data['photo']))
+        client.add_player(MatchPlayer(uuid=data['uuid'], email=data['email'], name = data['name'] , channel_name=self.channel_name, score=score, waiting_time = 0, x=data['x'], y = data['y'], photo = data['photo']))
 
         transport.close()
 
@@ -106,15 +106,15 @@ class MultiPlayer(AsyncWebsocketConsumer):
             if self.room_name:
                 cache.set(self.room_name, players, 3600)
         else:
-            def update_score(username, score):
-                player = Player.objects.get(user__username=username)
+            def update_score(email, score):
+                player = Player.objects.get(user__username=email)
                 player.score += score
                 player.save()
             for pr in players:
                 if pr['hp'] <= 0:
-                    await database_sync_to_async(update_score)(pr['username'], -5)
+                    await database_sync_to_async(update_score)(pr['email'], -5)
                 else:
-                    await database_sync_to_async(update_score)(pr['username'], 10)
+                    await database_sync_to_async(update_score)(pr['email'], 10)
 
         await self.channel_layer.group_send(
             self.room_name,
@@ -152,7 +152,8 @@ class MultiPlayer(AsyncWebsocketConsumer):
                 'event': 'send_message',
                 'uuid': data['uuid'],
                 'text': data['text'],
-                'username': data['username'],
+                'name': data['name'],
+                'email': data['email'],
             }
         )
 

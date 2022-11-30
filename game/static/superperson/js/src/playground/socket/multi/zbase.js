@@ -29,25 +29,27 @@ class MultiPlayerSocket {
         };
     }
 
-    send_create_player(x, y, username, photo){
+    send_create_player(x, y){
         this.ws.send(JSON.stringify({
             'uuid': this.uuid,
             'x': x,
             'y': y,
             'event': 'create_player',
-            'username' : username,
-            'photo' : photo,
+            'name' : this.playground.root.login.name,
+            'email': this.playground.root.login.email,
+            'photo' : this.playground.root.login.photo,
         }));
     }
 
     receive_create_player(data){
-        let username = data['username'];
+        let name = data['name'];
+        let email = data['email'];
         let photo = data['photo'];
         let uuid = data['uuid'];
         let x = data['x'];
         let y = data['y'];
         let playground = this.playground;
-        let player = new SPGamePlayer(playground, x, y, 'white', 0.25, 0.05, false, false, photo, username);
+        let player = new SPGamePlayer(playground, x, y, 'white', 0.25, 0.05, false, false, photo, name, email);
         playground.players.push(player);
         player.uuid = uuid;
 
@@ -145,20 +147,22 @@ class MultiPlayerSocket {
         }
     }
 
-    send_message(username, text){
+    send_message(name,email, text){
         let outer = this;
         this.ws.send(JSON.stringify({
             'event': 'send_message',
             'uuid': outer.uuid,
-            'username': username,
+            'name': name,
+            'email': email,
             'text': text,
         }));
     }
 
     receive_message(data){
-        let username = data['username'];
+        let name = data['name'];
         let text = data['text'];
-        this.playground.chat.add_message(username, text);
+        let email = data['email'];
+        this.playground.chat.add_message(name,email, text);
     }
 
 

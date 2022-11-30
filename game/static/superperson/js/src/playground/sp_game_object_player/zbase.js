@@ -1,5 +1,5 @@
 class SPGamePlayer extends SPGameObject {
-    constructor(playground,x,y,color,speed,radius,is_me, is_robot, photo, username) {
+    constructor(playground,x,y,color,speed,radius,is_me, is_robot, photo, name, email) {
         super();
         this.playground = playground;
         this.ctx = this.playground.sp_game_map.ctx;
@@ -17,7 +17,8 @@ class SPGamePlayer extends SPGameObject {
         this.cur_skill = null;
         this.is_robot = is_robot;
         this.photo = photo;
-        this.username = username;
+        this.name = name;
+        this.email = email;
         this.fireballs = [];
         this.fireball_cold_time_static = 3;
         this.fireball_cold_time = 0;

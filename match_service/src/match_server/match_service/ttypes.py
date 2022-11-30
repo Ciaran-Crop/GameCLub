@@ -20,26 +20,28 @@ class Player(object):
     """
     Attributes:
      - uuid
-     - username
+     - name
      - channel_name
      - score
      - waiting_time
      - x
      - y
      - photo
+     - email
 
     """
 
 
-    def __init__(self, uuid=None, username=None, channel_name=None, score=None, waiting_time=None, x=None, y=None, photo=None,):
+    def __init__(self, uuid=None, name=None, channel_name=None, score=None, waiting_time=None, x=None, y=None, photo=None, email=None,):
         self.uuid = uuid
-        self.username = username
+        self.name = name
         self.channel_name = channel_name
         self.score = score
         self.waiting_time = waiting_time
         self.x = x
         self.y = y
         self.photo = photo
+        self.email = email
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -57,7 +59,7 @@ class Player(object):
                     iprot.skip(ftype)
             elif fid == 2:
                 if ftype == TType.STRING:
-                    self.username = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                    self.name = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             elif fid == 3:
@@ -90,6 +92,11 @@ class Player(object):
                     self.photo = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
+            elif fid == 9:
+                if ftype == TType.STRING:
+                    self.email = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -104,9 +111,9 @@ class Player(object):
             oprot.writeFieldBegin('uuid', TType.STRING, 1)
             oprot.writeString(self.uuid.encode('utf-8') if sys.version_info[0] == 2 else self.uuid)
             oprot.writeFieldEnd()
-        if self.username is not None:
-            oprot.writeFieldBegin('username', TType.STRING, 2)
-            oprot.writeString(self.username.encode('utf-8') if sys.version_info[0] == 2 else self.username)
+        if self.name is not None:
+            oprot.writeFieldBegin('name', TType.STRING, 2)
+            oprot.writeString(self.name.encode('utf-8') if sys.version_info[0] == 2 else self.name)
             oprot.writeFieldEnd()
         if self.channel_name is not None:
             oprot.writeFieldBegin('channel_name', TType.STRING, 3)
@@ -132,6 +139,10 @@ class Player(object):
             oprot.writeFieldBegin('photo', TType.STRING, 8)
             oprot.writeString(self.photo.encode('utf-8') if sys.version_info[0] == 2 else self.photo)
             oprot.writeFieldEnd()
+        if self.email is not None:
+            oprot.writeFieldBegin('email', TType.STRING, 9)
+            oprot.writeString(self.email.encode('utf-8') if sys.version_info[0] == 2 else self.email)
+            oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
 
@@ -152,13 +163,14 @@ all_structs.append(Player)
 Player.thrift_spec = (
     None,  # 0
     (1, TType.STRING, 'uuid', 'UTF8', None, ),  # 1
-    (2, TType.STRING, 'username', 'UTF8', None, ),  # 2
+    (2, TType.STRING, 'name', 'UTF8', None, ),  # 2
     (3, TType.STRING, 'channel_name', 'UTF8', None, ),  # 3
     (4, TType.I32, 'score', None, None, ),  # 4
     (5, TType.I32, 'waiting_time', None, None, ),  # 5
     (6, TType.DOUBLE, 'x', None, None, ),  # 6
     (7, TType.DOUBLE, 'y', None, None, ),  # 7
     (8, TType.STRING, 'photo', 'UTF8', None, ),  # 8
+    (9, TType.STRING, 'email', 'UTF8', None, ),  # 9
 )
 fix_spec(all_structs)
 del all_structs

@@ -23,7 +23,6 @@ class ChangeView(APIView):
     def change_photo(self, data, request):
         user = request.user
         photo_file = request.FILES.get('file')
-        print(photo_file)
 
         user_profile = UserProfile.objects.get(user = request.user)
 
