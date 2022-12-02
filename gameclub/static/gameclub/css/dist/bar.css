@@ -1,0 +1,24 @@
+#bar-wrap {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    background: white;
+    padding: 10px;
+    box-shadow: 0 5px 10px 0 rgb(0 0 0 / 10%);
+    height: 60px;
+}
+
+.bar-title {
+    float: right;
+    margin-top: -10px;
+    font-size: 13px;
+}
+
+.bar-title:hover {
+    color: lightpink;
+}
+
+.bar-title:after {
+    clear: both;
+}

@@ -10,12 +10,26 @@ export class GameClubSpan {
 `);
         this.$span_div = $(`
 <div class="gc-home-span">
+    <div class="tool-wrap">
+        <div class="tool-border"></div>
+        <div class="tool-left">
+            <img src="/static/gameclub/images/home/right.svg">
+        </div>
+        <div class="tool-list">
+            <div class="tool-title">
+                <span>工具栏</span>
+            </div>
+            <div class='tool-list-content'>
+            </div>
+        </div>
+    </div>
     <section class="gc-home-span-top">
         <div class='gc-home-span-top-title'>
         </div>
         <div class='gc-home-span-top-opacity'>
             <img src='/static/gameclub/images/home/O.svg' id='O'>
             <img src='/static/gameclub/images/home/O1.svg' id='O1' style='display:none'>
+            <div><span class="gc-home-span-top-opacity-title">页面设置</span></div>
         </div>
         <div class='gc-home-span-top-profile'>
             <div class='gc-home-span-top-profile-name'>
@@ -50,22 +64,64 @@ export class GameClubSpan {
             <button id='cancel'> 取消 </button>
         </div>
     </div>
-    <section class='gc-home-span-game'>
-        <section class='gc-home-span-game-div'>
-            <div class='gc-home-span-game-title'>
-                全部游戏
-            </div>
-            <div class='gc-home-span-game-list' id='game-list'>
-            </div>
+    <div class="gc-home-span-content">
+        <div class="gc-home-span-comments"></div>
+        <section class='gc-home-span-game'>
+            <section class='gc-home-span-game-div'>
+                <div class='gc-home-span-game-title-wrap'>
+                    <div class='gc-home-span-game-title'>
+                        全部游戏
+                    </div>
+                    <div class='gc-home-span-game-search-input'>
+                        <input name='all-game-search' type='text' placeholder='输入游戏名' autocomplete='off'>
+                    </div>
+                </div>
+                <div class='gc-home-span-game-list-wrap'>
+                    <a class='gc-home-span-game-list-left' id='all-left'>
+                        <img src="/static/gameclub/images/home/left.svg">
+                    </a>
+                    <div class='gc-home-span-game-content'>
+                        <div class='gc-home-span-game-list' id='game-list'>
+                        </div>
+                    </div>
+                    <a class='gc-home-span-game-list-search' id='all-search'>
+                        <img src='/static/gameclub/images/home/search.png'>
+                        <span>搜索</span>
+                    </a>
+                    <a class='gc-home-span-game-list-right' id='all-right'>
+                        <img src="/static/gameclub/images/home/right.svg">
+                    </a>
+                </div>
+            </section>
+            <section class='gc-home-span-game-div'>
+                <div class='gc-home-span-game-title-wrap'>
+                    <div class='gc-home-span-game-title'>
+                        最近游玩
+                    </div>
+                    <div class='gc-home-span-game-search-input'>
+                        <input name='play-game-search' type='text' placeholder='输入游戏名' autocomplete='off'>
+                    </div>
+                </div>
+                <div class='gc-home-span-game-list-wrap'>
+                    <a class='gc-home-span-game-list-left' id='play-left'>
+                        <img src="/static/gameclub/images/home/left.svg">
+                    </a>
+                    <div class='gc-home-span-game-content'>
+                        <div class='gc-home-span-game-list' id='game-play'>
+                        </div>
+                    </div>
+                    <a class='gc-home-span-game-list-search' id='play-search'>
+                        <img src='/static/gameclub/images/home/search.png'>
+                        <span>搜索</span>
+                    </a>
+                    <a class='gc-home-span-game-list-right' id='play-right'>
+                        <img src="/static/gameclub/images/home/right.svg">
+                    </a>
+                </div>
+            </section>
         </section>
-        <section class='gc-home-span-game-div'>
-            <div class='gc-home-span-game-title'>
-                最近游玩
-            </div>
-            <div class='gc-home-span-game-list' id='game-play'>
-            </div>
-        </section>
-    </section>
+        <div class="gc-home-span-social"></div>
+    </div>
 </div>
 `);
         this.$span_div.hide();
@@ -81,6 +137,7 @@ export class GameClubSpan {
         this.$span_game_play = this.$span_div.find('#game-play');
         this.$span_page_setting = this.$span_div.find('.gc-home-span-page-setting');
         this.setting = new GameClubSetting(this);
+        this.$tool_wrap = this.$span_div.find('.tool-wrap');
         this.start();
     }
 
@@ -90,6 +147,7 @@ export class GameClubSpan {
             this.$span_div.fadeIn();
         }, 500);
         this.get_info();
+        this.get_tools();
         this.add_listening_events();
     }
 
@@ -247,8 +305,105 @@ export class GameClubSpan {
         this.$span_setting.on('click', () => {
             this.setting.show();
         });
+        this.$tool_wrap.find('.tool-border').on('mouseenter', () => {
+            this.$tool_wrap.find('.tool-border').hide();
+            this.$tool_wrap.find('.tool-left').hide();
+            this.$tool_wrap.find('.tool-list').animate({width:'100px'});
+        });
+        this.$tool_wrap.find('.tool-left').on('mouseenter', () => {
+            this.$tool_wrap.find('.tool-border').hide();
+            this.$tool_wrap.find('.tool-left').hide();
+            this.$tool_wrap.find('.tool-list').animate({width:'100px'});
+        });
+        this.$tool_wrap.find('.tool-list').on('mouseleave', () => {
+            this.$tool_wrap.find('.tool-list').animate({width:'0px'});
+            this.$tool_wrap.find('.tool-border').fadeIn();
+            this.$tool_wrap.find('.tool-left').fadeIn();
+        });
+        this.$span_div.find('#all-left').on('click', () => {
+            this.add_slider('#game-list', this.all_game_length, true);
+        });
+        this.$span_div.find('#all-right').on('click', () => {
+            this.add_slider('#game-list', this.all_game_length, false);
+        });
+        this.$span_div.find('#play-left').on('click', () => {
+            this.add_slider('#game-play', this.play_game_length, true);
+        });
+        this.$span_div.find('#play-right').on('click', () => {
+            this.add_slider('#game-play', this.play_game_length, false);
+        });
+        this.$span_div.find('#all-search').on('click', () => {
+            let input_div = this.$span_div.find('[name=all-game-search]');
+            console.log(input_div);
+            input_div.fadeIn();
+            input_div.focus();
+        });
+        this.$span_div.find('#play-search').on('click', () => {
+            let input_div = this.$span_div.find('[name=play-game-search]');
+            input_div.fadeIn();
+            input_div.focus();
+        });
+        this.$span_div.find('[name=all-game-search]').keydown((e) => {
+            if(e.which === 13){
+                let input_div = this.$span_div.find('[name=all-game-search]');
+                input_div.fadeOut();
+                this.search_game('#game-list', input_div.val());
+                input_div.val('');
+                return true;
+            }
+        }).blur(() => {
+            let input_div = this.$span_div.find('[name=all-game-search]');
+            input_div.fadeOut();
+            return true;
+        });
+        this.$span_div.find('[name=play-game-search]').keydown((e) => {
+            if(e.which === 13){
+                let input_div = this.$span_div.find('[name=play-game-search]');
+                input_div.fadeOut();
+                input_div.val('');
+                this.search_game('#game-play', input_div.val());
+                return true;
+            }
+        }).blur(() => {
+            let input_div = this.$span_div.find('[name=play-game-search]');
+            input_div.fadeOut();
+            return true;
+        });
     }
 
+    search_game(ele, game_name){
+        let re = new RegExp(".*" + game_name + ".*", 'i');
+        let list = $(ele);
+        let ch = list.children();
+        for(let i = 0; i < ch.length;i++){
+            let element = $(ch[i]);
+            let name = element.find('.gc-home-game-element-title').text();
+            if(name.match(re)){
+                let value = -i * 280;
+                this.$span_div.find(ele).css('transform', 'translateX(' + value + 'px)');
+                element.hover();
+                return true;
+            }
+        }
+    }
+
+    add_slider(ele, len, left){
+        console.log(this.$span_div.find(ele));
+        let value = parseInt(this.$span_div.find(ele).css('transform').split(',')[4]);
+        if(left){
+            if(value === 0){
+                return ;
+            }
+            value = Math.min(0, value + 840);
+        }else{
+            if(value <= -140 * len){
+                return ;
+            }
+            value = Math.max(-140 * len, value - 840);
+        }
+        this.$span_div.find(ele).css('transform', 'translateX(' + value + 'px)')
+
+    }
 
     set_back(){
         let opacity = this.get_setting('opacity');
@@ -279,12 +434,13 @@ export class GameClubSpan {
         this.$span_profile.find('.gc-home-span-top-profile-name').text(rep.name);
         this.$span_profile.find('img').attr('src', rep.photo);
         this.$span_title.text(rep.name.toUpperCase() + '\'  个人空间');
-        this.$span_title.addClass('gc-home-span-top-title-trans');
         this.padding_game(rep.game_list, rep.game_play);
         this.setting.padding_info();
     }
 
     padding_game(all, me){
+        this.all_game_length = all.length;
+        this.play_game_length = me.length;
         if(all){
             all.forEach((value, index, array) => {
                 this.$span_game_all.append(this.get_element(value));
@@ -296,6 +452,58 @@ export class GameClubSpan {
             });
         }
         this.set_color(true);
+    }
+
+    get_tool_element(value){
+        let tool_element = $(`
+<div class='tool-element-wrap'>
+    <a>
+        <div class='tool-element-photo'>
+            <img>
+        </div>
+        <div class='tool-element-name'>
+            <span></span>
+        </div>
+    </a>
+</div>
+`);
+        tool_element.find('a').attr('href', value.url);
+        tool_element.find('a').attr('name', value.name);
+        tool_element.find('a').attr('target', "_blank");
+        tool_element.find('.tool-element-photo > img').attr('src', value.photo);
+        tool_element.find('.tool-element-name > span').text(value.name);
+        return tool_element;
+    }
+
+    padding_tools(tools){
+        console.log(tools);
+        let tool_list = this.$tool_wrap.find('.tool-list-content');
+        tools.forEach((value, index, array) => {
+            tool_list.append(this.get_tool_element(value));
+        });
+    }
+
+    get_tools(){
+        $.ajax({
+            url: `${BASE_URL}/tool/get_tool_list/`,
+            type: 'get',
+            data: {
+                'type': 'all',
+            },
+            headers : {
+                'Authorization': 'Bearer ' + localStorage.getItem('gc-access'),
+            },
+            success: rep => {
+                if(rep.result === 'success'){
+                    this.padding_tools(rep.content);
+                }else{
+                    console.log(rep.content);
+                }
+            },
+            error : () => {
+                window.location.href = `${BASE_URL}/`;
+            }
+        });
     }
 
     get_info(){

@@ -2,6 +2,7 @@
 {% include 'gameclub/web/head.html' %}
 
 <body style="margin:0">
+    {% include 'gameclub/web/bar.html' %}
     <div id="gameclub-register"></div>
     <script type="module">
         import {GameClubRegister} from "{% static 'gameclub/js/dist/gameclub.js' %}"
@@ -9,5 +10,6 @@
             let gameClubRegister = new GameClubRegister("gameclub-register", null);
         });
     </script>
+    {% include 'gameclub/web/footer.html' %}
 
 </body>

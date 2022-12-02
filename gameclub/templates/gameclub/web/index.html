@@ -2,6 +2,7 @@
 {% include 'gameclub/web/head.html' %}
 
 <body style='margin:0'>
+    {% include 'gameclub/web/bar.html' %}
     <div id="gameclub"></div>
     <script type="module">
         import {GameClubIndex} from "{% static 'gameclub/js/dist/gameclub.js' %}"
@@ -10,6 +11,7 @@
         });
     </script>
 
+    {% include 'gameclub/web/footer.html' %}
 </body>
 
 

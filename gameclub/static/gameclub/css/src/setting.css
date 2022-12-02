@@ -1,6 +1,6 @@
 .gc-home-setting-page {
     position: absolute;
-    z-index: 2;
+    z-index: 9999;
     background: rgba(0,0,0,0.2);
     width: 100%;
     height: 760px;

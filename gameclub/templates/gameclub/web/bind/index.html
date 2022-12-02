@@ -2,6 +2,7 @@
 {% include 'gameclub/web/head.html' %}
 
 <body style="margin:0">
+    {% include 'gameclub/web/bar.html' %}
     <div id='gameclub-bind'></div>
     <script type="module">
         import {GameClubBind} from "{% static 'gameclub/js/dist/gameclub.js' %}"
@@ -9,4 +10,5 @@
             let gameClubBind = new GameClubBind('gameclub-bind', null, "{{ email }}");
         });
     </script>
+    {% include 'gameclub/web/footer.html' %}
 </body>
