@@ -7,8 +7,8 @@ from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 
-from match_service.src.match_server.match_service import Match
-from match_service.src.match_server.match_service.ttypes import Player as MatchPlayer
+from match_service.superperson.src.match_server.match_service import Match
+from match_service.superperson.src.match_server.match_service.ttypes import Player as MatchPlayer
 from game.models.player import Player
 from channels.db import database_sync_to_async
 

@@ -1,0 +1,14 @@
+{% load static %}
+{% include 'splendor/web/head.html' %}
+
+<body style='margin:0'>
+    <div id='splendor-menu'></div>
+    <script type='module'>
+        import {SplendorMenu} from '{% static 'splendor/js/dist/splendor.js' %}'
+        $(document).ready(() => {
+            let splendormenu = new SplendorMenu('splendor-menu', null);
+        });
+    </script>
+
+</body>
+

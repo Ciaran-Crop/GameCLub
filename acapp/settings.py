@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'game.apps.GameConfig',
     'gameclub.apps.GameclubConfig',
     'tool.apps.ToolConfig',
+    'Splendor.apps.SplendorConfig',
 ]
 
 MIDDLEWARE = [
@@ -133,6 +134,7 @@ STATICFILES_DIRS = [
         os.path.join(BASE_DIR, 'game', 'static'),
         os.path.join(BASE_DIR, 'gameclub', 'static'),
         os.path.join(BASE_DIR, 'tool', 'static'),
+        os.path.join(BASE_DIR, 'Splendor', 'static'),
 ]
 
 MEDIA_URL = '/media/'

@@ -1,0 +1,60 @@
+a, a:active, a:hover, a:visited {
+    text-decoration: none;
+    color: inherit;
+}
+
+a, a:hover, a:active, a:focus {
+    text-decoration: none;
+    outline: none;
+}
+
+.splendor-login-box {
+    box-sizing: border-box;
+    top: 50%;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 30px 20px 10px 20px;
+    border: 1px solid #c4c4c4;
+    border-radius: 10px;
+    background: white;
+    box-shadow: 5px 10px 10px 0 rgb(0 0 0 / 10%);
+}
+
+.splendor-login-logo {
+    height: 50px;
+    margin-bottom: 30px;
+    background: url(/static/splendor/images/login/logo.png) no-repeat center;
+    background-size: contain;
+}
+
+.splendor-login-wrap {
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),url(/static/splendor/images/login/back.png) no-repeat center;
+    background-size: cover;
+    height: 100%;
+}
+
+.splendor-login-content {
+    font-size: 18px;
+    padding: 10px 20px;
+    line-height: 40px;
+}
+
+.splendor-login-button > a {
+    text-align: center;
+    width: 100%;
+    height: 50px;
+    border: 1px solid #c4c4c4;
+    border-radius: 10px;
+    margin: auto;
+    display: block;
+    margin-top: 25px;
+    background: #3370FF;
+    color: white;
+    line-height: 50px;
+    cursor: pointer;
+}
+
+a:hover {
+    background: #3370ffe6;
+}

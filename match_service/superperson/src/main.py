@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 import glob
 import sys
-sys.path.insert(0, glob.glob('../../')[0])
+sys.path.insert(0, glob.glob('../../../')[0])
 
 from thrift.transport import TSocket
 from thrift.transport import TTransport

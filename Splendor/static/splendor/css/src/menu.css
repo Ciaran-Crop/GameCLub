@@ -1,0 +1,292 @@
+.menu-wrap {
+    background-size: cover;
+    height: 100%;
+    color: whitesmoke;
+}
+
+.menu-player-info {
+    height: 150px;
+    overflow: hidden;
+}
+
+.player-info {
+    height: fit-content;
+    float: right;
+    margin: 40px 50px 0 0;
+    background: rgba(0 0 0 / 70%);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 8px 10px 10px 0px rgb(216 90 100 / 30%);
+}
+
+.player-info:after {
+    clear: both;
+    content: '';
+}
+
+.player-info-left {
+    float: left;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-right: 10px;
+    font-size: 20px;
+}
+
+.player-info-right {
+    float: right;
+    width: 50px;
+    height: 50px;
+}
+
+.player-info-right > img {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+}
+
+.menu-box {
+    margin-top: 250px;
+    box-sizing: border-box;
+}
+
+.menu-list {
+    padding-left: 100px;
+    font-size: 35px;
+    font-style: italic;
+    position: relative;
+}
+
+.menu-element {
+    margin: 15px 0 15px 0;
+    user-select: none;
+    cursor: pointer;
+    width: fit-content;
+}
+
+.menu-element:hover {
+    transition: 0.3s;
+    transform: translateX(30px);
+}
+
+.menu-setting-wrap {
+    position: absolute;
+    z-index: 2000;
+    background: rgba(0 0 0 /10%);
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.menu-setting-box {
+    background: white;
+    color: black;
+    top: 50%;
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;
+    width: fit-content;
+    border: 1px solid #938b8b;
+    border-radius: 10px;
+    box-shadow: 0 10px 10px 0 rgba(0 0 0 / 10%);
+    user-select: none;
+}
+
+.menu-setting-title {
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    padding-top: 20px;
+    font-size: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #938b8b;
+    margin-bottom: 10px;
+}
+
+.menu-setting-config {
+    padding: 20px;
+}
+
+.menu-setting-element:before {
+    content: '';
+    display: table;
+}
+
+.menu-setting-element:after {
+    content: '';
+    display: table;
+}
+
+.menu-setting-name {
+    display: inline-block;
+}
+
+.menu-setting-select {
+    display: inline-block;
+}
+
+label {
+    background: none !important;
+    background: #3370ffbf !important;
+    color: white !important;
+    border: 1px solid #3370ee !important;
+    border-radius: 10px !important;
+    margin: 0 5px !important;
+    width: 100px !important;
+    padding: 10px !important;
+}
+
+label:hover {
+    background: #3370ff !important;
+    border: 1px solid #3370ee !important;
+    border-radius: 10px !important;
+}
+
+.ui-state-active{
+    background: #3370ff !important;
+    border: 1px solid #3370ee !important;
+    border-radius: 10px !important;
+    color: black !important;
+}
+
+.menu-setting-element:after {
+    content: '';
+    display: table;
+}
+
+.menu-setting-name > span:nth-child(1) {
+    float: left;
+    width: 70px;
+    text-align: center;
+}
+
+.menu-setting-name:nth-child(2) {
+    float: right;
+}
+
+.menu-setting-name > span:nth-child(2) {margin-right: 10px;}
+
+.menu-setting-element {
+    margin-bottom: 20px;
+}
+input[name='room_pass'] {
+    outline-color: #3370ff;
+    border: 1px solid #aaaa;
+    height: 30px;
+    padding-left: 10px;
+    border-radius: 5px;
+    margin-left: 5px;
+}
+
+.menu-setting-select-box > span {
+    color: #aaa;
+    margin-left: 20px;
+    font-size: 13px;
+}
+
+.menu-setting-button {
+    margin-bottom: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #938b8b;
+    text-align: center;
+}
+
+.menu-setting-button > button {
+    font-size: 20px;
+    color: white;
+    background: #3370ff;
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+}
+
+.menu-setting-button > button:nth-child(2) {
+    background: #ffb3b3;
+}
+
+.menu-ranklist-wrap {
+    position: absolute;
+    z-index: 2000;
+    background: rgba(0 0 0 /10%);
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.menu-ranklist-box {
+    background: white;
+    color: black;
+    top: 50%;
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;
+    width: fit-content;
+    border: 1px solid #938b8b;
+    border-radius: 10px;
+    box-shadow: 0 10px 10px 0 rgb(0 0 0 / 10%);
+    user-select: none;
+}
+
+.ranklist-title {
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-style: oblique;
+    font-size: 30px;
+    padding: 20px 30px;
+    font-weight: bolder;
+    border-bottom: 1px solid #938b8b;
+    margin-bottom: 10px;
+    width: 700px;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+}
+.ranklist-title img:hover {
+    transition: .5s;
+    transform: rotate(180deg);
+}
+
+.ranklist-box {
+    box-sizing: border-box;
+}
+
+.match-loading {
+    display: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.match-loading > div {
+    font-size: 20px;
+    text-align: center;
+}
+
+.match-loading > button {
+    font-size: 20px;
+    color: white;
+    background: #3370ff;
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.match-loading > button:hover {
+    color: black;
+    transition: 0.3s;
+}
+
+.ui-button-text {
+    padding: 0 !important;
+}

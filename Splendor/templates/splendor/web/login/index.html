@@ -1,0 +1,14 @@
+{% load static %}
+{% include 'splendor/web/head.html' %}
+
+<body style='margin:0'>
+    <div id='splendor-login'></div>
+    <script type='module'>
+        import {SplendorLogin} from '{% static 'splendor/js/dist/splendor.js' %}'
+        $(document).ready(() => {
+            let splendorlogin = new SplendorLogin('splendor-login', null, "{{ access }}", "{{ refresh }}", "{{ redirect }}");
+        });
+    </script>
+
+</body>
+

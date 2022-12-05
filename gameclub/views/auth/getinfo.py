@@ -39,7 +39,7 @@ class InfoView(APIView):
         return game_list
 
     def get_game_play(self, user):
-        games = UserGameInfo.objects.filter(user_profile__user = user)
+        games = UserGameInfo.objects.filter(user_profile__user = user).order_by('-last_play')
         game_list = []
 
         for game in games:

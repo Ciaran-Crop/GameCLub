@@ -21,6 +21,7 @@ from django.views.static import serve
 urlpatterns = [
     path('', include('gameclub.urls.index'), name='index'),
     path('superperson/', include('game.urls.index')),
+    path('splendor/', include('Splendor.urls.index')),
     path('admin/', admin.site.urls),
     path('tool/', include('tool.urls.index')),
     re_path(r'media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
