@@ -25,6 +25,9 @@ class PlayerInfo(APIView):
         if not user_game_record.exists():
             UserGameInfo.objects.create(user_profile = user_profiles, game = game)
 
+        user_game_record = UserGameInfo.objects.get(user_profile = user_profiles, game = game)
+        user_game_record.save()
+
         return Response({
             'result': 'success',
             'email': user.username,
