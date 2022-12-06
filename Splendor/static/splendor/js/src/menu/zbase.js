@@ -172,12 +172,25 @@ export class SplendorMenu {
         </div>
         <div class='ranklist-box'>
             <div class="rubik-loader"></div>
-            <div class='ranklist-content'></div>
+            <div class="ranklist-content-row ranklist-content-header">
+                <span>排名</span>
+                <span>头像</span>
+                <span>昵称</span>
+                <span>分数</span>
+            </div>
+            <div class='ranklist-content'>
+            </div>
+        </div>
+        <div class="ranklist-content-row ranklist-content-me">
         </div>
     </div>
 </div>
 `);
 
+        this.$ranklist_content = this.$ranklist.find('.ranklist-content');
+        this.$ranklist_cancel = this.$ranklist.find('img');
+        this.$rubik_loader = this.$ranklist.find('.rubik-loader');
+        this.$ranklist_row_me = this.$ranklist.find('.ranklist-content-me');
 
         this.$ranklist.hide();
         this.$menu_box.append(this.$ranklist);
@@ -196,7 +209,7 @@ export class SplendorMenu {
         });
         this.$rank.on('click', () => {
             this.$base_menu.hide();
-            this.$ranklist.show();
+            this.show_ranklist();
         });
         this.$signout.on('click', () => {
             clear_tokens();
@@ -236,7 +249,10 @@ export class SplendorMenu {
             this.$multi_list.hide();
             this.$base_menu.show();
         });
-
+        this.$ranklist_cancel.on('click', () => {
+            this.$ranklist.hide();
+            this.$base_menu.show();
+        });
     }
 
     create_room(config){
@@ -264,7 +280,7 @@ export class SplendorMenu {
             this.$match_loading.find('div:last').text(mess);
             i += 1;
         }
-        , 1000);
+            , 1000);
     }
 
     stop_match(){
@@ -275,6 +291,90 @@ export class SplendorMenu {
 
     match_game(info){
         console.log('matching...', info);
+    }
+
+    show_ranklist(){
+        this.$ranklist.show();
+        if(this.rank_list){
+            this.$rubik_loader.hide();
+            this.$ranklist_content.show();
+            this.$ranklist_row_me.show();
+        }else{
+            this.get_ranklist();
+        }
+    }
+
+    get_ranklist(){
+        $.ajax({
+            url: `${BASE_URL}/splendor/auth/get_ranklist/`,
+            type: 'post',
+            headers : {
+                'Authorization': 'Bearer ' + localStorage.getItem('gc-access'),
+            },
+            data : {
+                'range_min': 1,
+                'range_max': 100,
+            },
+            success : rep => {
+                this.padding_ranklist(rep);
+                if(this.$ranklist.css('display') !== 'none'){
+                    this.$rubik_loader.hide();
+                    this.$ranklist_content.show();
+                    this.$ranklist_row_me.show();
+                }
+            },
+        });
+    }
+
+    padding_ranklist(rep){
+        let me_rank = -1;
+        let ranks = rep.content;
+        this.rank_list = ranks;
+        let length = ranks.length;
+        ranks.forEach((value, index, array) => {
+            let ranknumber = index + 1;
+            let photo = value.photo;
+            let name = value.name;
+            let score = value.score;
+            let email = value.email;
+            let element = this.create_ranklist_row(ranknumber, photo, name, score);
+            if(ranknumber === 1){
+                element.addClass('ranklist-content-first');
+            }
+            if(ranknumber === 2){
+                element.addClass('ranklist-content-second');
+            }
+            if(ranknumber === 3){
+                element.addClass('ranklist-content-third');
+            }
+            if(ranknumber === length){
+                element.addClass('ranklist-content-last-row');
+            }
+            if(this.email === email){
+                me_rank = ranknumber;
+                element.addClass('ranklist-content-box-me');
+            }
+            this.$ranklist_content.append(element);
+        });
+        if(me_rank === -1) me_rank = '未上榜';
+        this.$ranklist_row_me.append($(`
+<span>${me_rank}</span>
+<img src='${this.photo}'>
+<span>${this.name}</span>
+<span>${this.score}</span>
+`));
+    }
+
+    create_ranklist_row(ranknumber, photo, name, score){
+        let ranklist_row = $(`
+<div class="ranklist-content-row">
+    <span>${ranknumber}</span>
+    <img src='${photo}'>
+    <span>${name}</span>
+    <span>${score}</span>
+</div>
+`);
+        return ranklist_row;
     }
 
     contain_setting(ele, setting){

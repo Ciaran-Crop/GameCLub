@@ -1,6 +1,6 @@
 .rubik-loader {
     width: 64px;
-    height: 300px;
+    height: 400px;
     margin: auto;
     background-image: url(/static/gameclub/images/home/loading.gif);
     background-repeat: no-repeat;
@@ -297,7 +297,6 @@ input[name='room_pass'] {
     border: 1px solid #938b8b;
     border-radius: 10px;
     box-shadow: 0 10px 10px 0 rgb(0 0 0 / 10%);
-    user-select: none;
 }
 
 .ranklist-title {
@@ -321,7 +320,7 @@ input[name='room_pass'] {
 }
 
 .ranklist-box {
-    box-sizing: border-box;
+    height: 400px;
 }
 
 .match-loading {
@@ -357,4 +356,85 @@ input[name='room_pass'] {
 
 .ui-button-text {
     padding: 0 !important;
+}
+
+.ranklist-content {
+    overflow-y: scroll;
+    padding: 0 30px;
+    margin: 0 10px;
+    display: none;
+    height: 360px;
+}
+
+.ranklist-content-row {
+    padding: 10px 0;
+    border-bottom: 1px solid #aaa;
+    background: aliceblue;
+}
+
+.ranklist-content-row > img {
+    width: 30px;
+    height: 30px;
+    margin: 0 70px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.ranklist-content-row > span {
+    width: 150px;
+    margin: 0 10px;
+    display: inline-block;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    font-size: 15px;
+}
+
+
+.ranklist-content-header {
+    background: #aaa;
+    border-radius: 10px 10px 0 0;
+    margin: 0 40px;
+}
+
+.ranklist-content-first {
+    background: gold;
+    color: red;
+    font-weight: 700;
+}
+
+.ranklist-content-last-row {
+    border-radius: 0 0 10px 10px;
+}
+
+.ranklist-content-second {
+    background: silver;
+    color: purple;
+    font-weight: 700;
+}
+
+.ranklist-content-third {
+    font-weight: 700;
+    background: chocolate;
+    color: deepskyblue;
+}
+
+.ranklist-content-box-me {
+    font-weight: 700;
+    background: lightpink !important;
+}
+
+.ranklist-content::-webkit-scrollbar {
+    width: 0;
+}
+
+.ranklist-content-me {
+    padding: 10px 0px;
+    margin: 20px 40px;
+    background: lightpink;
+    border-radius: 10px;
+    display: none;
 }
