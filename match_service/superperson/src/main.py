@@ -9,7 +9,6 @@ from thrift.protocol import TBinaryProtocol
 from thrift.server import TServer
 
 from match_server.match_service import Match
-from match_server.match_service.ttypes import Player
 from queue import Queue
 from threading import Thread
 from time import sleep

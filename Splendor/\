@@ -9,14 +9,14 @@ export class SplendorMenu {
     }
 
     start(){
+        this.get_info();
         this.start_ws();
         this.start_room();
-        this.get_info();
         this.create_settings();
     }
 
     start_ws(){
-        this.socket = new SplendorRoomSocket(this);
+        this.socket = new SplendorSocket(this);
     }
 
     start_room(){
@@ -277,17 +277,9 @@ export class SplendorMenu {
         this.room.create_room(this.player_info, this.room_id, this.need_pass, true, config);
     }
 
-    match_success(content){
+    match_success(){
         this.stop_match_timing(this.time_func_id);
-        this.$match_loading.find('button').hide();
-        this.$match_loading.find('div:last').css('color', 'rgb(68, 157, 68)');
-        this.$match_loading.find('div:last').text('匹配成功! loading...');
-        this.socket.join_room(content['room_id'], this.player_info, content['pass'], 'true')
         console.log('match_success');
-    }
-
-    start_game(config, players, room_id){
-        console.log('start_game', config, players, room_id);
     }
 
     stop_match_timing(func_id){
@@ -296,7 +288,6 @@ export class SplendorMenu {
 
     start_match_timing(){
         let i = 1;
-        this.$match_loading.find('div:last').text('');
         return setInterval(() => {
             let temp = i;
             let second = temp % 60;
@@ -312,14 +303,12 @@ export class SplendorMenu {
 
     stop_match(){
         this.stop_match_timing(this.time_func_id);
-        this.socket.stop_match(this.email, this.score);
         this.$match_loading.hide();
         console.log('stop_match');
     }
 
     match_game(info){
         console.log('matching...', info);
-        this.socket.match(info.email, info.score);
     }
 
     show_ranklist(){

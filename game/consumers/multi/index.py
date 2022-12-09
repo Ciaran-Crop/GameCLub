@@ -23,7 +23,7 @@ class MultiPlayer(AsyncWebsocketConsumer):
             await self.close()
 
     async def disconnect(self, close_code):
-        if hasattr(self, 'room-name') and self.room_name:
+        if hasattr(self, 'room_name') and self.room_name:
             await self.channel_layer.group_discard(self.room_name, self.channel_name)
 
 

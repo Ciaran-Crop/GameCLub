@@ -6,7 +6,7 @@
     <script type='module'>
         import {SplendorMenu} from '{% static 'splendor/js/dist/splendor.js' %}'
         $(document).ready(() => {
-            let splendormenu = new SplendorMenu('splendor-menu', null);
+            let splendormenu = new SplendorMenu('splendor-menu', null, "{{ room_id }}", "{{ need_pass }}");
         });
     </script>
 
