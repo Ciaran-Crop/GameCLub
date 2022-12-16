@@ -287,7 +287,27 @@ export class SplendorMenu {
     }
 
     start_game(config, players, room_id){
+        let player = null;
+        for(let i = 0;i < players.length;i++){
+            if(players[i].email === this.email){
+                players[i]['character'] = 'me';
+                player = players[i];
+            }else{
+                players[i]['character'] = 'enemy';
+            }
+        }
         console.log('start_game', config, players, room_id);
+        this.playground = new SplendorPlayground(this, config, players, room_id, player);
+        this.room.hide();
+        this.hide();
+    }
+
+    stop_game() {
+        if(this.playground){
+            this.playground.close();
+            this.playground = null;
+            this.show();
+        }
     }
 
     stop_match_timing(func_id){
@@ -432,7 +452,27 @@ export class SplendorMenu {
     }
 
     start_single_game(config){
-        console.log(config);
+        let playernumber = parseInt(config['single_player_number'][0]);
+        config['single_player_number'] = playernumber;
+        let players = [];
+        let me = this.player_info;
+        me['game_score'] = 0;
+        me['character'] = 'me';
+        players.push(me);
+        for(let i = 1;i < playernumber;i++){
+            players.push({
+                'email': 'robot' + i,
+                'name': 'robot' + i,
+                'score': this.player_info.score,
+                'photo': `${BASE_URL}/media/default/user.jpg`,
+                'game_score': 0,
+                'character': 'robot',
+            });
+        }
+        console.log('start_single_game', config, players);
+        this.playground = new SplendorPlayground(this, config, players, 'splendor-room_single', me);
+        this.room.hide();
+        this.hide();
     }
 
     padding_info(rep){

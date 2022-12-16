@@ -1,3 +1,7 @@
+img {
+    border-radius: 50%;
+}
+
 .gc-home-span {
     position: absolute;
     width: 100%;
@@ -1166,6 +1170,7 @@ span.gc-home-setting-span {
     height: 180px;
     user-select: none;
     margin: 0 50px;
+    border-radius: unset;
 }
 
 .gc-home-setting-confirm {

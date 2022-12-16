@@ -20,4 +20,3 @@ function clear_tokens(){
     localStorage.setItem('gc-access', '');
     localStorage.setItem('gc-refresh', '');
 }
-

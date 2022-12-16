@@ -1,0 +1,15 @@
+.playground {
+    width: 100vw;
+    height : 100vh;
+    outline: none;
+    background: url(/static/splendor/assets/bg.jpg);
+    background-size: cover;
+}
+
+canvas {
+    position: absolute;
+    left: 0;
+    z-index: 1;
+    width: 100vw;
+    height: 100vh;
+}

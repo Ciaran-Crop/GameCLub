@@ -1,3 +1,7 @@
+img {
+    border-radius: 50%;
+}
+
 .gc-home-span {
     position: absolute;
     width: 100%;
