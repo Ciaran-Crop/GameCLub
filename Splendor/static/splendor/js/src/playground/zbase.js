@@ -48,6 +48,7 @@ class SplendorPlayground {
                     obj.is_called_start = true;
                 }else{
                     obj.update();
+                    obj.timedelta = t - last_timestamp;
                 }
             }
             for (let t = 0; t < GAME_OBJECTS.length; t++) {

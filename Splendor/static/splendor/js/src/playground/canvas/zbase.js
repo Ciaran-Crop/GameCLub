@@ -1,6 +1,5 @@
 class TextureUtil {
     constructor(){
-        this.ctx = document.createElement('canvas').getContext('2d');
     }
 
     get_point_from(x, y, width, height) {
@@ -18,47 +17,30 @@ class TextureUtil {
         ];
     }
 
-    makeTexture(gl) {
-        let tex = gl.createTexture();
-        const ctx = this.ctx;
-        gl.bindTexture(gl.TEXTURE_2D, tex);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, ctx.canvas);
-        gl.generateMipmap(gl.TEXTURE_2D);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        return tex;
-    }
-
-    makeCircleTexture(gl, options){
+    makeTextTexture(text, options){
+        let ctx = document.createElement('canvas').getContext('2d');
         options = options || {};
-        var width  = options.width  || 128;
-        var height = options.height || 128;
-        var color1 = options.color1 || "white";
-        var color2 = options.color2 || "black";
+        let fontcolor = options.fontcolor || 'black';
+        let fontsize = options.fontsize || '30px';
+        let fontfamily = options.fontfamily || 'Microsoft YaHei';
+        let x = options.x || 0;
+        let y = options.y || 0;
+        let width = options.width || 10;
+        let height = options.height || 10;
 
-        this.setCanvasSize(width, height);
-        const ctx = this.ctx;
-
-        var size = Math.min(width, height);
-        ctx.fillStyle = color1 || "white";
-        ctx.fillRect(0, 0, width, height);
-        ctx.fillStyle = color2 || "black";
-        ctx.save();
-        ctx.translate(width / 2, height / 2);
-        ctx.beginPath();
-        ctx.arc(0, 0, width / 2 - 1, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = color1 || "white";
-        ctx.beginPath();
-        ctx.arc(0, 0, width / 4 - 1, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-
-        return makeTexture(gl);
+        let font = fontsize + ' ' + fontfamily;
+        this.setCanvasSize(ctx.canvas, width, height);
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = fontcolor;
+        ctx.font = font;
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.fillText(text, x, y);
+        return ctx.canvas;
     }
 
-    setCanvasSize(width, height){
-        this.ctx.canvas.width = width;
-        this.ctx.canvas.height = height;
+    setCanvasSize(canvas, width, height){
+        canvas.width = width;
+        canvas.height = height;
     }
 }

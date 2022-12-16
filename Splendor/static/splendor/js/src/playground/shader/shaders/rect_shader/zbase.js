@@ -39,34 +39,30 @@ class RectShader {
         this.program = program;
     }
 
-    init_data_buffer(a_position_data){
-        const gl = this.shader_manager.gl;
-        const a_position_buffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, a_position_buffer);
+    init_data_buffer(gl, a_position_data){
+        this.a_position_buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.a_position_buffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(a_position_data), gl.STATIC_DRAW);
-        this.a_position_buffer = a_position_buffer;
     }
     // main
     draw(a_position_data, u_color){
         const sm = this.shader_manager;
         const gl = sm.gl;
-        this.init_data_buffer(a_position_data);
+        this.init_data_buffer(gl, a_position_data);
         sm.resize(gl.canvas);
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         gl.useProgram(this.program);
-        this.set_attrib_pointer();
-        this.set_uniform(u_color);
+        this.set_attrib_pointer(gl);
+        this.set_uniform(gl, u_color);
         gl.drawArrays(gl.TRIANGLES, 0, 6);
     }
 
-    set_uniform(u_color){
-        const gl = this.shader_manager.gl;
+    set_uniform(gl, u_color){
         gl.uniform2fv(this.u_resolutionLoc, [gl.canvas.width, gl.canvas.height]);
         gl.uniform4fv(this.u_colorLoc, u_color);
     }
 
-    set_attrib_pointer(){
-        const gl = this.shader_manager.gl;
+    set_attrib_pointer(gl){
         gl.enableVertexAttribArray(this.a_positionLoc);
         gl.bindBuffer(gl.ARRAY_BUFFER, this.a_position_buffer);
         gl.vertexAttribPointer(this.a_positionLoc, 2, gl.FLOAT, false, 0, 0);
