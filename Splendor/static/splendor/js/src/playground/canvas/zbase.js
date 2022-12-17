@@ -23,10 +23,11 @@ class TextureUtil {
         let fontcolor = options.fontcolor || 'black';
         let fontsize = options.fontsize || '30px';
         let fontfamily = options.fontfamily || 'Microsoft YaHei';
-        let x = options.x || 0;
-        let y = options.y || 0;
-        let width = options.width || 10;
-        let height = options.height || 10;
+        let width = options.width || 100;
+        let height = options.height || 100;
+        let x = options.x || width / 2;
+        let y = options.y || height / 2;
+        let maxwidth = options.maxwidth || width;
 
         let font = fontsize + ' ' + fontfamily;
         this.setCanvasSize(ctx.canvas, width, height);
@@ -35,7 +36,7 @@ class TextureUtil {
         ctx.fillStyle = fontcolor;
         ctx.font = font;
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        ctx.fillText(text, x, y);
+        ctx.fillText(text, x, y, maxwidth);
         return ctx.canvas;
     }
 

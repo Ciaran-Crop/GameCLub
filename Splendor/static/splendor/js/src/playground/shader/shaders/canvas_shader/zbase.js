@@ -52,11 +52,11 @@ class CanvasShader {
         this.init_data_buffer(gl, a_position_data, a_texCoord_data, u_canvas);
         sm.resize(gl.canvas);
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         gl.useProgram(this.program);
         this.set_attrib_pointer(gl);
         this.set_uniform(gl);
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
         gl.drawArrays(gl.TRIANGLES, 0, 6);
     }
     set_uniform(gl){
@@ -85,6 +85,7 @@ class CanvasShader {
         // u_canvas
         this.u_canvas_texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, this.u_canvas_texture);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, u_canvas);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
