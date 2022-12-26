@@ -26,11 +26,11 @@ export class SplendorMenu {
     create_settings(){
         this.single_setting = {
             'single_mode': {'name': '模式', 'content': ['单人']},
-            'single_player_number': {'name': '人数', 'content': ['2人','3人','4人','5人']},
+            'single_player_number': {'name': '人数', 'content': ['2人','3人','4人']},
         };
         this.room_setting = {
             'room_mode': {'name': '模式', 'content': ['多人']},
-            'room_player_number': {'name': '人数', 'content':['2人', '3人', '4人', '5人']},
+            'room_player_number': {'name': '人数', 'content':['2人', '3人', '4人']},
             'room_round_second': {'name': '回合秒数', 'content': ['10s', '15s', '30s', '35s']},
             'room_pass': {'name':'房间密码', 'content': ['none']},
         };
@@ -464,7 +464,7 @@ export class SplendorMenu {
                 'email': 'robot' + i,
                 'name': 'robot' + i,
                 'score': this.player_info.score,
-                'photo': `${BASE_URL}/media/default/user.jpg`,
+                'photo': `/media/default/user.jpg`,
                 'game_score': 0,
                 'character': 'robot',
             });

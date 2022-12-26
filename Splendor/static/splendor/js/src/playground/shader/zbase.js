@@ -1,24 +1,130 @@
-class ShaderManager{
-    constructor(playground){
+class ShaderManager {
+    constructor(playground) {
         this.playground = playground;
         this.gl = this.playground.gl;
         this.shader_dict = {};
     }
 
-    get(shader_name){
+    shader_player_photo(email, offset_x, offset_y, options) {
+        let imageShader = this.get('ImageShader');
+        let texture = this.tm.get('players')[email];
+        options = options || {};
+        let scale_x = options.scale_x || 30;
+        let scale_y = options.scale_y || 30;
+        let rotation = options.rotation || 0;
+        let u_position_matrix = get_matrix(this.gl, [offset_x, offset_y], rotation, [scale_x, scale_y], false);
+        let u_texCoord_matrix = get_matrix(this.gl, [0, 0], 0, [1, 1], true);
+        imageShader.draw(texture, u_position_matrix, u_texCoord_matrix);
+    }
+
+    shader_card_back(offset_x, offset_y, p_x, p_y, options) {
+        let imageShader = this.get('ImageShader');
+        let texture = this.tm.get('cards');
+        options = options || {};
+        let scale_x = options.scale_x || 150;
+        let scale_y = options.scale_y || 203;
+        let rotation = options.rotation || 0;
+        let u_position_matrix = get_matrix(this.gl, [offset_x, offset_y], rotation, [scale_x, scale_y], false);
+        let u_texCoord_matrix = get_matrix(this.gl, [0.2 * p_x, 0.1666 * p_y], 0, [0.1998, 0.1665], true);
+        imageShader.draw(texture, u_position_matrix, u_texCoord_matrix);
+    }
+
+    shader_top_back(offset_x, offset_y, u_color, options) {
+        let rectShader = this.get('RectShader');
+        options = options || {};
+        let rotation = options.rotation || 0;
+        let scale_x = options.scale_x || 150;
+        let scale_y = options.scale_y || 54;
+        let u_position_matrix = get_matrix(this.gl, [offset_x, offset_y], rotation, [scale_x, scale_y], false);
+        rectShader.draw(u_position_matrix, u_color);
+    }
+
+    shader_score(offset_x, offset_y, i, options) {
+        let imageShader = this.get('ImageShader');
+        let texture = this.tm.get('numbers_sheet');
+        options = options || {};
+        let rotation = options.rotation || 0;
+        let scale_x = options.scale_x || 50;
+        let scale_y = options.scale_y || 50;
+        let u_position_matrix = get_matrix(this.gl, [offset_x, offset_y], rotation, [scale_x, scale_y], false);
+        let u_texCoord_matrix = get_matrix(this.gl, [0.1 * i, 0.6666], 0, [0.1, 0.3333], true);
+        imageShader.draw(texture, u_position_matrix, u_texCoord_matrix);
+    }
+
+    shader_mini_card_back(offset_x, offset_y, i, options) {
+        let imageShader = this.get('ImageShader');
+        let texture = this.tm.get('numbers_sheet');
+        options = options || {};
+        let rotation = options.rotation || 0;
+        let scale_x = options.scale_x || 35;
+        let scale_y = options.scale_y || 35;
+        let u_position_matrix = get_matrix(this.gl, [offset_x, offset_y], rotation, [scale_x, scale_y], false);
+        let u_texCoord_matrix = get_matrix(this.gl, [0.1 * i, 0], 0, [0.1, 0.3333], true);
+        imageShader.draw(texture, u_position_matrix, u_texCoord_matrix);
+    }
+
+    shader_gem(offset_x, offset_y, i, options) {
+        let imageShader = this.get('ImageShader');
+        let texture = this.tm.get('gems');
+        options = options || {};
+        let rotation = options.rotation || 0;
+        let scale_x = options.scale_x || 45;
+        let scale_y = options.scale_y || 45;
+        let u_position_matrix = get_matrix(this.gl, [offset_x + 2.5, offset_y + 2.5], rotation, [scale_x, scale_y], false);
+        let u_texCoord_matrix = get_matrix(this.gl, [0.2 * i, 0], 0, [0.2, 1], true);
+        imageShader.draw(texture, u_position_matrix, u_texCoord_matrix);
+    }
+
+    shader_spend(offset_x, offset_y, backi, needi) {
+        let imageShader = this.get('ImageShader');
+        let number_sheet_texture = this.tm.get('numbers_sheet');
+        let rotation = 0;
+        let scale_x = 50;
+        let scale_y = 50;
+        let u_position_matrix = get_matrix(this.gl, [offset_x, offset_y], rotation, [scale_x, scale_y], false);
+        let u_texCoord_matrix = get_matrix(this.gl, [0.1 * backi, 0.3333], 0, [0.1, 0.3333], true);
+        imageShader.draw(number_sheet_texture, u_position_matrix, u_texCoord_matrix);
+        this.shader_score(offset_x, offset_y, needi);
+    }
+
+    shader_token(offset_x, offset_y, tokeni, options) {
+        let imageShader = this.get('ImageShader');
+        let texture = this.tm.get('tokens');
+        options = options || {};
+        let rotation = options.rotation || 0;
+        let scale_x = options.scale_x || 70;
+        let scale_y = options.scale_y || 70;
+        let u_position_matrix = get_matrix(this.gl, [offset_x, offset_y], rotation, [scale_x, scale_y], false);
+        let u_texCoord_matrix = get_matrix(this.gl, [0.16666 * tokeni, 0], 0, [0.16667, 1], true);
+        imageShader.draw(texture, u_position_matrix, u_texCoord_matrix);
+    }
+
+    shader_noble(offset_x, offset_y, noblei_x, noblei_y, options) {
+        let imageShader = this.get('ImageShader');
+        let texture = this.tm.get('nobles');
+        options = options || {};
+        let rotation = options.rotation || 0;
+        let scale_x = options.scale_x || 140;
+        let scale_y = options.scale_y || 140;
+        let u_position_matrix = get_matrix(this.gl, [offset_x, offset_y], rotation, [scale_x, scale_y], false);
+        let u_texCoord_matrix = get_matrix(this.gl, [0.2 * noblei_x, 0.5 * noblei_y], 0, [0.2, 0.5], true);
+        imageShader.draw(texture, u_position_matrix, u_texCoord_matrix);
+    }
+
+    get(shader_name) {
         return this.shader_dict[shader_name];
     }
 
-    resize(canvas){
-        const width  = canvas.clientWidth;
+    resize(canvas) {
+        const width = canvas.clientWidth;
         const height = canvas.clientHeight;
-        if(canvas.width !== width || canvas.height !== height){
+        if (canvas.width !== width || canvas.height !== height) {
             canvas.width = width;
             canvas.height = height;
         }
     }
 
-    before_render(){
+    before_render() {
         const gl = this.gl;
         this.resize(gl.canvas);
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -26,17 +132,17 @@ class ShaderManager{
         gl.clear(gl.COLOR_BUFFER_BIT);
     }
 
-    createProgramFromText(gl, vs_text, fs_text){
-        const vs= this.createShader(gl, gl.VERTEX_SHADER, vs_text);
+    createProgramFromText(gl, vs_text, fs_text) {
+        const vs = this.createShader(gl, gl.VERTEX_SHADER, vs_text);
         const fs = this.createShader(gl, gl.FRAGMENT_SHADER, fs_text);
         return this.createProgram(gl, vs, fs);
     }
 
     createShader(gl, type, source) {
-        var shader = gl.createShader(type); // 创建着色器对象
+        let shader = gl.createShader(type); // 创建着色器对象
         gl.shaderSource(shader, source); // 提供数据源
         gl.compileShader(shader); // 编译 -> 生成着色器
-        var success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+        let success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
         if (success) {
             return shader;
         }
@@ -46,11 +152,11 @@ class ShaderManager{
     }
 
     createProgram(gl, vertexShader, fragmentShader) {
-        var program = gl.createProgram();
+        let program = gl.createProgram();
         gl.attachShader(program, vertexShader);
         gl.attachShader(program, fragmentShader);
         gl.linkProgram(program);
-        var success = gl.getProgramParameter(program, gl.LINK_STATUS);
+        let success = gl.getProgramParameter(program, gl.LINK_STATUS);
         if (success) {
             return program;
         }
@@ -59,9 +165,29 @@ class ShaderManager{
         gl.deleteProgram(program);
     }
 
-    init(){
+    get_point_from(x, y, width, height) {
+        let x1 = x;
+        let x2 = x + width;
+        let y1 = y;
+        let y2 = y + height;
+        return [
+            x1, y1,
+            x2, y1,
+            x1, y2,
+            x1, y2,
+            x2, y1,
+            x2, y2,
+        ];
+    }
+
+    randomint_from_xy(x, y) {
+        let a = Math.floor(x + Math.random() * (y - x));
+        return a;
+    }
+
+    init() {
         new ImageShader(this);
-        new CanvasShader(this);
         new RectShader(this);
+        this.tm = new PreProcessTexture(this);
     }
 }

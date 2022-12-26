@@ -5,7 +5,9 @@ class SplendorPlayground {
         this.players = players;
         this.me = me;
         this.room_id = room_id;
-        this.mode = this.config['mode'];
+        this.mode = this.config['single_mode'] || this.config['room_mode'];
+        this.player_number = this.config['single_player_number'] || this.config['room_player_number'];
+        this.round_second = this.config['room_round_second'] || 30;
         this.$playground_div = $(`<div class='playground'></div>`);
         this.menu.$menu_div.append(this.$playground_div);
         this.state = 'start'; // ['start', 'round', 'last_round', 'end']
@@ -21,6 +23,12 @@ class SplendorPlayground {
             this.chat = new SplendorChat(this);
         }
         this.top_board = new TopBoard(this);
+        this.cards_manager = new CardsManager(this);
+        this.tokens_manager = new TokensManager(this);
+        this.nobles_manager = new NoblesManager(this);
+        this.players_manager = new PlayersManager(this);
+        // this.top_manager = new 
+        // this.time_manager = new 
     }
 
     init_canvas_context(){
@@ -30,7 +38,6 @@ class SplendorPlayground {
         if(!this.gl){
             alert('未支持WebGl');
         }
-        this.textureUtil = new TextureUtil(this);
     }
 
     init_shader_manager(){
@@ -61,14 +68,5 @@ class SplendorPlayground {
     }
 
     close(){
-        if(this.socket){
-            this.socket.close();
-            this.socket = null;
-        }
-        this.top_board.destroy();
-        this.main_screen.destroy();
-        this.bottom_board.destroy();
-
-        this.$playground_div.remove();
     }
 }

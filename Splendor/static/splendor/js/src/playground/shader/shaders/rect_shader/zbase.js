@@ -1,8 +1,9 @@
 class RectShader {
     constructor(shader_manager){
-        this.shader_manager = shader_manager;
+        this.sm = shader_manager;
+        this.gl = this.sm.gl;
         this.name = 'RectShader';
-        this.shader_manager.shader_dict[this.name] = this;
+        this.sm.shader_dict[this.name] = this;
         console.log('loading shader', this.name);
         this.init();
     }
@@ -10,11 +11,11 @@ class RectShader {
     shader_text(){
         this.vs = `
             attribute vec2 a_position;
-            uniform vec2 u_resolution;
+
+            uniform mat3 u_position_matrix;
 
             void main(){
-                vec2 clipSpace = a_position / u_resolution * 2.0 - 1.0;
-                gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+                gl_Position = vec4((u_position_matrix * vec3(a_position, 1)).xy, 0, 1);
             }
         `;
         this.fs = `
@@ -28,43 +29,59 @@ class RectShader {
         `;
     }
 
-    init(){
+    init() {
+        const gl = this.gl;
+        const sm = this.sm;
         this.shader_text();
-        const sm = this.shader_manager;
-        const gl = sm.gl;
-        const program = sm.createProgramFromText(gl, this.vs, this.fs);
-        this.a_positionLoc = gl.getAttribLocation(program, 'a_position');
-        this.u_resolutionLoc = gl.getUniformLocation(program, 'u_resolution');
-        this.u_colorLoc = gl.getUniformLocation(program, 'u_color');
-        this.program = program;
+        let program = sm.createProgramFromText(gl, this.vs, this.fs);
+        let a_positionLoc = gl.getAttribLocation(program, 'a_position');
+        let u_position_matrixLoc = gl.getUniformLocation(program, 'u_position_matrix');
+        let u_colorLoc = gl.getUniformLocation(program, 'u_color');
+        const a_position_data = new Float32Array(sm.get_point_from(0, 0, 1, 1));
+        const a_position_buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, a_position_buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, a_position_data, gl.STATIC_DRAW);
+        let programInfo = {
+            program: program,
+            a_position: { loc: a_positionLoc, buffer: a_position_buffer },
+            u_position_matrix: u_position_matrixLoc,
+            u_color: u_colorLoc,
+        }
+        this.programInfo = programInfo;
     }
 
-    init_data_buffer(gl, a_position_data){
-        this.a_position_buffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.a_position_buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(a_position_data), gl.STATIC_DRAW);
-    }
-    // main
-    draw(a_position_data, u_color){
-        const sm = this.shader_manager;
-        const gl = sm.gl;
-        this.init_data_buffer(gl, a_position_data);
-        sm.resize(gl.canvas);
+    draw(u_position_matrix, u_color) {
+        const gl = this.gl;
+        const sm = this.sm;
+        let programInfo = this.programInfo;
+
+        sm.resize(gl);
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        gl.useProgram(this.program);
-        this.set_attrib_pointer(gl);
-        this.set_uniform(gl, u_color);
+        // gl.enable(gl.BLEND);
+        // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+        gl.useProgram(programInfo.program);
+        this.set_pointer(programInfo);
+        this.set_uniform(programInfo,u_position_matrix, u_color);
+
         gl.drawArrays(gl.TRIANGLES, 0, 6);
     }
 
-    set_uniform(gl, u_color){
-        gl.uniform2fv(this.u_resolutionLoc, [gl.canvas.width, gl.canvas.height]);
-        gl.uniform4fv(this.u_colorLoc, u_color);
+    set_pointer(programInfo) {
+        const gl = this.gl;
+
+        const a_positionLoc = programInfo.a_position.loc;
+        const a_position_buffer = programInfo.a_position.buffer;
+        gl.enableVertexAttribArray(a_positionLoc);
+        gl.bindBuffer(gl.ARRAY_BUFFER, a_position_buffer);
+
+        gl.vertexAttribPointer(a_positionLoc, 2, gl.FLOAT, false, 0, 0);
     }
 
-    set_attrib_pointer(gl){
-        gl.enableVertexAttribArray(this.a_positionLoc);
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.a_position_buffer);
-        gl.vertexAttribPointer(this.a_positionLoc, 2, gl.FLOAT, false, 0, 0);
+    set_uniform(programInfo, u_position_matrix, u_color) {
+        const gl = this.gl;
+        gl.uniformMatrix3fv(programInfo.u_position_matrix, false, u_position_matrix);
+        gl.uniform4fv(programInfo.u_color, u_color);
     }
+
 }
