@@ -5,6 +5,7 @@ class CardsManager extends GameObject {
         this.sm = this.playground.shader_manager;
         // card: [id, gem, score, backIndex, spend]
         this.cards = {
+            instance: [],
             // count: { level1: 40, level2: 30, level3: 20 },
             count: { level1: 4, level2: 4, level3: 4 },
             board_cards: {
@@ -14,7 +15,6 @@ class CardsManager extends GameObject {
             },
             all_cards: { level1: [], level2: [], level3: [] },
         };
-        console.log(this.cards);
         this.init();
     }
 
@@ -28,7 +28,6 @@ class CardsManager extends GameObject {
             this.init_cards_from_web();
         } else {
             // single init
-
             this.init_cards_from_local();
         }
 
@@ -37,7 +36,6 @@ class CardsManager extends GameObject {
                 this.next_card(level, i);
             }
         }
-        console.log(this.cards);
     }
 
     init_cards_from_local() {
@@ -82,7 +80,8 @@ class CardsManager extends GameObject {
         if (cardIndex >= 0 && this.cards.board_cards[level][location] === null) {
             let card = origin_cards[level][cardIndex];
             this.cards.count[level]--;
-            let card_instance = new Card(this, card, offset_x, offset_y + (bLevel - 1) * y_step);
+            let card_instance = new Card(this, card, offset_x, offset_y + (bLevel - 1) * y_step, bLevel, location);
+            this.cards.instance.push(card_instance);
             this.cards.board_cards[level][location] = card_instance;
             card_instance.move_to(offset_x + (location + 1) * x_step,
                 offset_y + (bLevel - 1) * y_step);
@@ -110,5 +109,12 @@ class CardsManager extends GameObject {
             }
         }
     }
-
+    click_card(x, y){
+        for(let i in this.cards.instance){
+            if(this.cards.instance[i].clicked(x, y)){
+                return this.cards.instance[i];
+            }
+        }
+        return null;
+    }
 }

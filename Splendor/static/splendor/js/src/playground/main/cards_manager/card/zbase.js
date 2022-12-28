@@ -1,6 +1,7 @@
 class Card extends GameObject {
-    constructor(cards_manager, card, x, y) {
+    constructor(cards_manager, card, x, y, level, location) {
         super();
+        this.playground = cards_manager.playground;
         this.cm = cards_manager;
         this.sm = this.cm.sm;
         this.card_config = card;
@@ -10,8 +11,91 @@ class Card extends GameObject {
         this.vy = 0;
         this.move_length = 0;
         this.speed = 1000;
-        this.state = 'board'; // 'board', 'book'
+        this.state = 'board'; // 'board', 'book', 'on_de'
         this.role = null;
+        this.level = level;
+        this.location = location;
+        this.scale = 1;
+    }
+
+    can_buy(player) {
+        let spend = this.card_config.spend;
+        let less_count = 0;
+        for (let i in spend) {
+            let e = spend[i];
+            let color = e.color;
+            let need = e.need;
+            less_count += Math.max(0, need - player.cards[color] - player.tokens[color]);
+        }
+        if (less_count - player.tokens.O <= 0) return true;
+        else return false;
+    }
+
+    buy_by_player(player) {
+        let spend = this.card_config.spend;
+        let need_token = {};
+        let less_count = 0;
+        for (let i in spend) {
+            let e = spend[i];
+            let color = e.color;
+            let need = e.need;
+            need_token[color] = Math.max(0, need - player.cards[color]);
+            if(need_token[color] - player.tokens[color] > 0){
+                less_count += (need_token[color] - player.tokens[color]);
+                need_token[color] = 0;
+            }
+        }
+        need_token.O = less_count;
+        this.playground.tokens_manager.used_by_player(player, need_token);
+        if (this.state === 'book') player.update_books('buy', this);
+        else {
+            this.change_scale(0.3);
+            this.move_to(player.x, player.y);
+            this.change_state('on_de');
+            player.update_cards(this, this.card_config.gem, 1);
+            this.playground.cards_manager.next_card(this.level, this.location);
+        }
+        this.playground.players_manager.next_player();
+    }
+
+    can_book(player) {
+        if (this.state === 'board') {
+            if (player.books.length < 3) return true;
+        }
+        else return false;
+    }
+
+    book_by_player(player) {
+        if (player.tokens_count + 1 <= 10) {
+            this.playground.tokens_manager.picked_by_player_from_tokens(player, { O: 1 });
+        }
+        player.update_books('book', this);
+        this.playground.cards_manager.next_card(this.level, this.location);
+        this.playground.players_manager.next_player();
+    }
+
+    clicked(x, y) {
+        if (this.state !== 'board' && this.state !== 'book') {
+            return false;
+        }
+        if (this.state === 'book') {
+            if (this.role !== this.playground.players_manager.get_me().email) return false;
+        }
+        let width = 150 * this.scale;
+        let height = 203 * this.scale;
+        if (x >= this.x && x <= this.x + width && y >= this.y && y <= this.y + height && (this.role === null || this.role === this.playground.me.email)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    change_state(state) {
+        this.state = state;
+    }
+
+    change_scale(scale) {
+        this.scale = scale;
     }
 
     get_dist(x1, y1, x2, y2) {
@@ -39,34 +123,47 @@ class Card extends GameObject {
     }
 
     update() {
+        if (this.state === 'on_de') {
+            if (this.move_length === 0) this.destroy();
+        }
         this.update_x_y();
         this.render();
     }
 
+    on_destroy() {
+        for (let i in this.cm.cards.instance) {
+            if (this.cm.cards.instance[i] === this) {
+                this.cm.cards.instance.splice(i, 1);
+            }
+        }
+    }
+
     render() {
-        let gem_step = 98;
-        let spend_step = 100;
+        let gem_step = 98 * this.scale;
+        let spend_step = 100 * this.scale;
         let spend_index = [2, 0, 3, 1];
-        let gem_step_x = 40;
-        let gem_step_y = 15;
-        this.sm.shader_card_back(this.x, this.y, this.card_config.backIndex[0], this.card_config.backIndex[1]);
-        this.sm.shader_top_back(this.x, this.y, [1, 1, 1, 0.5]);
-        this.sm.shader_score(this.x, this.y, this.card_config.score - 1);
-        this.sm.shader_gem(this.x + gem_step, this.y, GemColor2Index[this.card_config.gem]);
+        let gem_step_x = 40 * this.scale;
+        let gem_step_y = 15 * this.scale;
+        let scale = this.scale;
+        let fix_step = 50 * this.scale;
+        this.sm.shader_card_back(this.x, this.y, this.card_config.backIndex[0], this.card_config.backIndex[1], { scale: scale });
+        this.sm.shader_top_back(this.x, this.y, [1, 1, 1, 0.5], { scale: scale });
+        this.sm.shader_score(this.x, this.y, this.card_config.score - 1, { scale: scale });
+        this.sm.shader_gem(this.x + gem_step, this.y, GemColor2Index[this.card_config.gem], { scale: scale });
         this.card_config.spend.forEach((value, index) => {
             index = spend_index[index];
             let iy = Math.floor(index / 2);
             let ix = index % 2;
             let backi = NSColor2Index[value.color];
             let needi = value.need - 1;
-            this.sm.shader_spend(this.x + ix * 50, this.y + spend_step + iy * 50, backi, needi);
+            this.sm.shader_spend(this.x + ix * fix_step, this.y + spend_step + iy * fix_step, backi, needi, { scale: scale });
         });
         this.card_config.spend.forEach((value, index) => {
             index = spend_index[index];
             let iy = Math.floor(index / 2);
             let ix = index % 2;
             let gemi = GemColor2Index[value.color];
-            this.sm.shader_gem(this.x + ix * 50 + gem_step_x, this.y + iy * 50 + gem_step_y + spend_step, gemi, { scale_x: 20, scale_y: 20 });
+            this.sm.shader_gem(this.x + ix * fix_step + gem_step_x, this.y + iy * fix_step + gem_step_y + spend_step, gemi, { scale_x: 20, scale_y: 20, scale: scale });
         });
     }
 }

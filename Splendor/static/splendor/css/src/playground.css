@@ -1,9 +1,10 @@
 .playground {
     width: 100vw;
-    height : 100vh;
+    height: 100vh;
     outline: none;
     background: url(/static/splendor/assets/bg.jpg);
     background-size: cover;
+    user-select: none;
 }
 
 canvas {
@@ -12,4 +13,137 @@ canvas {
     z-index: 1;
     width: 100vw;
     height: 100vh;
+}
+
+.top-board {
+    width: 100vw;
+    height: 6vh;
+    color: whitesmoke;
+    font-size: 1.5vw;
+    position: fixed;
+    z-index: 1000;
+    line-height: 6vh;
+}
+
+.top-board-center {
+    display: inline-block;
+    margin-left: 50vw;
+}
+
+.top-board-out {
+    display: inline-block;
+    position: absolute;
+    right: 0;
+}
+
+.top-board-out > button {
+    background: none;
+    outline: none;
+    border: none;
+    color: palevioletred;
+    font-size: 1.5vw;
+    cursor: pointer;
+}
+
+.card-click {
+    position: fixed;
+    z-index: 20000;
+    color: black;
+    user-select: none;
+    display:none;
+}
+
+.element {
+        background: whitesmoke;
+        width: 3vw;
+        height: 3vw;
+        border-radius: 50%;
+        font-size: 1.3vw;
+        text-align: center;
+        line-height: 3vw;
+        padding: 1vw;
+        color: cadetblue;
+        cursor: pointer;
+}
+.no-click {
+    cursor: not-allowed;
+}
+
+.book {
+    margin-left: 3vw;
+}
+
+.token-click {
+    position: fixed;
+    z-index: 10000;
+    display: none;
+    margin-left: 83vw;
+    padding-top: 0.5vw;
+}
+
+.token-click > button {
+    background: none;
+    border: none;
+    color: black;
+    border-radius: 0.5vw;
+    width: 4vw;
+    height: 5vh;
+    cursor: pointer;
+}
+
+button.pick {
+    background: #3232af;
+}
+
+button.cancel {
+    background: #aaa;
+}
+
+.game-score-list {
+    position: fixed;
+    z-index: 10000;
+    right: 0;
+    color: whitesmoke;
+    margin-top: 12vh;
+    padding-right: 0.1vw;
+    font-size: 1.3vw;
+    text-align: center;
+}
+
+.game-score {
+    padding-bottom: 17.5vh;
+}
+
+.error-message {
+    position: fixed;
+    display: none;
+    z-index: 30000;
+    color: white;
+    background: #ea2929ad;
+    font-size: 15px;
+    border-radius: 10px;
+    padding: 3px 20px;
+}
+.player-tick {
+    color: whitesmoke;
+    position: fixed;
+    z-index: 20000;
+    right: 17vw;
+    font-size: 3vw;
+    font-style: italic;
+    display: none;
+}
+
+.pass-click {
+    color: whitesmoke;
+    position: fixed;
+    z-index: 10000;
+    left: 55vw;
+    height: 4vh;
+    line-height: 4vh;
+    background: #3370ff;
+    border-radius: 1vw;
+    padding: 0 1vw;
+    margin: 0.5vw 0 0;
+    cursor: pointer;
 }

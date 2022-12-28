@@ -15,7 +15,6 @@ class Noble extends GameObject {
         this.vy = 0;
         this.move_length = 0;
         this.speed = 800;
-
     }
 
     start() { }

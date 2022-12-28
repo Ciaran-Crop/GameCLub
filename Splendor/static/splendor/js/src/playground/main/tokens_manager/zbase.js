@@ -16,49 +16,117 @@ class TokensManager extends GameObject {
                 break;
         }
         this.tokens = {
-            G: { count: count, instance: [] },
-            W: { count: count, instance: [] },
-            B: { count: count, instance: [] },
-            I: { count: count, instance: [] },
-            R: { count: count, instance: [] },
-            O: { count: 5, instance: [] },
+            G: { count: count, instance: [], offset: [970, 100] },
+            W: { count: count, instance: [], offset: [970, 215] },
+            B: { count: count, instance: [], offset: [970, 215 + 115] },
+            I: { count: count, instance: [], offset: [970, 215 + 115 * 2] },
+            R: { count: count, instance: [], offset: [970, 215 + 115 * 3] },
+            O: { count: 5, instance: [], offset: [970, 215 + 115 * 4] },
         };
+        this.select_tokens = [];
         this.offset_x = 970;
         this.offset_y = 100;
         this.y_step = 115;
         this.t_step = 5;
+        this.width = 70;
+        this.height = 70;
+    }
+
+    click_token(x, y) {
+        for (let key in this.tokens) {
+            let offset = this.tokens[key].offset;
+            if (x >= offset[0] && y >= offset[1] && x <= offset[0] + this.width && y <= offset[1] + this.height) {
+                if (key === 'O') return null;
+                if (this.tokens[key].count <= 0) return null;
+                if (this.playground.players_manager.get_me().tokens_count >= 10) return null;
+                return key;
+            }
+        }
+        return null;
     }
 
     // move_to_select
     select_by_player(token_config) {
-        // new Token
-        // move to select region
+        if (this.select_tokens.length === 0 && this.tokens[token_config].count > 0) {
+            this.playground.top_board.add_token_click();
+        } else if (this.select_tokens.length === 1) {
+            if (this.select_tokens[0].color === token_config && this.tokens[token_config].count < 3) {
+                return false;
+            }
+        } else if (this.select_tokens.length === 2) {
+            if (this.select_tokens[0].color === this.select_tokens[1].color) return false;
+            for (let i in this.select_tokens) {
+                if (this.select_tokens[i].color === token_config) return false;
+            }
+        } else if (this.select_tokens.length === 3) {
+            return false;
+        }
+        if (this.select_tokens.length + this.playground.players_manager.get_me().tokens_count + 1 > 10) {
+            return false;
+        }
+        if (this.tokens[token_config].count > 0) {
+            this.tokens[token_config].count--;
+            let offset = this.tokens[token_config].offset;
+            let token = new Token(this, token_config, offset[0], offset[1]);
+            this.select_tokens.push(token);
+            token.move_to(900 + this.select_tokens.length * this.width, 5);
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    unselect_by_player(tokens) {
-        // move to token region
-        // destroy token
+    unselect_by_player() {
+        for (let i in this.select_tokens) {
+            let offset = this.tokens[this.select_tokens[i].color].offset;
+            this.tokens[this.select_tokens[i].color].count++;
+            this.select_tokens[i].move_to(offset[0], offset[1]);
+        }
+        for (let i in this.select_tokens) {
+            this.select_tokens[i].change_state('on_de');
+        }
+        this.select_tokens = [];
     }
 
     // move_to_player
-    picked_by_player(player, options) {
-        // options has token_config, tokens
-        // if token_config
-        // new Token
-        // move to player
-        // else
-        // move tokens to player
-        // destroy
+    picked_by_player_from_tokens(player, token_config) {
+        for(let key in token_config){
+            if(this.tokens[key].count >= token_config[key]){
+                this.tokens[key].count -= token_config[key];
+                let offset = this.tokens[key].offset;
+                for(let i = 0;i < token_config[key];i++){
+                    let token = new Token(this, key, offset[0], offset[1]);
+                    token.move_to(player.x, player.y);
+                    token.change_state('on_de');
+                    player.update_tokens(key, 1);
+                }
+            }
+        }
+    }
+
+    picked_by_me() {
+        let p = this.playground.players_manager.get_me();
+        for (let i in this.select_tokens) {
+            this.select_tokens[i].move_to(p.x, p.y);
+            p.update_tokens(this.select_tokens[i].color, 1);
+            this.select_tokens[i].change_state('on_de');
+        }
+        this.select_tokens = [];
+        this.playground.players_manager.next_player();
     }
 
     used_by_player(player, token_config) {
-        // new Token
-        // move to token region
-        // destroy
-    }
-
-    move_to(tx, ty) {
-
+        for(let key in token_config){
+            let need = token_config[key];
+            player.update_tokens(key, -need);
+            for(let i = 0;i < need;i++){
+                let offset = this.tokens[key].offset;
+                let token = new Token(this, key, player.x, player.y);
+                token.move_to(offset[0], offset[1]);
+                token.change_state('on_de');
+                this.tokens[key].count++;
+            }
+        }
     }
 
     start() {

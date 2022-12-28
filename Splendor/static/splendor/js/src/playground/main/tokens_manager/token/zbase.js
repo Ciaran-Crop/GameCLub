@@ -35,7 +35,7 @@ class Token extends GameObject {
 
     }
 
-    change_state(state){
+    change_state(state) {
         this.state = state;
     }
 
@@ -43,6 +43,9 @@ class Token extends GameObject {
         if (this.state !== 'unshow') {
             this.update_x_y();
             this.render();
+        }
+        if (this.state === 'on_de'){
+            if(this.move_length === 0) this.destroy();
         }
     }
 

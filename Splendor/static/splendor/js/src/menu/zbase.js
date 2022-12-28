@@ -27,6 +27,7 @@ export class SplendorMenu {
         this.single_setting = {
             'single_mode': {'name': '模式', 'content': ['单人']},
             'single_player_number': {'name': '人数', 'content': ['2人','3人','4人']},
+            'single_round_second': {'name': '回合秒数', 'content': ['10s', '15s', '30s', '35s']},
         };
         this.room_setting = {
             'room_mode': {'name': '模式', 'content': ['多人']},
@@ -452,8 +453,10 @@ export class SplendorMenu {
     }
 
     start_single_game(config){
-        let playernumber = parseInt(config['single_player_number'][0]);
+        let playernumber = parseInt(config['single_player_number']);
+        let play_round_time = parseInt(config['single_round_second']);
         config['single_player_number'] = playernumber;
+        config['single_round_second'] = play_round_time;
         let players = [];
         let me = this.player_info;
         me['game_score'] = 0;

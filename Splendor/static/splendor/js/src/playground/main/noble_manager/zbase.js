@@ -25,11 +25,15 @@ class NoblesManager {
         base_nobles.sort(() => {
             return (0.5 - Math.random());
         });
-        this.noblesIndex = base_nobles.slice(0, this.nobleLength - 1);
+        this.noblesIndex = base_nobles.slice(0, this.nobleLength);
     }
 
     init_nobles_from_web(){
 
+    }
+
+    can_get_one(player){
+        
     }
 
     start(){

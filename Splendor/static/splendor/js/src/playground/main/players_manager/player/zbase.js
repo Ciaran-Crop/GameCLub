@@ -9,34 +9,147 @@ class Player extends GameObject {
         this.game_score = player_config.game_score;
         this.score = player_config.score;
         this.tokens_count = 0;
-        this.tokens = { G: 1, W: 2, B: 3, I: 2, R: 1, O: 1 };
+        this.tokens = { G: 0, W: 0, B: 0, I: 0, R: 0, O: 0 };
         this.cards = { G: 0, W: 0, B: 0, I: 0, R: 0 };
         this.books = [];
         this.nobles = [];
         this.index = i;
+        this.state = 'online';
+        this.pass_count = 0;
         let y_step = 160;
         this.x = 1285;
         this.y = 77 + this.index * y_step;
     }
 
+    do() {
+        let playground = this.pm.playground;
+
+        // buy
+        for (let i in playground.cards_manager.cards.instance) {
+            let card = playground.cards_manager.cards.instance[i];
+            if (card.state === 'book' && card.role === this.email) {
+                if (card.can_buy(this)) {
+                    card.buy_by_player(this);
+                    return;
+                }
+            } else if (card.state === 'board') {
+                if (card.can_buy(this)) {
+                    card.buy_by_player(this);
+                    return;
+                }
+            }
+        }
+        // token
+        for (let key in playground.tokens_manager.tokens) {
+            if(key === 'O') break;
+            let count = playground.tokens_manager.tokens[key].count;
+            if (count >= 4 && this.tokens_count <= 8) {
+                let pick = {};
+                pick[key] = 2;
+                playground.tokens_manager.picked_by_player_from_tokens(this, pick);
+                this.pm.next_player();
+                return;
+            }
+        }
+        let can_pick = Math.min(3, 10 - this.tokens_count);
+        let pick = {};
+        for (let key in playground.tokens_manager.tokens) {
+            if(key === 'O') break;
+            let count = playground.tokens_manager.tokens[key].count;
+            if (count > 0 && can_pick > 0) {
+                pick[key] = 1;
+                can_pick--;
+            }
+            if (!can_pick) break;
+        }
+        if(!$.isEmptyObject(pick)){
+            playground.tokens_manager.picked_by_player_from_tokens(this, pick);
+            this.pm.next_player();
+            return;
+        }
+
+        // book 
+        for (let i in playground.cards_manager.cards.instance) {
+            let card = playground.cards_manager.cards.instance[i];
+            if(card.state === 'board'){
+                if (card.can_book(this)) {
+                    card.book_by_player(this);
+                    return;
+                }
+            }
+        }
+
+        this.pm.next_player();
+        return;
+    }
+
+    pass() {
+        this.pass_count++;
+        let playground = this.pm.playground;
+        if (this.pass_count >= 3) this.state = 'offline';
+        if (this.character === 'me') {
+            if (playground.top_board.is_show('click_card')) {
+                playground.top_board.$click_card.find('.cancle').click();
+            }
+            if (playground.top_board.is_show('token_click')) {
+                playground.top_board.$token_click.find('.pick').click();
+            }
+        }
+        this.pm.next_player();
+    }
+
+    getIndex() {
+        return this.index;
+    }
+
+    update_score(score) {
+        this.game_score += score;
+        if (this.game_score >= 15) {
+            if (this.playground.state == 'round') this.playground.state == 'last_round';
+        }
+        this.pass_count = 0;
+    }
+
     update_tokens(color, num) {
         this.tokens[color] += num;
+        this.tokens_count += num;
+        this.pass_count = 0;
     }
 
-    update_cards(color, num) {
+    update_cards(card, color, num) {
         this.cards[color] += num;
+        this.update_score(card.card_config.score);
+        this.pass_count = 0;
     }
 
-    update_books(color, op, card) {
-        if(op === 'buy'){
-
-        }else{
-            
+    update_books(op, card) {
+        if (op === 'buy') {
+            this.update_cards(card, card.card_config.gem, 1);
+            for (let i in this.books) {
+                if (this.books[i] === card) this.books.splice(i, 1);
+            }
+            card.destroy();
+            this.pm.playground.cards_manager.next_card(card.level, card.location);
+        } else {
+            let x_step = 5;
+            let card_step = 45;
+            card.change_state('book');
+            card.move_to(this.x +
+                x_step * (this.books.length + 1) +
+                card_step * this.books.length, this.y + 90);
+            card.change_scale(0.3);
+            card.role = this.email;
+            this.books.push(card);
         }
+        this.pass_count = 0;
     }
 
     update_nobles(noble) {
-        if(this.nobles.length < 3) this.nobles.push(noble);
+        if (this.nobles.length < 3) {
+            this.nobles.push(noble);
+            this.update_score(noble.noble_config.score);
+        }
+        this.pass_count = 0;
     }
 
     update() {
@@ -59,9 +172,9 @@ class Player extends GameObject {
             let gemi = GemColor2Index[key];
             let count = this.cards[key];
             this.sm.shader_mini_card_back(this.x + i * cards_x_step + x_step, this.y + y_step, cardi);
-            this.sm.shader_gem(this.x + i * cards_x_step + x_step + 25, this.y + y_step - 5, gemi, {scale_x: 10, scale_y:10});
-            if(count > 0){
-                this.sm.shader_score(this.x + i * cards_x_step + x_step, this.y + y_step, Math.min(9, count - 1), {scale_x: 35, scale_y: 35});
+            this.sm.shader_gem(this.x + i * cards_x_step + x_step + 25, this.y + y_step - 5, gemi, { scale_x: 10, scale_y: 10 });
+            if (count > 0) {
+                this.sm.shader_score(this.x + i * cards_x_step + x_step, this.y + y_step, Math.min(9, count - 1), { scale_x: 35, scale_y: 35 });
             }
             i++;
         }
@@ -71,21 +184,21 @@ class Player extends GameObject {
         let token_step = 37 + 5;
         let token_y_step = 50;
         let i = 0;
-        for(let key in this.tokens){
+        for (let key in this.tokens) {
             let tokeni = TokenColor2Index[key];
             let count = this.tokens[key];
-            this.sm.shader_token(this.x + i * token_step + 5, this.y + token_y_step, tokeni, {scale_x: 35, scale_y: 35});
-            if(count > 0) this.sm.shader_score(this.x + i * token_step + 5, this.y + token_y_step - 3, count - 1, {scale_x: 35, scale_y: 35});
+            this.sm.shader_token(this.x + i * token_step + 5, this.y + token_y_step, tokeni, { scale_x: 35, scale_y: 35 });
+            if (count > 0) this.sm.shader_score(this.x + i * token_step + 5, this.y + token_y_step - 3, count - 1, { scale_x: 35, scale_y: 35 });
             i++;
         }
     }
 
     render_books() {
-        for(let i in this.books) this.books[i].update();
+        for (let i in this.books) this.books[i].update();
     }
 
     render_nobles() {
-        for(let i in this.nobles) this.nobles[i].update();
+        for (let i in this.nobles) this.nobles[i].update();
     }
 
     render() {

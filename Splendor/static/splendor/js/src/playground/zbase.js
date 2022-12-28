@@ -7,7 +7,7 @@ class SplendorPlayground {
         this.room_id = room_id;
         this.mode = this.config['single_mode'] || this.config['room_mode'];
         this.player_number = this.config['single_player_number'] || this.config['room_player_number'];
-        this.round_second = this.config['room_round_second'] || 30;
+        this.round_second = this.config['room_round_second'] || this.config['single_round_second'];
         this.$playground_div = $(`<div class='playground'></div>`);
         this.menu.$menu_div.append(this.$playground_div);
         this.state = 'start'; // ['start', 'round', 'last_round', 'end']
@@ -27,8 +27,8 @@ class SplendorPlayground {
         this.tokens_manager = new TokensManager(this);
         this.nobles_manager = new NoblesManager(this);
         this.players_manager = new PlayersManager(this);
-        // this.top_manager = new 
-        // this.time_manager = new 
+        this.state = 'round';
+        this.players_manager.next_player();
     }
 
     init_canvas_context(){
@@ -38,6 +38,9 @@ class SplendorPlayground {
         if(!this.gl){
             alert('未支持WebGl');
         }
+        this.$canvas.on('click', (e) => {
+            this.process_mouse_event(e);
+        });
     }
 
     init_shader_manager(){
@@ -67,6 +70,25 @@ class SplendorPlayground {
         requestAnimationFrame(GAME_ANIMATION);
     }
 
-    close(){
+    statistics(){
+        this.state === 'end';
+    }
+
+    process_mouse_event(e){
+        if(!this.players_manager.is_me_round()) return false;
+        let clientX = e.clientX;
+        let clientY = e.clientY;
+        let is_card = this.cards_manager.click_card(clientX, clientY);
+        if(is_card !== null){
+            this.top_board.click_card(is_card);
+            return true;
+        }
+        let is_token = this.tokens_manager.click_token(clientX, clientY);
+        if(is_token !== null){
+            let result = this.tokens_manager.select_by_player(is_token);
+            if(!result){
+                this.top_board.add_error_message('不能这样操作', clientX, clientY);
+            }
+        }
     }
 }
