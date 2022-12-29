@@ -16,6 +16,7 @@ class Card extends GameObject {
         this.level = level;
         this.location = location;
         this.scale = 1;
+        this.uuid = this.card_config.id;
     }
 
     can_buy(player) {
@@ -31,7 +32,7 @@ class Card extends GameObject {
         else return false;
     }
 
-    buy_by_player(player) {
+    buy_by_player(player, send = true) {
         let spend = this.card_config.spend;
         let need_token = {};
         let less_count = 0;
@@ -46,6 +47,9 @@ class Card extends GameObject {
             }
         }
         need_token.O = less_count;
+        if(player.email === this.playground.players_manager.get_me().email && send){
+            if(this.playground.socket) this.playground.socket.send_buy_card(player.email, this.uuid);
+        }
         this.playground.tokens_manager.used_by_player(player, need_token);
         if (this.state === 'book') player.update_books('buy', this);
         else {
@@ -65,9 +69,12 @@ class Card extends GameObject {
         else return false;
     }
 
-    book_by_player(player) {
+    book_by_player(player, send = true) {
         if (player.tokens_count + 1 <= 10) {
             this.playground.tokens_manager.picked_by_player_from_tokens(player, { O: 1 });
+        }
+        if(player.email === this.playground.players_manager.get_me().email && send){
+            if(this.playground.socket) this.playground.socket.send_book_card(player.email, this.uuid);
         }
         player.update_books('book', this);
         this.playground.cards_manager.next_card(this.level, this.location);

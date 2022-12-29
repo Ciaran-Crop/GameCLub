@@ -1,6 +1,6 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.core.cache import cache
-from gameclub.views.common import get_state
+from gameclub.views.common import get_state, random_cards, random_nobles
 import json
 from asgiref.sync import sync_to_async
 
@@ -29,6 +29,12 @@ def op_player(email, channel_name, score, op):
 def get_info(email):
     player = configPlayer.objects.get(user__username = email)
     return {'email': email, 'score': player.score}
+
+@sync_to_async
+def change_score(email, change):
+    player = configPlayer.objects.get(user__username = email)
+    player.score += change
+    player.save()
 
 class MultiGameRoom(AsyncWebsocketConsumer):
     async def connect(self):
@@ -76,6 +82,43 @@ class MultiGameRoom(AsyncWebsocketConsumer):
             await self.match(content)
         elif event == 'stop_match':
             await self.stop_match(content)
+        elif event == 'send_message':
+            await self.send_message(content)
+        elif event == 'send_get_tokens':
+            await self.send_get_tokens(content)
+        elif event == 'send_book_card':
+            await self.send_book_card(content)
+        elif event == 'send_buy_card':
+            await self.send_buy_card(content)
+        elif event == 'send_pass':
+            await self.send_pass(content)
+        elif event == 'send_stat':
+            await self.stat(content)
+        
+    async def stat(self, content):
+        config = cache.get(self.room_id)
+        if config['config']['state'] == 'start':
+            config['config']['state'] = 'end'
+            cache.set(self.room_id, config, 360)
+            for player in content:
+                email = player['email']
+                change = player['score_change']
+                await change_score(email, change)
+
+    async def send_pass(self, content):
+        await self.group_send(content, 'send_pass')
+
+    async def send_message(self, content):
+        await self.group_send(content, 'send_message')
+    
+    async def send_get_tokens(self, content):
+        await self.group_send(content, 'send_get_tokens')
+    
+    async def send_book_card(self, content):
+        await self.group_send(content, 'send_book_card')
+
+    async def send_buy_card(self, content):
+        await self.group_send(content, 'send_buy_card')
 
     async def create_room(self, content):
         if self.state != 'free':
@@ -89,6 +132,13 @@ class MultiGameRoom(AsyncWebsocketConsumer):
         roomowner['game_score'] = 0
         room_config['room_player_number'] = int(room_config['room_player_number'][0])
         room_config['room_round_second'] = int(room_config['room_round_second'][:-1])
+        cards_list = random_cards()
+        base_nobles = random_nobles()
+        room_config['base_level1_list'] = cards_list[0]
+        room_config['base_level2_list'] = cards_list[1]
+        room_config['base_level3_list'] = cards_list[2]
+        room_config['base_nobles'] = base_nobles
+        room_config['state'] = 'start'
         room_content = {
             'config': room_config,
             'players': [roomowner],

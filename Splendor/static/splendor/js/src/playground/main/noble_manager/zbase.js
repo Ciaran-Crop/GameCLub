@@ -29,11 +29,43 @@ class NoblesManager {
     }
 
     init_nobles_from_web(){
-
+        let base_nobles = this.playground.config['base_nobles'];
+        this.noblesIndex = base_nobles.slice(0, this.nobleLength);
     }
 
     can_get_one(player){
-        
+        if(!player.can_get_one()) return false;
+        let flag = -1;
+        for(let i in this.nobles){
+            let noble = this.nobles[i];
+            let spend = noble.noble_config.spend;
+            let can_get = true;
+            for(let key in spend){
+                let color = spend[key].color;
+                let need = spend[key].need;
+                let has = player.cards[color];
+                if(has < need){
+                    can_get = false;
+                    break;
+                }
+            }
+            if(can_get){
+                flag = i;
+                break;
+            }
+        }
+        if(flag === -1){
+            return false;
+        }
+        // let flag = 0;
+        let noble = this.nobles[flag];
+        this.nobles.splice(flag, 1);
+        noble.change_scale(0.3);
+        noble.change_state('player');
+        noble.role = player.email;
+        noble.move_to(player.x + 45 * 3 + 5 * 4, player.y + 100);
+        player.update_nobles(noble);
+        return true;
     }
 
     start(){

@@ -1,6 +1,7 @@
 #! /usr/bin/env python3 
 import glob
 import sys
+import random
 sys.path.insert(0, glob.glob('../../../')[0])
 
 from thrift.transport import TSocket
@@ -11,7 +12,7 @@ from thrift.server import TServer
 from splendor_match_service.splendor_match.ttypes import SplendorPlayer
 from splendor_match_service.splendor_match import SplendorMatch
 from splendor_match_service.splendor_save import SplendorSave
-from gameclub.views.common import get_state
+from gameclub.views.common import get_state, random_cards, random_nobles
 from asgiref.sync import async_to_sync
 from acapp.asgi import channel_layer
 from django.core.cache import cache
@@ -21,11 +22,20 @@ class SplendorSaveHandler:
         print('match success:', [player.email for player in mplayers])
         room_id = 'splendor-room_' + get_state()
         passwd = get_state()
+
+        cards_list = random_cards()
+        base_nobles = random_nobles()
         config = {
             'room_player_number': 4,
             'room_round_second': 30,
             'room_pass': passwd,
+            'base_level1_list':cards_list[0],
+            'base_level2_list':cards_list[1],
+            'base_level3_list': cards_list[2],
+            'base_nobles': base_nobles,
+            'state': 'start',
         }
+
         for pr in mplayers:
             async_to_sync(channel_layer.group_add)(room_id, pr.channel_name)
 

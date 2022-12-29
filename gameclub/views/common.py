@@ -45,3 +45,29 @@ def remove_file(filename):
             return False
     Dprint('remove success')
     return True
+
+def random_cards():
+    level1 = 40
+    level2 = 30
+    level3 = 20
+    base_level1_list = []
+    for i in range(0, level1):
+        base_level1_list.append(i)
+    base_level1_list = sorted(base_level1_list, key=lambda x: random.random())
+    base_level2_list = []
+    for i in range(0, level2):
+        base_level2_list.append(i)
+    base_level2_list = sorted(base_level2_list, key=lambda x: random.random())
+    base_level3_list = []
+    for i in range(0, level3):
+        base_level3_list.append(i)
+    base_level3_list = sorted(base_level3_list, key=lambda x: random.random())
+    return [base_level1_list, base_level2_list, base_level3_list]
+
+def random_nobles():
+    length = 10
+    base_nobles = []
+    for i in range(0, length):
+        base_nobles.append(i)
+    base_nobles = sorted(base_nobles, key=lambda x: random.random())
+    return base_nobles

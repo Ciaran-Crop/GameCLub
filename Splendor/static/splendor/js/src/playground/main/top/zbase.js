@@ -2,7 +2,6 @@ class TopBoard {
     constructor(playground) {
         this.playground = playground;
         this.room_id = this.playground.room_id;
-        this.player_score = {};
         this.time = 0;
         this.player_time = this.playground.round_second;
         this.$top_board = $(`
@@ -53,9 +52,8 @@ this.$pass_click = $(`
 `);
         for(let i in this.playground.players){
             let p = this.playground.players[i];
-            this.player_score[p.email] = p.game_score;
             this.$game_score.append(`<div class='game-score' name=${p.email}>
-            ${p.game_score}
+            0
             </div>`);
         }
         this.playground.$playground_div.append(this.$top_board);
@@ -82,19 +80,19 @@ this.$pass_click = $(`
         });
         this.$token_click.find('.cancel').on('click', () => {
             this.playground.tokens_manager.unselect_by_player();
-            if(this.$click_card.find('.book').hasClass('no-click')) this.$click_card.find('.book').removeClass('no-click');
-            if(this.$click_card.find('.buy').hasClass('no-click')) this.$click_card.find('.buy').removeClass('no-click');
+            this.click_card_remove_no_click();
+            this.click_card_remove_scale();
             this.$token_click.hide();
         });
         this.$token_click.find('.pick').on('click', () => {
             this.playground.tokens_manager.picked_by_me();
-            if(this.$click_card.find('.book').hasClass('no-click')) this.$click_card.find('.book').removeClass('no-click');
-            if(this.$click_card.find('.buy').hasClass('no-click')) this.$click_card.find('.buy').removeClass('no-click');
+            this.click_card_remove_no_click();
+            this.click_card_remove_scale();
             this.$token_click.hide();
         });
         this.$click_card.find('.cancle').on('click', () => {
-            if(this.$click_card.find('.book').hasClass('no-click')) this.$click_card.find('.book').removeClass('no-click');
-            if(this.$click_card.find('.buy').hasClass('no-click')) this.$click_card.find('.buy').removeClass('no-click');
+            this.click_card_remove_no_click();
+            this.click_card_remove_scale();
             this.$click_card.hide();
         });
         this.$click_card.find('.book').on('click', () => {
@@ -111,10 +109,11 @@ this.$pass_click = $(`
         });
         this.$pass_click.on('click', () => {
             let me = this.playground.players_manager.is_me_round();
+            let player = this.playground.players_manager.get_me();
             if(me){
-                this.playground.players_manager.next_player();
+                player.pass();
             }
-        });
+        }); 
     }
 
     is_show(element){
@@ -128,13 +127,9 @@ this.$pass_click = $(`
         this.$player_tick.show();
         if(player.character === 'me') this.$pass_click.show();
         if(player.character === 'robot'){
-            setTimeout(() => {
+            player.timeout_func = setTimeout(() => {
                 player.do();
             }, 3000);
-        }else if(player.state === 'offline'){
-            setTimeout(() => {
-                player.pass();
-            }, 2000);
         }
         this.$player_tick.text(this.player_time);
         this.tick_func = setInterval(() => {
@@ -142,7 +137,7 @@ this.$pass_click = $(`
             this.$player_tick.text(this.player_time);
             if(this.player_time === 0){
                 this.clear_interval('tick');
-                player.pass();
+                player.do();
             }
         }, 1000);
     }
@@ -157,13 +152,34 @@ this.$pass_click = $(`
             if(this.tick_func) clearInterval(this.tick_func);
         }
     }
+    
+    click_card_add_scale(){
+        this.$click_card.find('.book').addClass('element-book');
+        this.$click_card.find('.buy').addClass('element-book');
+        this.$click_card.find('.cancle').addClass('element-book');
+    }
+    
+    click_card_remove_scale(){
+        if(this.$click_card.find('.buy').hasClass('element-book')) this.$click_card.find('.buy').removeClass('element-book');
+        if(this.$click_card.find('.book').hasClass('element-book')) this.$click_card.find('.book').removeClass('element-book');
+        if(this.$click_card.find('.cancle').hasClass('element-book')) this.$click_card.find('.cancle').removeClass('element-book');    
+    }
+
+    click_card_remove_no_click(){
+        if(this.$click_card.find('.book').hasClass('no-click')) this.$click_card.find('.book').removeClass('no-click');
+        if(this.$click_card.find('.buy').hasClass('no-click')) this.$click_card.find('.buy').removeClass('no-click');
+    }
 
     click_card(card){
         let me = this.playground.players_manager.get_me();
         this.card = card;
         if(!this.card.can_book(me)) this.$click_card.find('.book').addClass('no-click');
         if(!this.card.can_buy(me)) this.$click_card.find('.buy').addClass('no-click');
-        this.$click_card.css({'left': card.x + 150 * card.scale, 'top': card.y});
+        if(this.card.state === 'book'){
+            this.click_card_add_scale();
+            this.$click_card.css({'left': card.x + 150 * card.scale, 'top': card.y - 90});
+        }
+        else this.$click_card.css({'left': card.x + 150 * card.scale, 'top': card.y});
         this.$click_card.fadeIn();
     }
 
@@ -179,9 +195,9 @@ this.$pass_click = $(`
         this.$token_click.show();
     }
 
-    change_game_score(email, num){
-        this.player_score[email] += num;
-        this.$game_score.find(`[name='${email}']`).text(this.player_score[email]);
+    change_game_score(player, score){
+        let email = player.email;
+        this.$game_score.find(`[name='${email}']`).text(score);
     }
 
     start() {

@@ -7,15 +7,15 @@ class Player extends GameObject {
         this.email = player_config.email;
         this.name = player_config.name;
         this.game_score = player_config.game_score;
+        // this.game_score = 15;
         this.score = player_config.score;
+        this.photo = player_config.photo;
         this.tokens_count = 0;
         this.tokens = { G: 0, W: 0, B: 0, I: 0, R: 0, O: 0 };
         this.cards = { G: 0, W: 0, B: 0, I: 0, R: 0 };
         this.books = [];
         this.nobles = [];
         this.index = i;
-        this.state = 'online';
-        this.pass_count = 0;
         let y_step = 160;
         this.x = 1285;
         this.y = 77 + this.index * y_step;
@@ -27,21 +27,17 @@ class Player extends GameObject {
         // buy
         for (let i in playground.cards_manager.cards.instance) {
             let card = playground.cards_manager.cards.instance[i];
-            if (card.state === 'book' && card.role === this.email) {
+            if ((card.state === 'book' && card.role === this.email) || card.state === 'board') {
                 if (card.can_buy(this)) {
-                    card.buy_by_player(this);
-                    return;
-                }
-            } else if (card.state === 'board') {
-                if (card.can_buy(this)) {
-                    card.buy_by_player(this);
+                    card.buy_by_player(this, false);
                     return;
                 }
             }
         }
+
         // token
         for (let key in playground.tokens_manager.tokens) {
-            if(key === 'O') break;
+            if (key === 'O') break;
             let count = playground.tokens_manager.tokens[key].count;
             if (count >= 4 && this.tokens_count <= 8) {
                 let pick = {};
@@ -54,7 +50,7 @@ class Player extends GameObject {
         let can_pick = Math.min(3, 10 - this.tokens_count);
         let pick = {};
         for (let key in playground.tokens_manager.tokens) {
-            if(key === 'O') break;
+            if (key === 'O') break;
             let count = playground.tokens_manager.tokens[key].count;
             if (count > 0 && can_pick > 0) {
                 pick[key] = 1;
@@ -62,7 +58,7 @@ class Player extends GameObject {
             }
             if (!can_pick) break;
         }
-        if(!$.isEmptyObject(pick)){
+        if (!$.isEmptyObject(pick)) {
             playground.tokens_manager.picked_by_player_from_tokens(this, pick);
             this.pm.next_player();
             return;
@@ -71,29 +67,25 @@ class Player extends GameObject {
         // book 
         for (let i in playground.cards_manager.cards.instance) {
             let card = playground.cards_manager.cards.instance[i];
-            if(card.state === 'board'){
+            if (card.state === 'board') {
                 if (card.can_book(this)) {
-                    card.book_by_player(this);
+                    card.book_by_player(this, false);
                     return;
                 }
             }
         }
-
-        this.pm.next_player();
+        this.pass(true);
         return;
     }
 
-    pass() {
+    add_pass_count() {
         this.pass_count++;
-        let playground = this.pm.playground;
         if (this.pass_count >= 3) this.state = 'offline';
-        if (this.character === 'me') {
-            if (playground.top_board.is_show('click_card')) {
-                playground.top_board.$click_card.find('.cancle').click();
-            }
-            if (playground.top_board.is_show('token_click')) {
-                playground.top_board.$token_click.find('.pick').click();
-            }
+    }
+
+    pass(receive = false) {
+        if (!receive) {
+            if (this.pm.playground.socket) this.pm.playground.socket.send_pass(this.email);
         }
         this.pm.next_player();
     }
@@ -103,23 +95,26 @@ class Player extends GameObject {
     }
 
     update_score(score) {
+        let playground = this.pm.playground;
         this.game_score += score;
+        console.log(this.game_score);
+        playground.top_board.change_game_score(this, this.game_score);
         if (this.game_score >= 15) {
-            if (this.playground.state == 'round') this.playground.state == 'last_round';
+            if (playground.state === 'round') playground.state = 'last_round';
         }
-        this.pass_count = 0;
+
     }
 
     update_tokens(color, num) {
         this.tokens[color] += num;
         this.tokens_count += num;
-        this.pass_count = 0;
+
     }
 
     update_cards(card, color, num) {
         this.cards[color] += num;
         this.update_score(card.card_config.score);
-        this.pass_count = 0;
+
     }
 
     update_books(op, card) {
@@ -129,7 +124,6 @@ class Player extends GameObject {
                 if (this.books[i] === card) this.books.splice(i, 1);
             }
             card.destroy();
-            this.pm.playground.cards_manager.next_card(card.level, card.location);
         } else {
             let x_step = 5;
             let card_step = 45;
@@ -141,7 +135,12 @@ class Player extends GameObject {
             card.role = this.email;
             this.books.push(card);
         }
-        this.pass_count = 0;
+
+    }
+
+    can_get_one() {
+        if (this.nobles.length >= 3) return false;
+        return true;
     }
 
     update_nobles(noble) {
@@ -149,7 +148,7 @@ class Player extends GameObject {
             this.nobles.push(noble);
             this.update_score(noble.noble_config.score);
         }
-        this.pass_count = 0;
+
     }
 
     update() {
@@ -199,6 +198,7 @@ class Player extends GameObject {
 
     render_nobles() {
         for (let i in this.nobles) this.nobles[i].update();
+        if (this.nobles.length > 0) this.sm.shader_score(this.x + 45 * 3 + 5 * 4, this.y + 100, this.nobles.length - 1, { scale_x: 40, scale_y: 40 });
     }
 
     render() {

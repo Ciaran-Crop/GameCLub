@@ -6,8 +6,8 @@ class CardsManager extends GameObject {
         // card: [id, gem, score, backIndex, spend]
         this.cards = {
             instance: [],
-            // count: { level1: 40, level2: 30, level3: 20 },
-            count: { level1: 4, level2: 4, level3: 4 },
+            count: { level1: 40, level2: 30, level3: 20 },
+            // count: { level1: 4, level2: 4, level3: 4 },
             board_cards: {
                 level1: [null, null, null, null],
                 level2: [null, null, null, null],
@@ -20,6 +20,15 @@ class CardsManager extends GameObject {
 
     init() {
         this.init_cards();
+    }
+
+    get_card(card_uuid){
+        for(let key in this.cards.instance){
+            let c = this.cards.instance[key];
+            if(c.uuid === card_uuid){
+                return c;
+            }
+        }
     }
 
     init_cards() {
@@ -66,10 +75,13 @@ class CardsManager extends GameObject {
     }
 
     init_cards_from_web() {
-
+        this.cards.all_cards.level1 = this.playground.config['base_level1_list'];
+        this.cards.all_cards.level2 = this.playground.config['base_level2_list'];
+        this.cards.all_cards.level3 = this.playground.config['base_level3_list'];
     }
 
     next_card(level, location) {
+        console.log('next card');
         let offset_x = 20;
         let offset_y = 75;
         let x_step = 40 + 150;
@@ -77,10 +89,11 @@ class CardsManager extends GameObject {
         let bLevel = level;
         level = 'level' + level;
         let cardIndex = this.cards.all_cards[level].pop();
-        if (cardIndex >= 0 && this.cards.board_cards[level][location] === null) {
+        if (cardIndex >= 0) {
             let card = origin_cards[level][cardIndex];
             this.cards.count[level]--;
             let card_instance = new Card(this, card, offset_x, offset_y + (bLevel - 1) * y_step, bLevel, location);
+            console.log('next ' + level + ' card | now ' + level + ' cards count:' + this.cards.count[level]);
             this.cards.instance.push(card_instance);
             this.cards.board_cards[level][location] = card_instance;
             card_instance.move_to(offset_x + (location + 1) * x_step,

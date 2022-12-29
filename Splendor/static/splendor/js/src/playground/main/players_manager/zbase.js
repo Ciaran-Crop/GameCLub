@@ -34,16 +34,26 @@ class PlayersManager {
         return this.me;
     }
 
+    get_player(email){
+        for(let key in this.players){
+            let p = this.players[key];
+            if(p.email === email) return p;
+        }
+    }
+
     is_me_round() {
         return this.roundi === this.get_me().getIndex();
     }
 
     next_player() {
-        this.playground.nobles_manager.can_get_one(this.players[this.roundi]);
+        if(this.roundi >= 0) this.playground.nobles_manager.can_get_one(this.players[this.roundi]);
         this.playground.top_board.clear_interval('tick');
+        this.playground.top_board.$token_click.hide();
+        this.playground.top_board.$click_card.hide();
+        if(this.playground.tokens_manager.select_tokens.length > 0) this.playground.tokens_manager.unselect_by_player();
         if (this.playground.state === 'last_round') {
             if (this.roundi === this.number - 1) {
-                this.playground.statistics();
+                this.playground.statistics(this.players);
             }
         }
         if (this.playground.state === 'round' || this.playground.state === 'last_round') {
@@ -51,7 +61,11 @@ class PlayersManager {
             let p = this.players[this.roundi];
             this.playground.top_board.add_tick(p);
             if (this.roundi === 0) this.round++;
-            console.log('round ' + this.round + ' | now: ' + this.players[this.roundi].email);
+            if(this.playground.state === 'round'){
+                console.log('round ' + this.round + ' | now: ' + this.players[this.roundi].name);
+            }else if(this.playground.state === 'last_round'){
+                console.log('last round ' + ' | now: ' + this.players[this.roundi].name);
+            }
         }
     }
 }

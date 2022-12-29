@@ -45,7 +45,7 @@ class SplendorRoomSocket {
         let content = {
             'room_id': room_id,
             'pass': pass,
-            'player_info', player_info,
+            'player_info': player_info,
             'match': match,
         };
         this.ws.send(JSON.stringify({
@@ -102,6 +102,16 @@ class SplendorRoomSocket {
                     this.root.room.start_game();
                 }else if(event === 'cancel_room'){
                     this.root.room.cancel_room();
+                }else if(event === 'send_message'){
+                    this.root.playground.socket.recevie_message(content);
+                }else if(event === 'send_get_tokens'){
+                    this.root.playground.socket.recevie_get_tokens(content);
+                }else if(event === 'send_book_card'){
+                    this.root.playground.socket.recevie_book_card(content);
+                }else if(event === 'send_buy_card'){
+                    this.root.playground.socket.receive_buy_card(content);
+                }else if(event === 'send_pass'){
+                    this.root.playground.socket.receive_pass(content);
                 }
             }
         }

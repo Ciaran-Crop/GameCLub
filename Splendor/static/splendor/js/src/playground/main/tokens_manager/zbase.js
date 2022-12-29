@@ -106,12 +106,16 @@ class TokensManager extends GameObject {
 
     picked_by_me() {
         let p = this.playground.players_manager.get_me();
+        let tokens_config = {};
         for (let i in this.select_tokens) {
             this.select_tokens[i].move_to(p.x, p.y);
             p.update_tokens(this.select_tokens[i].color, 1);
+            if(tokens_config[this.select_tokens[i].color]) tokens_config[this.select_tokens[i].color]++;
+            else tokens_config[this.select_tokens[i].color] = 1;
             this.select_tokens[i].change_state('on_de');
         }
         this.select_tokens = [];
+        if(this.playground.socket) this.playground.socket.send_get_tokens(p.email, tokens_config);
         this.playground.players_manager.next_player();
     }
 
