@@ -313,3 +313,73 @@ button.cancel {
     transition-duration: 0.3s;
     transition-timing-function: linear;
 }
+
+.playground-icon {
+    position: fixed;
+    z-index: 10000;
+    width: 2vw;
+    height: 2vw;
+    background: url(/static/splendor/images/playground/setting.svg);
+    background-size: contain;
+    right: 2vw;
+    top: 2.5vw;
+    cursor: pointer;
+}
+
+.playground-icon:hover {
+    transform: rotate(180deg);
+    transition-duration: 1s;
+}
+
+.playground-setting-wrap {
+    position: fixed;
+    background: rgba(0,0,0, 0.8);
+    color: whitesmoke;
+    right: 1vw;
+    top: 5vw;
+    z-index: 40000;
+    border-radius: 1vw;
+    width: fit-content;
+    padding: 1vw;
+    box-sizing: border-box;
+}
+
+.title {
+    margin-bottom: 1vw;
+    height: 2vw;
+    line-height: 2vw;
+    font-size: 1.5vw;
+}
+
+.title > img {
+    float: right;
+    width: 2vw;
+    cursor: pointer;
+}
+
+.title > img:hover {
+    transform: rotate(180deg);
+    transition-duration: 1s;
+}
+
+.slider-box {
+    width: 20vw;
+    padding: 0 1vw;
+}
+
+.name {
+    margin: 1vw 0;
+}
+
+.action-slider {
+    margin-bottom: 1vw;
+}
+
+.playground-setting {
+    user-select: none;
+}
+
+
+
+#backslider .ui-slider-range {background: #3370ff;}
+#actionslider .ui-slider-range {background: #3370ff;}

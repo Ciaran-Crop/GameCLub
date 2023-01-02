@@ -93,11 +93,13 @@ this.$pass_click = $(`
         this.$click_card.find('.cancle').on('click', () => {
             this.click_card_remove_no_click();
             this.click_card_remove_scale();
+            if(this.card) this.card.change_back();
             this.$click_card.hide();
         });
         this.$click_card.find('.book').on('click', () => {
             if(this.$click_card.find('.book').hasClass('no-click')) return false;
             let me = this.playground.players_manager.get_me();
+            this.card.clicked_state = false;
             this.card.book_by_player(me);
             this.$click_card.hide();
         });
@@ -171,16 +173,19 @@ this.$pass_click = $(`
     }
 
     click_card(card){
+        this.playground.players_manager.clean();
         let me = this.playground.players_manager.get_me();
         this.card = card;
         if(!this.card.can_book(me)) this.$click_card.find('.book').addClass('no-click');
         if(!this.card.can_buy(me)) this.$click_card.find('.buy').addClass('no-click');
+        let scale = card.change_big();
         if(this.card.state === 'book'){
             this.click_card_add_scale();
-            this.$click_card.css({'left': card.x + 150 * card.scale, 'top': card.y - 90});
+            this.$click_card.css({'left': card.x - 180 * scale, 'top': card.y - 90});
         }
-        else this.$click_card.css({'left': card.x + 150 * card.scale, 'top': card.y});
+        else this.$click_card.css({'left': card.x + 150 * scale, 'top': card.y});
         this.$click_card.fadeIn();
+        card.late_update();
     }
 
     add_error_message(val, x, y){

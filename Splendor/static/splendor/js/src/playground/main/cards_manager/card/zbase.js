@@ -4,6 +4,7 @@ class Card extends GameObject {
         this.playground = cards_manager.playground;
         this.cm = cards_manager;
         this.sm = this.cm.sm;
+        this.am = this.cm.playground.am;
         this.card_config = card;
         this.x = x;
         this.y = y;
@@ -12,11 +13,15 @@ class Card extends GameObject {
         this.move_length = 0;
         this.speed = 1000;
         this.state = 'board'; // 'board', 'book', 'on_de'
+        this.clicked_state = false;
         this.role = null;
         this.level = level;
         this.location = location;
         this.scale = 1;
         this.uuid = this.card_config.id;
+        this.change_speed = 1.5;
+        this.scale_change_flag = 1;
+        this.scale_change = 0;
     }
 
     can_buy(player) {
@@ -59,6 +64,7 @@ class Card extends GameObject {
             player.update_cards(this, this.card_config.gem, 1);
             this.playground.cards_manager.next_card(this.level, this.location);
         }
+        this.am.play_func.splendor_ping();
         this.playground.players_manager.next_player();
     }
 
@@ -78,6 +84,7 @@ class Card extends GameObject {
         }
         player.update_books('book', this);
         this.playground.cards_manager.next_card(this.level, this.location);
+        this.am.play_func.splendor_ping();
         this.playground.players_manager.next_player();
     }
 
@@ -91,6 +98,7 @@ class Card extends GameObject {
         let width = 150 * this.scale;
         let height = 203 * this.scale;
         if (x >= this.x && x <= this.x + width && y >= this.y && y <= this.y + height && (this.role === null || this.role === this.playground.me.email)) {
+            this.clicked_state = true;
             return true;
         } else {
             return false;
@@ -102,7 +110,27 @@ class Card extends GameObject {
     }
 
     change_scale(scale) {
-        this.scale = scale;
+        this.scale_change_flag = scale > this.scale ? 1 : -1;
+        this.scale_change = Math.abs(scale - this.scale);
+    }
+
+    change_big(){
+        if(this.state === 'book'){
+            this.change_scale(0.6);
+            return 0.6;
+        }else{
+            this.change_scale(1.1);
+            return 1.1;
+        }
+    }
+    
+    change_back(){
+        if(this.state === 'book'){
+            this.change_scale(0.3);
+        }else{
+            this.change_scale(1);
+        }
+        this.clicked_state = false;
     }
 
     get_dist(x1, y1, x2, y2) {
@@ -116,6 +144,7 @@ class Card extends GameObject {
         let angle = Math.atan2(ty - this.y, tx - this.x);
         this.vx = Math.cos(angle);
         this.vy = Math.sin(angle);
+        this.am.play_func.move();
     }
 
     update_x_y() {
@@ -123,6 +152,12 @@ class Card extends GameObject {
         this.move_length -= moved;
         this.x += moved * this.vx;
         this.y += moved * this.vy;
+    }
+
+    update_scale(){
+        let changed = Math.min(this.scale_change, this.change_speed * this.timedelta * 0.001);
+        this.scale_change -= changed;
+        this.scale += this.scale_change_flag * changed;
     }
 
     start() {
@@ -134,7 +169,16 @@ class Card extends GameObject {
             if (this.move_length === 0) this.destroy();
         }
         this.update_x_y();
+        this.update_scale();
         this.render();
+    }
+
+    late_update(){
+        if(this.clicked_state){
+            this.update_x_y();
+            this.update_scale();
+            this.render();
+        }
     }
 
     on_destroy() {

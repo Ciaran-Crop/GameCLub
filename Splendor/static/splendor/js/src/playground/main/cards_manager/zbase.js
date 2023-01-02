@@ -81,7 +81,6 @@ class CardsManager extends GameObject {
     }
 
     next_card(level, location) {
-        console.log('next card');
         let offset_x = 20;
         let offset_y = 75;
         let x_step = 40 + 150;

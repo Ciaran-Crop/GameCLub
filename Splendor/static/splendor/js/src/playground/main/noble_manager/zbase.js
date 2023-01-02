@@ -2,6 +2,7 @@ class NoblesManager {
     constructor(playground){
         this.playground = playground;
         this.sm = this.playground.shader_manager;
+        this.am = this.playground.am;
         this.nobleLength = Math.min(4, this.playground.player_number + 1);
         this.noblesIndex = [];
         this.nobles = [];
@@ -64,6 +65,7 @@ class NoblesManager {
         noble.change_state('player');
         noble.role = player.email;
         noble.move_to(player.x + 45 * 3 + 5 * 4, player.y + 100);
+        this.am.play_func.splendor_buynoble();
         player.update_nobles(noble);
         return true;
     }

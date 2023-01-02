@@ -17,6 +17,7 @@ class SplendorPlayground {
     start() {
         this.init_canvas_context();
         this.init_shader_manager();
+        this.init_audio_manager();
         this.start_animation();
         if (this.mode !== '单人') {
             this.socket = new SplendorGameSocket(this);
@@ -29,6 +30,10 @@ class SplendorPlayground {
         this.players_manager = new PlayersManager(this);
         this.state = 'round';
         this.players_manager.next_player();
+    }
+
+    init_audio_manager(){
+        this.am = new AudioManager(this);
     }
 
     init_canvas_context() {

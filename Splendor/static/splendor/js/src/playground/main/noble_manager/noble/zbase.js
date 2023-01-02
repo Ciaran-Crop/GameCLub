@@ -3,6 +3,7 @@ class Noble extends GameObject {
         super();
         this.nm = noble_manager;
         this.sm = this.nm.sm;
+        this.am = this.nm.am;
         this.noble_config = noble_config;
         this.state = 'board' // 'player'
         this.role = null;
@@ -16,6 +17,9 @@ class Noble extends GameObject {
         this.move_length = 0;
         this.speed = 800;
         this.scale = 1;
+        this.change_speed = 0.6;
+        this.scale_change_flag = 1;
+        this.scale_change = 0;
     }
 
     start() { }
@@ -25,7 +29,8 @@ class Noble extends GameObject {
     }
 
     change_scale(scale){
-        this.scale = scale;
+        this.scale_change_flag = scale > this.scale ? 1 : -1;
+        this.scale_change = Math.abs(scale - this.scale);
     }
 
     get_dist(x1, y1, x2, y2) {
@@ -39,6 +44,7 @@ class Noble extends GameObject {
         let angle = Math.atan2(ty - this.y, tx - this.x);
         this.vx = Math.cos(angle);
         this.vy = Math.sin(angle);
+        this.am.play_func.move();
     }
     update_x_y() {
         let moved = Math.min(this.move_length, this.speed * this.timedelta * 0.001);
@@ -46,8 +52,16 @@ class Noble extends GameObject {
         this.x += moved * this.vx;
         this.y += moved * this.vy;
     }
+
+    update_scale(){
+        let changed = Math.min(this.scale_change, this.change_speed * this.timedelta * 0.001);
+        this.scale_change -= changed;
+        this.scale += this.scale_change_flag * changed;
+    }
+
     update() {
         this.update_x_y();
+        this.update_scale();
         this.render();
     }
 

@@ -1,4 +1,6 @@
 **/__pycache__
+**/assets
+**/images
 db.sqlite3
 *.swp
 *.swo

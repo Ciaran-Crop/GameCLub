@@ -1,6 +1,7 @@
 class SplendorChat {
     constructor(playground) {
         this.playground = playground;
+        this.am = this.playground.am;
         this.start();
     }
     start() {
@@ -95,6 +96,9 @@ class SplendorChat {
         message = `[${name}] ${message}`;
         this.$history.append(this.render_message(message, email));
         this.$history.scrollTop(this.$history[0].scrollHeight);
+        if(email !== this.playground.players_manager.get_me().email){
+            this.am.play_func.tac();
+        }
     }
 
     render_message(message, email){

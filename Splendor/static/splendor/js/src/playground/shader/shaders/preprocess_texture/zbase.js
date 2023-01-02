@@ -1,7 +1,7 @@
 class PreProcessTexture {
     constructor(shader_manager){
         this.sm = shader_manager;
-        this.base_url = `${BASE_URL}/static/splendor/assets`;
+        this.base_url = `/static/splendor/assets`;
         this.texture_dict = {cards: null, gems: null, nobles: null, tokens: null, numbers_sheet: null};
         this.start();
     }
@@ -24,7 +24,6 @@ class PreProcessTexture {
     }
 
     preProcess(){
-        this.texture_dict.players = {};
         for(let key in this.texture_dict){
             let image = new Image();
             image.src = `${this.base_url}/${key}.jpg`;
@@ -32,6 +31,7 @@ class PreProcessTexture {
                 this.texture_dict[key] = this.init_texture(image);
             }
         }
+        this.texture_dict.players = {};
         for(let key in this.sm.playground.players){
             let photo = this.sm.playground.players[key].photo;
             let email = this.sm.playground.players[key].email;

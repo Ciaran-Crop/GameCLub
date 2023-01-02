@@ -108,25 +108,28 @@ class Player extends GameObject {
     update_tokens(color, num) {
         this.tokens[color] += num;
         this.tokens_count += num;
-
     }
 
     update_cards(card, color, num) {
         this.cards[color] += num;
         this.update_score(card.card_config.score);
-
     }
 
     update_books(op, card) {
+        let x_step = 5;
+        let card_step = 45;
         if (op === 'buy') {
             this.update_cards(card, card.card_config.gem, 1);
             for (let i in this.books) {
                 if (this.books[i] === card) this.books.splice(i, 1);
             }
             card.destroy();
+            for(let i in this.books){
+                this.books[i].move_to(this.x +
+                    x_step * (parseInt(i) + 1) +
+                    card_step * parseInt(i), this.y + 90);
+            }
         } else {
-            let x_step = 5;
-            let card_step = 45;
             card.change_state('book');
             card.move_to(this.x +
                 x_step * (this.books.length + 1) +
@@ -148,7 +151,6 @@ class Player extends GameObject {
             this.nobles.push(noble);
             this.update_score(noble.noble_config.score);
         }
-
     }
 
     update() {
@@ -192,12 +194,7 @@ class Player extends GameObject {
         }
     }
 
-    render_books() {
-        for (let i in this.books) this.books[i].update();
-    }
-
     render_nobles() {
-        for (let i in this.nobles) this.nobles[i].update();
         if (this.nobles.length > 0) this.sm.shader_score(this.x + 45 * 3 + 5 * 4, this.y + 100, this.nobles.length - 1, { scale_x: 40, scale_y: 40 });
     }
 
@@ -206,7 +203,6 @@ class Player extends GameObject {
         this.render_photo();
         this.render_cards();
         this.render_tokens();
-        this.render_books();
         this.render_nobles();
     }
 

@@ -3,6 +3,7 @@ class TokensManager extends GameObject {
         super();
         this.playground = playground;
         this.sm = this.playground.shader_manager;
+        this.am = this.playground.am;
         let count = 0;
         switch (this.playground.player_number) {
             case 2:
@@ -70,6 +71,7 @@ class TokensManager extends GameObject {
             let token = new Token(this, token_config, offset[0], offset[1]);
             this.select_tokens.push(token);
             token.move_to(900 + this.select_tokens.length * this.width, 5);
+            this.am.play_func.select_token();
             return true;
         } else {
             return false;
@@ -85,6 +87,7 @@ class TokensManager extends GameObject {
         for (let i in this.select_tokens) {
             this.select_tokens[i].change_state('on_de');
         }
+        this.am.play_func.get_use_token();
         this.select_tokens = [];
     }
 
@@ -102,6 +105,7 @@ class TokensManager extends GameObject {
                 }
             }
         }
+        this.am.play_func.get_use_token();
     }
 
     picked_by_me() {
@@ -116,6 +120,7 @@ class TokensManager extends GameObject {
         }
         this.select_tokens = [];
         if(this.playground.socket) this.playground.socket.send_get_tokens(p.email, tokens_config);
+        this.am.play_func.get_use_token();
         this.playground.players_manager.next_player();
     }
 
@@ -131,6 +136,7 @@ class TokensManager extends GameObject {
                 this.tokens[key].count++;
             }
         }
+        this.am.play_func.get_use_token();
     }
 
     start() {

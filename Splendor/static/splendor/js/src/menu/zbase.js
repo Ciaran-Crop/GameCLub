@@ -461,7 +461,7 @@ export class SplendorMenu {
         let me = this.player_info;
         me['game_score'] = 0;
         me['character'] = 'me';
-        players.push(me);
+        
         for(let i = 1;i < playernumber;i++){
             players.push({
                 'email': 'robot' + i,
@@ -472,6 +472,7 @@ export class SplendorMenu {
                 'character': 'robot',
             });
         }
+        players.push(me);
         console.log('start_single_game', config, players);
         this.playground = new SplendorPlayground(this, config, players, 'splendor-room_single', me);
         this.room.hide();

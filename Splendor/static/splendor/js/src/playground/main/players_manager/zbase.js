@@ -1,6 +1,7 @@
 class PlayersManager {
     constructor(playground) {
         this.playground = playground;
+        this.am = this.playground.am;
         this.sm = this.playground.shader_manager;
         this.number = this.playground.player_number;
         this.players_config = [];
@@ -34,10 +35,10 @@ class PlayersManager {
         return this.me;
     }
 
-    get_player(email){
-        for(let key in this.players){
+    get_player(email) {
+        for (let key in this.players) {
             let p = this.players[key];
-            if(p.email === email) return p;
+            if (p.email === email) return p;
         }
     }
 
@@ -45,12 +46,22 @@ class PlayersManager {
         return this.roundi === this.get_me().getIndex();
     }
 
+    clean(){
+        for(let index in this.playground.cards_manager.cards.instance){
+            let c = this.playground.cards_manager.cards.instance[index];
+            if(c.clicked_state){
+                this.playground.top_board.$click_card.find('.cancle').click();
+            }
+        }
+    }
+
     next_player() {
-        if(this.roundi >= 0) this.playground.nobles_manager.can_get_one(this.players[this.roundi]);
+        this.clean();
+        if (this.roundi >= 0) this.playground.nobles_manager.can_get_one(this.players[this.roundi]);
         this.playground.top_board.clear_interval('tick');
         this.playground.top_board.$token_click.hide();
         this.playground.top_board.$click_card.hide();
-        if(this.playground.tokens_manager.select_tokens.length > 0) this.playground.tokens_manager.unselect_by_player();
+        if (this.playground.tokens_manager.select_tokens.length > 0) this.playground.tokens_manager.unselect_by_player();
         if (this.playground.state === 'last_round') {
             if (this.roundi === this.number - 1) {
                 this.playground.statistics(this.players);
@@ -61,11 +72,12 @@ class PlayersManager {
             let p = this.players[this.roundi];
             this.playground.top_board.add_tick(p);
             if (this.roundi === 0) this.round++;
-            if(this.playground.state === 'round'){
+            if (this.playground.state === 'round') {
                 console.log('round ' + this.round + ' | now: ' + this.players[this.roundi].name);
-            }else if(this.playground.state === 'last_round'){
+            } else if (this.playground.state === 'last_round') {
                 console.log('last round ' + ' | now: ' + this.players[this.roundi].name);
             }
         }
+        this.am.play_func.tac();
     }
 }
