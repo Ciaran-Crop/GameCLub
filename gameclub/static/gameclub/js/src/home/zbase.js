@@ -200,7 +200,7 @@ export class GameClubSpan {
             this.setting_json = JSON.parse(setting_json_str);
         }else{
             this.setting_json = {
-                'opacity': 0,
+                'opacity': 0.59,
                 'rgb': '255,182,193',
             };
             let new_setting_json_str = JSON.stringify(this.setting_json);

@@ -36,7 +36,7 @@ export class SplendorLogin {
 
     add_listening_events(){
         this.$login_div.find('.splendor-login-button').on('click', () => {
-            window.location.href=`${BASE_URL}/?redirect=https://app3774.acapp.acwing.com.cn/splendor/signin/`;
+            window.location.href=`${BASE_URL}/?redirect=https://app3774.acapp.acwing.com.cn/splendor/`;
         });
     }
 
