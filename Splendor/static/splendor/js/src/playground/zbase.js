@@ -142,7 +142,7 @@ class SplendorPlayground {
         for (let i in this.players_stat) {
             let change_score = 0;
             if (this.mode !== '单人') {
-                if (i === 1) change_score += 10;
+                if (parseInt(i) === 0) change_score += 10;
                 if (this.players_stat[i].game_score >= 15) change_score += 10;
                 else change_score -= 10;
             }

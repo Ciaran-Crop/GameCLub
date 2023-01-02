@@ -51,7 +51,7 @@ class Card extends GameObject {
             need_token[color] = Math.max(0, need - player.cards[color]);
             if(need_token[color] - player.tokens[color] > 0){
                 less_count += (need_token[color] - player.tokens[color]);
-                need_token[color] = 0;
+                need_token[color] = player.tokens[color];
             }
         }
         need_token.O = less_count;
