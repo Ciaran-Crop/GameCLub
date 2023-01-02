@@ -78,6 +78,9 @@ export class SplendorMenu {
     <div class='menu-element' name='ranklist'>
         <span>排行榜</span>
     </div>
+    <div class='menu-element' name='rule'>
+        <span>中文规则书</span>
+    </div>
     <div class='menu-element' name='signout'>
         <span>退出</span>
     </div>
@@ -87,6 +90,7 @@ export class SplendorMenu {
         this.$multi = this.$base_menu.find("[name='multi']");
         this.$rank = this.$base_menu.find("[name='ranklist']");
         this.$signout = this.$base_menu.find("[name='signout']");
+        this.$rule = this.$base_menu.find("[name='rule']");
 
         this.$menu_box.append(this.$base_menu);
 
@@ -225,6 +229,9 @@ export class SplendorMenu {
         this.$rank.on('click', () => {
             this.$base_menu.hide();
             this.show_ranklist();
+        });
+        this.$rule.on('click', () => {
+            window.location.href = "https://www.gstonegames.com/game/doc-517.html";
         });
         this.$signout.on('click', () => {
             clear_tokens();
@@ -461,7 +468,7 @@ export class SplendorMenu {
         let me = this.player_info;
         me['game_score'] = 0;
         me['character'] = 'me';
-        
+        players.push(me);
         for(let i = 1;i < playernumber;i++){
             players.push({
                 'email': 'robot' + i,
@@ -472,7 +479,6 @@ export class SplendorMenu {
                 'character': 'robot',
             });
         }
-        players.push(me);
         console.log('start_single_game', config, players);
         this.playground = new SplendorPlayground(this, config, players, 'splendor-room_single', me);
         this.room.hide();
