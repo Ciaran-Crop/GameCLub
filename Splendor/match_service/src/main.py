@@ -27,7 +27,7 @@ class SplendorSaveHandler:
         base_nobles = random_nobles()
         config = {
             'room_player_number': 4,
-            'room_round_second': 30,
+            'room_round_second': 60,
             'room_pass': passwd,
             'base_level1_list':cards_list[0],
             'base_level2_list':cards_list[1],

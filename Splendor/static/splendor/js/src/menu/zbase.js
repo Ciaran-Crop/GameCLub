@@ -32,7 +32,7 @@ export class SplendorMenu {
         this.room_setting = {
             'room_mode': {'name': '模式', 'content': ['多人']},
             'room_player_number': {'name': '人数', 'content':['2人', '3人', '4人']},
-            'room_round_second': {'name': '回合秒数', 'content': ['10s', '15s', '30s', '35s']},
+            'room_round_second': {'name': '回合秒数', 'content': ['10s', '15s', '30s', '35s', '45s', '60s']},
             'room_pass': {'name':'房间密码', 'content': ['none']},
         };
     }
@@ -81,6 +81,9 @@ export class SplendorMenu {
     <div class='menu-element' name='rule'>
         <span>中文规则书</span>
     </div>
+    <div class='menu-element' name='gameclub'>
+        <span>前往GameClub</span>
+    </div>
     <div class='menu-element' name='signout'>
         <span>退出</span>
     </div>
@@ -91,6 +94,7 @@ export class SplendorMenu {
         this.$rank = this.$base_menu.find("[name='ranklist']");
         this.$signout = this.$base_menu.find("[name='signout']");
         this.$rule = this.$base_menu.find("[name='rule']");
+        this.$gameclub = this.$base_menu.find("[name='gameclub']");
 
         this.$menu_box.append(this.$base_menu);
 
@@ -232,6 +236,9 @@ export class SplendorMenu {
         });
         this.$rule.on('click', () => {
             window.location.href = "https://www.gstonegames.com/game/doc-517.html";
+        });
+        this.$gameclub.on('click', () => {
+            window.location.href = "https://app3774.acapp.acwing.com.cn/";
         });
         this.$signout.on('click', () => {
             clear_tokens();

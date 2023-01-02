@@ -102,7 +102,7 @@ class SplendorRoom{
         this.$room_wrap.css('background-image', 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(' + player_info.back + ')');
         if(is_owner){
             this.players.push(player_info);
-            this.$box.find('.room-title > span').text('房间 ' + this.room_id);
+            this.$box.find('.room-title > span').text('房间 ' + this.room_id + "(" + config['room_player_number'] + "人房)");
             this.padding_info(player_info);
             this.root.hide();
             this.show();
@@ -136,7 +136,7 @@ class SplendorRoom{
         this.playernumber = config['room_player_number'];
         this.round_second = config['room_round_second'];
         this.players = players;
-        this.$box.find('.room-title > span').text('房间 ' + this.room_id);
+        this.$box.find('.room-title > span').text('房间 ' + this.room_id + "(" + config['room_player_number'] + "人房)");
         this.$box.find('.room-player').empty();
         for(let i = 0;i < players.length;i++){
             this.padding_info(players[i]);
