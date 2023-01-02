@@ -16,6 +16,7 @@ class GameObject {
     update() {}
     late_update() {}
     on_destroy() {}
+    update_offset(){}
     destroy() {
         this.on_destroy();
         for (let t = 0; t < GAME_OBJECTS.length; t++)

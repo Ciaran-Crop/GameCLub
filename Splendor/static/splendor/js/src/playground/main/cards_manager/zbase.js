@@ -3,6 +3,7 @@ class CardsManager extends GameObject {
         super();
         this.playground = playground;
         this.sm = this.playground.shader_manager;
+        this.gl = this.playground.gl;
         // card: [id, gem, score, backIndex, spend]
         this.cards = {
             instance: [],
@@ -81,10 +82,11 @@ class CardsManager extends GameObject {
     }
 
     next_card(level, location) {
-        let offset_x = 20;
-        let offset_y = 75;
-        let x_step = 40 + 150;
-        let y_step = 35 + 203;
+        const gl = this.gl;
+        let offset_x = fix(gl, card_next_card_offset_x, true);
+        let offset_y = fix(gl, card_next_card_offset_y, false);
+        let x_step = fix(gl, card_next_card_x_step, true);
+        let y_step = fix(gl, card_next_card_y_step, false);
         let bLevel = level;
         level = 'level' + level;
         let cardIndex = this.cards.all_cards[level].pop();
@@ -105,10 +107,11 @@ class CardsManager extends GameObject {
     }
 
     render() {
-        let offset_x = 20;
-        let offset_y = 75;
-        let x_step = 40 + 150;
-        let y_step = 35 + 203;
+        const gl = this.gl;
+        let offset_x = fix(gl, card_next_card_offset_x, true);
+        let offset_y = fix(gl, card_next_card_offset_y, false);
+        let x_step = fix(gl, card_next_card_x_step, true);
+        let y_step = fix(gl, card_next_card_y_step, false);
         // 渲染第一列
         for (let i = 1; i <= 3; i++) {
             this.sm.shader_card_back(offset_x, offset_y + (i - 1) * y_step, i - 1, 5);

@@ -46,6 +46,21 @@ class SplendorPlayground {
         this.$canvas.on('click', (e) => {
             this.process_mouse_event(e);
         });
+        this.resize();
+        $(window).resize(() => {
+            this.resize();
+        });
+    }
+
+    resize(){
+        if(this.now_size) this.pre_size = this.now_size;
+        else this.pre_size = [this.gl.canvas.clientWidth, this.gl.canvas.clientHeight];
+        if(this.shader_manager)this.shader_manager.before_render();
+        this.now_size = [this.gl.canvas.clientWidth, this.gl.canvas.clientHeight];
+        for(let s = 0;s < GAME_OBJECTS.length;s++){
+            let obj = GAME_OBJECTS[s];
+            obj.update_offset();
+        }
     }
 
     init_shader_manager() {
@@ -172,6 +187,7 @@ class SplendorPlayground {
             this.top_board.click_card(is_card);
             return true;
         }
+        this.players_manager.clean();
         let is_token = this.tokens_manager.click_token(clientX, clientY);
         if (is_token !== null) {
             let result = this.tokens_manager.select_by_player(is_token);

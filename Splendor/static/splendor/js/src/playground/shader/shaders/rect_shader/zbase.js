@@ -57,8 +57,8 @@ class RectShader {
 
         sm.resize(gl);
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        // gl.enable(gl.BLEND);
-        // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
         gl.useProgram(programInfo.program);
         this.set_pointer(programInfo);

@@ -2,14 +2,17 @@ class Token extends GameObject {
     constructor(token_manager, color, x, y) {
         super();
         this.tm = token_manager;
+        this.playground = this.tm.playground;
         this.sm = this.tm.sm;
+        this.gl = this.tm.gl;
         this.color = color;
         this.x = x;
         this.y = y;
         this.vx = 0;
         this.vy = 0;
+        const gl = this.gl;
         this.move_length = 0;
-        this.speed = 800;
+        this.speed = fix(gl, token_speed, true);
         this.state = 'board' // 'select', 'unshow'
     }
 
@@ -37,6 +40,13 @@ class Token extends GameObject {
 
     change_state(state) {
         this.state = state;
+    }
+
+    update_offset(){
+        const gl = this.gl;
+        this.speed = fix(gl, token_speed, true);
+        this.x = fix(gl, this.x, true, {pre_size: this.playground.pre_size});
+        this.y = fix(gl, this.y, false, {pre_size: this.playground.pre_size});
     }
 
     update() {

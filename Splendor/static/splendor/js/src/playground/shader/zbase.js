@@ -9,8 +9,8 @@ class ShaderManager {
         let imageShader = this.get('ImageShader');
         let texture = this.tm.get('players')[email];
         options = options || {};
-        let scale_x = options.scale_x || 30;
-        let scale_y = options.scale_y || 30;
+        let scale_x = options.scale_x || fix(this.gl,shader_player_photo_scale_x, true);
+        let scale_y = options.scale_y || fix(this.gl,shader_player_photo_scale_y, false);
         let scale = options.scale || 1;
         let rotation = options.rotation || 0;
         let u_position_matrix = get_matrix(this.gl, [offset_x, offset_y], rotation, [scale_x * scale, scale_y * scale], false);
@@ -22,8 +22,8 @@ class ShaderManager {
         let imageShader = this.get('ImageShader');
         let texture = this.tm.get('cards');
         options = options || {};
-        let scale_x = options.scale_x || 150;
-        let scale_y = options.scale_y || 203;
+        let scale_x = options.scale_x || fix(this.gl, shader_card_back_scale_x, true);
+        let scale_y = options.scale_y || fix(this.gl, shader_card_back_scale_y, false);
         let rotation = options.rotation || 0;
         let scale = options.scale || 1;
         let u_position_matrix = get_matrix(this.gl, [offset_x, offset_y], rotation, [scale_x * scale, scale_y * scale], false);
@@ -35,8 +35,8 @@ class ShaderManager {
         let rectShader = this.get('RectShader');
         options = options || {};
         let rotation = options.rotation || 0;
-        let scale_x = options.scale_x || 150;
-        let scale_y = options.scale_y || 54;
+        let scale_x = options.scale_x || fix(this.gl, shader_top_back_scale_x, true);
+        let scale_y = options.scale_y || fix(this.gl, shader_top_back_scale_y, false);
         let scale = options.scale || 1;
         let u_position_matrix = get_matrix(this.gl, [offset_x, offset_y], rotation, [scale_x * scale, scale_y * scale], false);
         rectShader.draw(u_position_matrix, u_color);
@@ -47,8 +47,8 @@ class ShaderManager {
         let texture = this.tm.get('numbers_sheet');
         options = options || {};
         let rotation = options.rotation || 0;
-        let scale_x = options.scale_x || 50;
-        let scale_y = options.scale_y || 50;
+        let scale_x = options.scale_x || fix(this.gl, shader_score_scale_x, true);
+        let scale_y = options.scale_y || fix(this.gl, shader_score_scale_y, false);
         let scale = options.scale || 1;
         let u_position_matrix = get_matrix(this.gl, [offset_x, offset_y], rotation, [scale_x * scale, scale_y * scale], false);
         let u_texCoord_matrix = get_matrix(this.gl, [0.1 * i, 0.6666], 0, [0.1, 0.3333], true);
@@ -60,8 +60,8 @@ class ShaderManager {
         let texture = this.tm.get('numbers_sheet');
         options = options || {};
         let rotation = options.rotation || 0;
-        let scale_x = options.scale_x || 35;
-        let scale_y = options.scale_y || 35;
+        let scale_x = options.scale_x || fix(this.gl, shader_mini_card_back_scale_x, true);
+        let scale_y = options.scale_y || fix(this.gl, shader_mini_card_back_scale_y, false);
         let scale = options.scale || 1;
         let u_position_matrix = get_matrix(this.gl, [offset_x, offset_y], rotation, [scale_x * scale, scale_y * scale], false);
         let u_texCoord_matrix = get_matrix(this.gl, [0.1 * i, 0], 0, [0.1, 0.3333], true);
@@ -73,10 +73,12 @@ class ShaderManager {
         let texture = this.tm.get('gems');
         options = options || {};
         let rotation = options.rotation || 0;
-        let scale_x = options.scale_x || 45;
-        let scale_y = options.scale_y || 45;
+        let scale_x = options.scale_x || fix(this.gl, shader_gem_scale_x, true);
+        let scale_y = options.scale_y || fix(this.gl, shader_gem_scale_y, false);
+        let fix_x_step = fix(this.gl, shader_gem_fix_x_step, true);
+        let fix_y_step = fix(this.gl, shader_gem_fix_y_step, true);
         let scale = options.scale || 1;
-        let u_position_matrix = get_matrix(this.gl, [offset_x + 2.5, offset_y + 2.5], rotation, [scale_x * scale, scale_y * scale], false);
+        let u_position_matrix = get_matrix(this.gl, [offset_x + fix_x_step, offset_y + fix_y_step], rotation, [scale_x * scale, scale_y * scale], false);
         let u_texCoord_matrix = get_matrix(this.gl, [0.2 * i, 0], 0, [0.2, 1], true);
         imageShader.draw(texture, u_position_matrix, u_texCoord_matrix);
     }
@@ -85,8 +87,8 @@ class ShaderManager {
         let imageShader = this.get('ImageShader');
         let number_sheet_texture = this.tm.get('numbers_sheet');
         let rotation = 0;
-        let scale_x = 50;
-        let scale_y = 50;
+        let scale_x = fix(this.gl, shader_spend_scale_x, true);
+        let scale_y = fix(this.gl, shader_spend_scale_y, false);
         options = options || {};
         let scale = options.scale || 1;
         let u_position_matrix = get_matrix(this.gl, [offset_x, offset_y], rotation, [scale_x * scale, scale_y * scale], false);
@@ -100,8 +102,8 @@ class ShaderManager {
         let texture = this.tm.get('tokens');
         options = options || {};
         let rotation = options.rotation || 0;
-        let scale_x = options.scale_x || 70;
-        let scale_y = options.scale_y || 70;
+        let scale_x = options.scale_x || fix(this.gl, shader_token_scale_x, true);
+        let scale_y = options.scale_y || fix(this.gl, shader_token_scale_y, false);
         let scale = options.scale || 1;
         let u_position_matrix = get_matrix(this.gl, [offset_x, offset_y], rotation, [scale_x * scale, scale_y * scale], false);
         let u_texCoord_matrix = get_matrix(this.gl, [0.16666 * tokeni, 0], 0, [0.16667, 1], true);
@@ -113,8 +115,8 @@ class ShaderManager {
         let texture = this.tm.get('nobles');
         options = options || {};
         let rotation = options.rotation || 0;
-        let scale_x = options.scale_x || 140;
-        let scale_y = options.scale_y || 140;
+        let scale_x = options.scale_x || fix(this.gl, shader_noble_scale_x, true);
+        let scale_y = options.scale_y || fix(this.gl, shader_noble_scale_y, false);
         let scale = options.scale || 1;
         let u_position_matrix = get_matrix(this.gl, [offset_x, offset_y], rotation, [scale_x * scale, scale_y * scale], false);
         let u_texCoord_matrix = get_matrix(this.gl, [0.2 * noblei_x, 0.5 * noblei_y], 0, [0.2, 0.5], true);
@@ -125,18 +127,22 @@ class ShaderManager {
         return this.shader_dict[shader_name];
     }
 
-    resize(canvas) {
-        const width = canvas.clientWidth;
-        const height = canvas.clientHeight;
-        if (canvas.width !== width || canvas.height !== height) {
-            canvas.width = width;
-            canvas.height = height;
+    resize(gl) {
+        const canvas = gl.canvas;
+        const displayWidth = canvas.clientWidth;
+        const displayHeight = canvas.clientHeight;
+        const needResize = canvas.width !== displayWidth ||
+          canvas.height !== displayHeight;
+        if (needResize) {
+          canvas.width = displayWidth;
+          canvas.height = displayHeight;
         }
+        return needResize;
     }
 
     before_render() {
         const gl = this.gl;
-        this.resize(gl.canvas);
+        this.resize(gl);
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);

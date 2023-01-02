@@ -2,6 +2,7 @@ class Card extends GameObject {
     constructor(cards_manager, card, x, y, level, location) {
         super();
         this.playground = cards_manager.playground;
+        this.gl = this.playground.gl;
         this.cm = cards_manager;
         this.sm = this.cm.sm;
         this.am = this.cm.playground.am;
@@ -11,7 +12,8 @@ class Card extends GameObject {
         this.vx = 0;
         this.vy = 0;
         this.move_length = 0;
-        this.speed = 1000;
+        const gl = this.gl;
+        this.speed = fix(gl, card_speed, true);
         this.state = 'board'; // 'board', 'book', 'on_de'
         this.clicked_state = false;
         this.role = null;
@@ -38,6 +40,7 @@ class Card extends GameObject {
     }
 
     buy_by_player(player, send = true) {
+        this.clicked_state = false;
         let spend = this.card_config.spend;
         let need_token = {};
         let less_count = 0;
@@ -76,6 +79,7 @@ class Card extends GameObject {
     }
 
     book_by_player(player, send = true) {
+        this.clicked_state = false;
         if (player.tokens_count + 1 <= 10) {
             this.playground.tokens_manager.picked_by_player_from_tokens(player, { O: 1 });
         }
@@ -89,14 +93,15 @@ class Card extends GameObject {
     }
 
     clicked(x, y) {
+        const gl = this.gl;
         if (this.state !== 'board' && this.state !== 'book') {
             return false;
         }
         if (this.state === 'book') {
             if (this.role !== this.playground.players_manager.get_me().email) return false;
         }
-        let width = 150 * this.scale;
-        let height = 203 * this.scale;
+        let width = fix(gl, card_width, true) * this.scale;
+        let height = fix(gl, card_height, false) * this.scale;
         if (x >= this.x && x <= this.x + width && y >= this.y && y <= this.y + height && (this.role === null || this.role === this.playground.me.email)) {
             this.clicked_state = true;
             return true;
@@ -160,6 +165,13 @@ class Card extends GameObject {
         this.scale += this.scale_change_flag * changed;
     }
 
+    update_offset(){
+        const gl = this.gl;
+        this.x = fix(gl, this.x, true, {pre_size: this.playground.pre_size});
+        this.y = fix(gl, this.y, false, {pre_size: this.playground.pre_size});
+        this.speed = fix(gl, card_speed, true);
+    }
+
     start() {
 
     }
@@ -190,13 +202,15 @@ class Card extends GameObject {
     }
 
     render() {
-        let gem_step = 98 * this.scale;
-        let spend_step = 100 * this.scale;
+        const gl = this.gl;
+        let gem_step = fix(gl, card_gem_step, true) * this.scale;
+        let spend_step = fix(gl, card_spend_step, false) * this.scale;
         let spend_index = [2, 0, 3, 1];
-        let gem_step_x = 40 * this.scale;
-        let gem_step_y = 15 * this.scale;
+        let gem_step_x = fix(gl, card_gem_step_x, true) * this.scale;
+        let gem_step_y = fix(gl, card_gem_step_y, false) * this.scale;
         let scale = this.scale;
-        let fix_step = 50 * this.scale;
+        let fix_step_x = fix(gl, card_fix_step_x, true) * this.scale;
+        let fix_step_y = fix(gl, card_fix_step_y, false) * this.scale;
         this.sm.shader_card_back(this.x, this.y, this.card_config.backIndex[0], this.card_config.backIndex[1], { scale: scale });
         this.sm.shader_top_back(this.x, this.y, [1, 1, 1, 0.5], { scale: scale });
         this.sm.shader_score(this.x, this.y, this.card_config.score - 1, { scale: scale });
@@ -207,14 +221,14 @@ class Card extends GameObject {
             let ix = index % 2;
             let backi = NSColor2Index[value.color];
             let needi = value.need - 1;
-            this.sm.shader_spend(this.x + ix * fix_step, this.y + spend_step + iy * fix_step, backi, needi, { scale: scale });
+            this.sm.shader_spend(this.x + ix * fix_step_x, this.y + spend_step + iy * fix_step_y, backi, needi, { scale: scale });
         });
         this.card_config.spend.forEach((value, index) => {
             index = spend_index[index];
             let iy = Math.floor(index / 2);
             let ix = index % 2;
             let gemi = GemColor2Index[value.color];
-            this.sm.shader_gem(this.x + ix * fix_step + gem_step_x, this.y + iy * fix_step + gem_step_y + spend_step, gemi, { scale_x: 20, scale_y: 20, scale: scale });
+            this.sm.shader_gem(this.x + ix * fix_step_x + gem_step_x, this.y + iy * fix_step_y+ gem_step_y + spend_step, gemi, { scale_x: fix(gl, card_gem_scale_x, true), scale_y: fix(gl, card_gem_scale_y, false), scale: scale });
         });
     }
 }

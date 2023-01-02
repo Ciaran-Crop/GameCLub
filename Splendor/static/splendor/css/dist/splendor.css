@@ -488,7 +488,7 @@ canvas {
 
 .card-click {
     position: fixed;
-    z-index: 20000;
+    z-index: 40000;
     color: black;
     user-select: none;
     display: none;

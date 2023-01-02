@@ -7,7 +7,6 @@ class SplendorGameSocket {
 
     start(){
         this.ws = this.playground.menu.socket.ws;
-        console.log(this.ws);
     }
 
     get_player(email){

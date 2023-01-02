@@ -3,6 +3,7 @@ class PlayersManager {
         this.playground = playground;
         this.am = this.playground.am;
         this.sm = this.playground.shader_manager;
+        this.gl = this.playground.gl;
         this.number = this.playground.player_number;
         this.players_config = [];
         this.players = [];
