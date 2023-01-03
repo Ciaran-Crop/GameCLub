@@ -2,6 +2,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django.core.cache import cache
 from gameclub.views.common import get_state, random_cards, random_nobles
 import json
+import random
 from asgiref.sync import sync_to_async
 
 from thrift.transport import TSocket
@@ -156,8 +157,9 @@ class MultiGameRoom(AsyncWebsocketConsumer):
     async def start_game(self, content):
         config = cache.get(self.room_id)
         config['config']['state'] = 'round'
+        config['config']['roundi'] = random.randint(0, len(config['players']) - 1)
         cache.set(self.room_id, config, 4800)
-        await self.group_send({'start': 'true'}, 'start_game')
+        await self.group_send({'start': 'true', 'config': config['config'], 'players': config['players']}, 'start_game')
 
     async def join_room(self, content):
         if self.state != 'free' and self.state != 'match':

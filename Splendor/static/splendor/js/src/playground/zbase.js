@@ -172,7 +172,7 @@ class SplendorPlayground {
             content.append(element);
         }
         this.$statistics.find('.statistics-click').on('click', () => {
-            window.location.reload();
+            window.location.href = `${BASE_URL}/splendor/`;
         });
 
         this.$playground_div.append(this.$statistics);

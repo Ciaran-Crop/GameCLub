@@ -7,8 +7,8 @@ class PlayersManager {
         this.number = Math.min(this.playground.player_number, this.playground.players.length);
         this.players_config = [];
         this.players = [];
-        this.start_i = Math.floor(Math.random() * this.number);
-        this.roundi = this.start_i- 1;
+        this.start_i = this.playground.config['roundi'];
+        this.roundi = this.start_i - 1;
         this.round = 0;
         this.start();
     }

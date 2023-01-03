@@ -17,9 +17,8 @@ class SplendorRoom{
         });
         this.$room_wrap.find('.room-start > button:first').on('click', () => {
             if(this.is_owner){
-                // if(this.players.length < this.config['room_player_number']) return false;
+                if(this.players.length < 2) return false;
                 this.root.socket.start_game();
-                this.start_game();
             }
         });
         this.$room_wrap.find('.room-start > button:last').on('click', () => {
@@ -28,15 +27,23 @@ class SplendorRoom{
                 this.cancel_room();
             }
         });
-        this.$room_wrap.find('.room-start > button:nth-child(2)').on('click', () => {
-            let copy = (e)=>{
-                e.preventDefault();
-                e.clipboardData.setData('text/plain',`${BASE_URL}/splendor/page/menu/?room_id=${this.room_id}&need_pass=${this.need_pass}`);
-                alert('复制链接成功, 分享给好友邀请加入游戏');
-                document.removeEventListener('copy',copy);
-            }
-            document.addEventListener('copy',copy);
-            document.execCommand("Copy");
+        this.$room_wrap.find('.room-start > button:nth-child(2)').on('click', (e) => {
+            let copyipt = document.createElement("input");
+            let text = `${BASE_URL}/splendor/page/menu/?room_id=${this.room_id}&need_pass=${this.need_pass}`;
+            copyipt.setAttribute("value", text);
+            document.body.appendChild(copyipt);
+            copyipt.select();
+            document.execCommand("copy");
+            document.body.removeChild(copyipt);
+            alert('复制链接成功, 分享给好友邀请加入游戏');
+            // let copy = (e)=>{
+            //     e.preventDefault();
+            //     e.clipboardData.setData('text/plain',`${BASE_URL}/splendor/page/menu/?room_id=${this.room_id}&need_pass=${this.need_pass}`);
+            //     alert('复制链接成功, 分享给好友邀请加入游戏');
+            //     document.removeEventListener('copy',copy);
+            // }
+            // document.addEventListener('copy',copy);
+            // document.execCommand("Copy");
         });
     }
 

@@ -34,6 +34,7 @@ class SplendorSaveHandler:
             'base_level3_list': cards_list[2],
             'base_nobles': base_nobles,
             'state': 'start',
+            'roundi': random.randint(0, len(mplayers) - 1),
         }
 
         for pr in mplayers:
