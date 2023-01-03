@@ -24,10 +24,10 @@ class SplendorPlayground {
             this.chat = new SplendorChat(this);
         }
         this.top_board = new TopBoard(this);
+        this.players_manager = new PlayersManager(this);
         this.cards_manager = new CardsManager(this);
         this.tokens_manager = new TokensManager(this);
         this.nobles_manager = new NoblesManager(this);
-        this.players_manager = new PlayersManager(this);
         this.state = 'round';
         this.players_manager.next_player();
     }

@@ -17,21 +17,34 @@ class Pool:
     def __init__(self):
         self.players = []
 
-    def match(self):
-        while len(self.players) >= 4:
+    def match_func(self, l):
+        while len(self.players) >= l:
             self.players = sorted(self.players, key = lambda pr: pr.score)
             flag = False
-            for i in range(len(self.players) - 3):
-                pr1, pr2, pr3, pr4 = self.players[i], self.players[i+1], self.players[i+2], self.players[i+3]
-                if self.check_match(pr1,pr2) and self.check_match(pr1,pr3) and self.check_match(pr1, pr4) and self.check_match(pr2, pr3) and self.check_match(pr2, pr4) and self.check_match(pr3, pr4):
-                    self.match_success([pr1,pr2,pr3,pr4])
-                    self.players = self.players[:i] + self.players[i+4:]
+            for i in range(len(self.players) - l + 1):
+                prs = []
+                for index in range(l):
+                    prs.append(self.players[i + index])
+                check = True
+                for j in range(l):
+                    for k in range(j + 1, l):
+                        check = check & self.check_match(prs[j], prs[k])
+                if check:
+                    self.match_success(prs)
+                    self.players = self.players[:i] + self.players[i+l:]
                     print('match_success, players len:', len(self.players))
                     flag = True
                     break
             if not flag:
                 break
         self.increase_waiting()
+
+    def match(self):
+        max_waiting = self.get_waiting()
+        if max_waiting < 40:
+            self.match_func(4)
+        elif max_waiting >= 40:
+            self.match_func(max(2, min(len(self.players), 4)))
 
     def check_match(self, pr1, pr2):
         dis = abs(pr1.score - pr2.score)
@@ -51,6 +64,12 @@ class Pool:
     def increase_waiting(self):
         for player in self.players:
             player.waiting_time += 1
+
+    def get_waiting(self):
+        maxn = 0
+        for player in self.players:
+            maxn = max(maxn, player.waiting_time)
+        return maxn
 
     def add_player(self, pr):
         self.players.append(pr)

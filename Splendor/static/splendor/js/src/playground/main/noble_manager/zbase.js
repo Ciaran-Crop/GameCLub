@@ -4,7 +4,7 @@ class NoblesManager {
         this.sm = this.playground.shader_manager;
         this.am = this.playground.am;
         this.gl = this.playground.gl;
-        this.nobleLength = Math.min(4, this.playground.player_number + 1);
+        this.nobleLength = Math.min(4, this.playground.players_manager.number + 1);
         this.noblesIndex = [];
         this.nobles = [];
         this.start();

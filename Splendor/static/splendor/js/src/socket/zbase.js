@@ -55,7 +55,7 @@ class SplendorRoomSocket {
     }
 
     receive_join_room(content){
-        if(content['players'].length >= 4) this.root.start_game(content['config'], content['players'], content['room_id'])
+        if(content['players'].length >= 2) this.root.start_game(content['config'], content['players'], content['room_id'])
     }
 
     receive_match_success(content){

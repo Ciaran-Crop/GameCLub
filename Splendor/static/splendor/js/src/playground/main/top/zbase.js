@@ -124,7 +124,7 @@ this.$pass_click = $(`
 
     add_tick(player){
         this.clear_interval('tick');
-        this.$player_tick.css('top', player.index * 10.5 + 8 + 'vw');
+        this.$player_tick.css('top', player.index * 22 + 10 + 'vh');
         this.$player_tick.show();
         if(player.character === 'me') this.$pass_click.show();
         if(player.character === 'robot'){

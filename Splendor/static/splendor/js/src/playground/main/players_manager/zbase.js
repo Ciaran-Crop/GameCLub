@@ -7,7 +7,8 @@ class PlayersManager {
         this.number = Math.min(this.playground.player_number, this.playground.players.length);
         this.players_config = [];
         this.players = [];
-        this.roundi = -1;
+        this.start_i = Math.floor(Math.random() * this.number);
+        this.roundi = this.start_i- 1;
         this.round = 0;
         this.start();
     }
@@ -64,7 +65,7 @@ class PlayersManager {
         this.playground.top_board.$click_card.hide();
         if (this.playground.tokens_manager.select_tokens.length > 0) this.playground.tokens_manager.unselect_by_player();
         if (this.playground.state === 'last_round') {
-            if (this.roundi === this.number - 1) {
+            if (this.roundi === (this.number - 1 + this.start_i) % this.number) {
                 this.playground.statistics(this.players);
             }
         }
@@ -72,7 +73,7 @@ class PlayersManager {
             this.roundi = (this.roundi + 1) % this.number;
             let p = this.players[this.roundi];
             this.playground.top_board.add_tick(p);
-            if (this.roundi === 0) this.round++;
+            if (this.roundi === this.start_i) this.round++;
             if (this.playground.state === 'round') {
                 console.log('round ' + this.round + ' | now: ' + this.players[this.roundi].name);
             } else if (this.playground.state === 'last_round') {

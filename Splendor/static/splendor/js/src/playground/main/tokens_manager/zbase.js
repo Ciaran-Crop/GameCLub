@@ -6,7 +6,10 @@ class TokensManager extends GameObject {
         this.am = this.playground.am;
         this.gl = this.playground.gl;
         let count = 0;
-        switch (this.playground.player_number) {
+        switch (this.playground.players_manager.number) {
+            case 1:
+                count = 4;
+                break;
             case 2:
                 count = 4;
                 break;
