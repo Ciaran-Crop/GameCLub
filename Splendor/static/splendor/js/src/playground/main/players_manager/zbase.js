@@ -4,7 +4,7 @@ class PlayersManager {
         this.am = this.playground.am;
         this.sm = this.playground.shader_manager;
         this.gl = this.playground.gl;
-        this.number = this.playground.player_number;
+        this.number = Math.min(this.playground.player_number, this.playground.players.length);
         this.players_config = [];
         this.players = [];
         this.roundi = -1;

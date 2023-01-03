@@ -14,6 +14,7 @@ class Player extends GameObject {
         this.tokens_count = 0;
         this.tokens = { G: 0, W: 0, B: 0, I: 0, R: 0, O: 0 };
         this.cards = { G: 0, W: 0, B: 0, I: 0, R: 0 };
+        this.cards_count = 0;
         this.books = [];
         this.nobles = [];
         this.index = i;
@@ -113,6 +114,7 @@ class Player extends GameObject {
 
     update_cards(card, color, num) {
         this.cards[color] += num;
+        this.cards_count += num;
         this.update_score(card.card_config.score);
     }
 

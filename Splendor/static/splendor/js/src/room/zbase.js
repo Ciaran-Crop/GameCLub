@@ -17,7 +17,7 @@ class SplendorRoom{
         });
         this.$room_wrap.find('.room-start > button:first').on('click', () => {
             if(this.is_owner){
-                if(this.players.length < this.config['room_player_number']) return false;
+                // if(this.players.length < this.config['room_player_number']) return false;
                 this.root.socket.start_game();
                 this.start_game();
             }

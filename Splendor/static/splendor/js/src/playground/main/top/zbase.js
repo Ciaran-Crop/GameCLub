@@ -76,7 +76,7 @@ this.$pass_click = $(`
             this.$top_board.find('.top-board-center > span').text(min + ':' + sec);
         }, 1000);
         this.$top_board.find('.top-board-out').on('click', () => {
-            window.location.reload();
+            window.location.href = `${BASE_URL}/splendor/`;
         });
         this.$token_click.find('.cancel').on('click', () => {
             this.playground.tokens_manager.unselect_by_player();

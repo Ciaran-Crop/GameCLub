@@ -97,7 +97,7 @@ class MultiGameRoom(AsyncWebsocketConsumer):
         
     async def stat(self, content):
         config = cache.get(self.room_id)
-        if config['config']['state'] == 'start':
+        if config['config']['state'] == 'round':
             config['config']['state'] = 'end'
             cache.set(self.room_id, config, 360)
             for player in content:
@@ -154,6 +154,9 @@ class MultiGameRoom(AsyncWebsocketConsumer):
         self.room_id = ''
 
     async def start_game(self, content):
+        config = cache.get(self.room_id)
+        config['config']['state'] = 'round'
+        cache.set(self.room_id, config, 4800)
         await self.group_send({'start': 'true'}, 'start_game')
 
     async def join_room(self, content):
@@ -164,7 +167,7 @@ class MultiGameRoom(AsyncWebsocketConsumer):
         player_info = content['player_info']
         player_info['game_score'] = 0
         if len(cache.keys(room_id)):
-            if passwd == cache.get(room_id)['config']['room_pass']:
+            if passwd == cache.get(room_id)['config']['room_pass'] and cache.get(room_id)['config']['state'] == 'start':
                 if cache.get(room_id)['config']['room_player_number'] > len(cache.get(room_id)['players']):
                     room = cache.get(room_id)
                     for pr in room['players']:

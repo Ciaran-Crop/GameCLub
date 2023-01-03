@@ -133,9 +133,11 @@ class SplendorPlayground {
                 photo: p.photo,
                 game_score: p.game_score,
                 score: p.score,
+                cards_count : this.players_manager.get_player(p.email).cards_count,
             });
         }
         this.players_stat.sort((p1, p2) => {
+            if(p2.game_score === p1.game_score) return p1.cards_count - p2.cards_count;
             return p2.game_score - p1.game_score;
         });
 
