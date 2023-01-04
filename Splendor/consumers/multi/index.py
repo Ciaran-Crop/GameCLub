@@ -68,7 +68,10 @@ class MultiGameRoom(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        print(data)
+        if hasattr(self, 'room_id') and self.room_id:
+            print(self.room_id, data)
+        else:
+            print(data)
         event = data['event']
         content = data['content']
         if event == 'create_room':
@@ -100,7 +103,7 @@ class MultiGameRoom(AsyncWebsocketConsumer):
         config = cache.get(self.room_id)
         if config['config']['state'] == 'round':
             config['config']['state'] = 'end'
-            cache.set(self.room_id, config, 360)
+            cache.set(self.room_id, config, 60)
             for player in content:
                 email = player['email']
                 change = player['score_change']

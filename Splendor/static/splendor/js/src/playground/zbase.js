@@ -8,6 +8,7 @@ class SplendorPlayground {
         this.mode = this.config['single_mode'] || this.config['room_mode'];
         this.player_number = this.config['single_player_number'] || this.config['room_player_number'];
         this.round_second = this.config['room_round_second'] || this.config['single_round_second'];
+        this.roundi = this.config['roundi'] || 0;
         this.$playground_div = $(`<div class='playground'></div>`);
         this.menu.$menu_div.append(this.$playground_div);
         this.state = 'start'; // ['start', 'round', 'last_round', 'end']
