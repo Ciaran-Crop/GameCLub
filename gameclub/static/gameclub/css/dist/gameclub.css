@@ -1,3 +1,6 @@
+body {
+    background: white;
+}
 img {
     border-radius: 50%;
 }
@@ -1246,7 +1249,7 @@ button#name {
     height: 30px;
     float: right;
     border-radius: 0 5px 5px 0;
-    background: rgba(255,255,255,0.8);
+    background: rgba(255, 255, 255, 0.8);
     cursor: pointer;
 }
 
@@ -1256,7 +1259,7 @@ button#name {
 }
 
 .tool-border {
-    background: rgba(255,255,255,0.8);
+    background: rgba(255, 255, 255, 0.8);
     height: 100%;
     width: 4px;
     float: left;
@@ -1276,7 +1279,7 @@ button#name {
     top: 0;
     bottom: 0;
     width: 0px;
-    background: rgba(255,255,255,0.8);
+    background: rgba(255, 255, 255, 0.8);
     box-shadow: 10px 0 10px 0 rgba(0 0 0 / 10%);
     overflow: hidden;
 }
@@ -1299,7 +1302,7 @@ button#name {
     margin: auto;
 }
 
-.tool-element-photo > img {
+.tool-element-photo>img {
     width: 100%;
 }
 
@@ -1308,6 +1311,7 @@ button#name {
     height: 40px;
     line-height: 40px;
     font-size: 20px;
+    overflow: hidden;
 }
 
 .tool-title {
@@ -1320,4 +1324,25 @@ button#name {
     padding-bottom: 20px;
     font-style: italic;
     font-weight: 600;
+}
+
+.tool-element-name>span:hover {
+    animation: move 1.5s infinite alternate linear;
+}
+
+.tool-element-name>span {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+@keyframes move {
+    0% {
+        left: 0;
+        transform: translate(0, 0);
+    }
+
+    100% {
+        left: 100%;
+        transform: translate(-100%, 0);
+    }
 }

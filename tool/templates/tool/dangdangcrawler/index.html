@@ -1,0 +1,1215 @@
+{% load static %}
+
+<head>
+    <link rel="stylesheet" href="https://cdn.acwing.com/static/jquery-ui-dist/jquery-ui.min.css">
+    <script src="https://cdn.acwing.com/static/jquery/js/jquery-3.3.1.min.js"></script>
+    <script src="{% static 'tool/js/dist/echarts.min.js' %}"></script>
+    <link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
+    <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
+</head>
+
+<style>
+    .box {
+        box-sizing: border-box;
+        margin: auto;
+    }
+
+    .title {
+        font-size: 30px;
+        width: 50%;
+        margin: auto;
+        text-align: center;
+        height: 10vh;
+        line-height: 10vh;
+    }
+
+    .sub-title>div {
+        display: inline-block;
+    }
+
+    .sub-title {
+        text-align: center;
+        width: 90%;
+        margin: auto;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+
+    .data-source>span {
+        font-style: italic;
+        padding-right: 20px;
+        cursor: pointer;
+    }
+
+    .button {
+        background: #3370ff;
+        border-radius: 4px;
+        padding: 10px;
+        color: white;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+
+    .button:hover {
+        background: #1d5ef4;
+    }
+
+    .data-echarts {
+        height: 200%;
+        padding: 0 20px 10px;
+        display: none;
+        grid-template-columns: repeat(4, 25%);
+        grid-template-rows: repeat(4, 25%);
+    }
+
+    .load-main {
+        height: 80%;
+    }
+
+    div#data-grid-wrap {
+        position: absolute;
+        top: 18vh;
+        z-index: 1000;
+        background: lightpink;
+        width: 70%;
+        right: 1vw;
+        padding: 10px;
+        border-radius: 10px;
+        display: none;
+    }
+
+    .move {
+        display: block !important;
+    }
+</style>
+
+<body style='margin:0'>
+    <div class='box'>
+        <div class='title'>当当畅销榜Top500</div>
+        <div class="sub-title">
+            <div class="data-source">
+                数据来源:
+                <span>http://bang.dangdang.com/books/fivestars/</span>
+            </div>
+            <div class="state" , style="color: GoldenRod ">
+                获取数据中
+            </div>
+            <div class="button download" style="display: none;">
+                下载raw爬虫数据
+            </div>
+            <div class="button" id="data-grid" style="display: none">
+                查看数据表格
+            </div>
+            <div class="data-grid-wrap" id="data-grid-wrap"></div>
+        </div>
+        <div class='data-echarts'>
+            <div id="hot-index" style="grid-column-start: span 4;grid-row-start: span 1;"></div>
+            <div id="cdrscsl-index" style="grid-column-start: span 1;grid-row-start: span 1;"></div>
+            <div id="author-rank-index" style="grid-column-start: span 1;grid-row-start: span 1;"></div>
+            <div id="press-count-index" style="grid-column-start: span 1;grid-row-start: span 1;"></div>
+            <div id="e-price-rank-index" style="grid-column-start: span 1;grid-row-start: span 1;"></div>
+            <div id="press-time-index" style="grid-column-start: span 3;grid-row-start: span 1;"></div>
+            <div id="star-count-index" style="grid-column-start: span 1;grid-row-start: span 1;"></div>
+            <div id="star-price-rate-index" style="grid-column-start: span 4;grid-row-start: span 1;"></div>
+        </div>
+        <div class="load-main" id="loading"></div>
+
+    </div>
+    <script>
+        (function () {
+            theme_json = {
+                "color": [
+                    "#516b91",
+                    "#59c4e6",
+                    "#edafda",
+                    "#93b7e3",
+                    "#a5e7f0",
+                    "#cbb0e3"
+                ],
+                "backgroundColor": "rgba(0,0,0,0)",
+                "textStyle": {},
+                "title": {
+                    "textStyle": {
+                        "color": "#516b91"
+                    },
+                    "subtextStyle": {
+                        "color": "#93b7e3"
+                    }
+                },
+                "line": {
+                    "itemStyle": {
+                        "borderWidth": "2"
+                    },
+                    "lineStyle": {
+                        "width": "2"
+                    },
+                    "symbolSize": "6",
+                    "symbol": "emptyCircle",
+                    "smooth": true
+                },
+                "radar": {
+                    "itemStyle": {
+                        "borderWidth": "2"
+                    },
+                    "lineStyle": {
+                        "width": "2"
+                    },
+                    "symbolSize": "6",
+                    "symbol": "emptyCircle",
+                    "smooth": true
+                },
+                "bar": {
+                    "itemStyle": {
+                        "barBorderWidth": 0,
+                        "barBorderColor": "#ccc"
+                    }
+                },
+                "pie": {
+                    "itemStyle": {
+                        "borderWidth": 0,
+                        "borderColor": "#ccc"
+                    }
+                },
+                "scatter": {
+                    "itemStyle": {
+                        "borderWidth": 0,
+                        "borderColor": "#ccc"
+                    }
+                },
+                "boxplot": {
+                    "itemStyle": {
+                        "borderWidth": 0,
+                        "borderColor": "#ccc"
+                    }
+                },
+                "parallel": {
+                    "itemStyle": {
+                        "borderWidth": 0,
+                        "borderColor": "#ccc"
+                    }
+                },
+                "sankey": {
+                    "itemStyle": {
+                        "borderWidth": 0,
+                        "borderColor": "#ccc"
+                    }
+                },
+                "funnel": {
+                    "itemStyle": {
+                        "borderWidth": 0,
+                        "borderColor": "#ccc"
+                    }
+                },
+                "gauge": {
+                    "itemStyle": {
+                        "borderWidth": 0,
+                        "borderColor": "#ccc"
+                    }
+                },
+                "candlestick": {
+                    "itemStyle": {
+                        "color": "#edafda",
+                        "color0": "transparent",
+                        "borderColor": "#d680bc",
+                        "borderColor0": "#8fd3e8",
+                        "borderWidth": "2"
+                    }
+                },
+                "graph": {
+                    "itemStyle": {
+                        "borderWidth": 0,
+                        "borderColor": "#ccc"
+                    },
+                    "lineStyle": {
+                        "width": 1,
+                        "color": "#aaaaaa"
+                    },
+                    "symbolSize": "6",
+                    "symbol": "emptyCircle",
+                    "smooth": true,
+                    "color": [
+                        "#516b91",
+                        "#59c4e6",
+                        "#edafda",
+                        "#93b7e3",
+                        "#a5e7f0",
+                        "#cbb0e3"
+                    ],
+                    "label": {
+                        "color": "#eeeeee"
+                    }
+                },
+                "map": {
+                    "itemStyle": {
+                        "areaColor": "#f3f3f3",
+                        "borderColor": "#516b91",
+                        "borderWidth": 0.5
+                    },
+                    "label": {
+                        "color": "#000"
+                    },
+                    "emphasis": {
+                        "itemStyle": {
+                            "areaColor": "#a5e7f0",
+                            "borderColor": "#516b91",
+                            "borderWidth": 1
+                        },
+                        "label": {
+                            "color": "#516b91"
+                        }
+                    }
+                },
+                "geo": {
+                    "itemStyle": {
+                        "areaColor": "#f3f3f3",
+                        "borderColor": "#516b91",
+                        "borderWidth": 0.5
+                    },
+                    "label": {
+                        "color": "#000"
+                    },
+                    "emphasis": {
+                        "itemStyle": {
+                            "areaColor": "#a5e7f0",
+                            "borderColor": "#516b91",
+                            "borderWidth": 1
+                        },
+                        "label": {
+                            "color": "#516b91"
+                        }
+                    }
+                },
+                "categoryAxis": {
+                    "axisLine": {
+                        "show": true,
+                        "lineStyle": {
+                            "color": "#cccccc"
+                        }
+                    },
+                    "axisTick": {
+                        "show": false,
+                        "lineStyle": {
+                            "color": "#333"
+                        }
+                    },
+                    "axisLabel": {
+                        "show": true,
+                        "color": "#999999"
+                    },
+                    "splitLine": {
+                        "show": true,
+                        "lineStyle": {
+                            "color": [
+                                "#eeeeee"
+                            ]
+                        }
+                    },
+                    "splitArea": {
+                        "show": false,
+                        "areaStyle": {
+                            "color": [
+                                "rgba(250,250,250,0.05)",
+                                "rgba(200,200,200,0.02)"
+                            ]
+                        }
+                    }
+                },
+                "valueAxis": {
+                    "axisLine": {
+                        "show": true,
+                        "lineStyle": {
+                            "color": "#cccccc"
+                        }
+                    },
+                    "axisTick": {
+                        "show": false,
+                        "lineStyle": {
+                            "color": "#333"
+                        }
+                    },
+                    "axisLabel": {
+                        "show": true,
+                        "color": "#999999"
+                    },
+                    "splitLine": {
+                        "show": true,
+                        "lineStyle": {
+                            "color": [
+                                "#eeeeee"
+                            ]
+                        }
+                    },
+                    "splitArea": {
+                        "show": false,
+                        "areaStyle": {
+                            "color": [
+                                "rgba(250,250,250,0.05)",
+                                "rgba(200,200,200,0.02)"
+                            ]
+                        }
+                    }
+                },
+                "logAxis": {
+                    "axisLine": {
+                        "show": true,
+                        "lineStyle": {
+                            "color": "#cccccc"
+                        }
+                    },
+                    "axisTick": {
+                        "show": false,
+                        "lineStyle": {
+                            "color": "#333"
+                        }
+                    },
+                    "axisLabel": {
+                        "show": true,
+                        "color": "#999999"
+                    },
+                    "splitLine": {
+                        "show": true,
+                        "lineStyle": {
+                            "color": [
+                                "#eeeeee"
+                            ]
+                        }
+                    },
+                    "splitArea": {
+                        "show": false,
+                        "areaStyle": {
+                            "color": [
+                                "rgba(250,250,250,0.05)",
+                                "rgba(200,200,200,0.02)"
+                            ]
+                        }
+                    }
+                },
+                "timeAxis": {
+                    "axisLine": {
+                        "show": true,
+                        "lineStyle": {
+                            "color": "#cccccc"
+                        }
+                    },
+                    "axisTick": {
+                        "show": false,
+                        "lineStyle": {
+                            "color": "#333"
+                        }
+                    },
+                    "axisLabel": {
+                        "show": true,
+                        "color": "#999999"
+                    },
+                    "splitLine": {
+                        "show": true,
+                        "lineStyle": {
+                            "color": [
+                                "#eeeeee"
+                            ]
+                        }
+                    },
+                    "splitArea": {
+                        "show": false,
+                        "areaStyle": {
+                            "color": [
+                                "rgba(250,250,250,0.05)",
+                                "rgba(200,200,200,0.02)"
+                            ]
+                        }
+                    }
+                },
+                "toolbox": {
+                    "iconStyle": {
+                        "borderColor": "#999999"
+                    },
+                    "emphasis": {
+                        "iconStyle": {
+                            "borderColor": "#666666"
+                        }
+                    }
+                },
+                "legend": {
+                    "textStyle": {
+                        "color": "#999999"
+                    }
+                },
+                "tooltip": {
+                    "axisPointer": {
+                        "lineStyle": {
+                            "color": "#cccccc",
+                            "width": 1
+                        },
+                        "crossStyle": {
+                            "color": "#cccccc",
+                            "width": 1
+                        }
+                    }
+                },
+                "timeline": {
+                    "lineStyle": {
+                        "color": "#8fd3e8",
+                        "width": 1
+                    },
+                    "itemStyle": {
+                        "color": "#8fd3e8",
+                        "borderWidth": 1
+                    },
+                    "controlStyle": {
+                        "color": "#8fd3e8",
+                        "borderColor": "#8fd3e8",
+                        "borderWidth": 0.5
+                    },
+                    "checkpointStyle": {
+                        "color": "#8fd3e8",
+                        "borderColor": "#8a7ca8"
+                    },
+                    "label": {
+                        "color": "#8fd3e8"
+                    },
+                    "emphasis": {
+                        "itemStyle": {
+                            "color": "#8fd3e8"
+                        },
+                        "controlStyle": {
+                            "color": "#8fd3e8",
+                            "borderColor": "#8fd3e8",
+                            "borderWidth": 0.5
+                        },
+                        "label": {
+                            "color": "#8fd3e8"
+                        }
+                    }
+                },
+                "visualMap": {
+                    "color": [
+                        "#516b91",
+                        "#59c4e6",
+                        "#a5e7f0"
+                    ]
+                },
+                "dataZoom": {
+                    "backgroundColor": "rgba(0,0,0,0)",
+                    "dataBackgroundColor": "rgba(255,255,255,0.3)",
+                    "fillerColor": "rgba(167,183,204,0.4)",
+                    "handleColor": "#a7b7cc",
+                    "handleSize": "100%",
+                    "textStyle": {
+                        "color": "#333"
+                    }
+                },
+                "markPoint": {
+                    "label": {
+                        "color": "#eeeeee"
+                    },
+                    "emphasis": {
+                        "label": {
+                            "color": "#eeeeee"
+                        }
+                    }
+                }
+            };
+
+            echarts.registerTheme('westeros', theme_json);
+            let base_url = 'https://app3774.acapp.acwing.com.cn';
+            loading();
+            add_listening_events()
+            $.ajax({
+                url: `${base_url}/tool/dangdangcrawler/`,
+                type: 'get',
+                data: { 'type': 'data' },
+                success: (rep) => {
+                    result = rep.result;
+                    content = rep.content;
+                    date = rep.date;
+                    url = rep.url;
+                    if (result) {
+                        $('.state').text('上次更新时间: ' + date);
+                        $('.state').css('color', 'green');
+                        padding_data(content);
+                    } else {
+                        $('.state').text('获取数据失败');
+                        $('.state').css('color', 'red');
+                    }
+                },
+                error: () => {
+                    $('.state').text('获取数据失败');
+                    $('.state').css('color', 'red');
+                }
+            });
+
+            function padding_raw_data(data) {
+                process_data = [];
+                for (let index in data) {
+                    let a_book_info = data[index];
+                    let book_info = [];
+                    for (let key in a_book_info) {
+                        book_info.push(a_book_info[key]);
+                    }
+                    process_data.push(book_info);
+                }
+                new gridjs.Grid({
+                    data: process_data,
+                    pagination: {
+                        limit: 4,
+                    },
+                    style: {
+                        table: {
+                            'white-space': 'nowrap'
+                        }
+                    },
+                    fixedHeader: true,
+                    height: '400px',
+                    search: true,
+                    sort: true,
+                    resizable: true,
+                    columns: ["排名", { name: "图片", hidden: true }, { name: "网页地址", hidden: true }, "书名", "星级",
+                        "评论数", "推荐指数", "作者/译者/出品", "出版时间", "出版社",
+                        "五星评分数", "折后价格", "原价", "折扣", "电子书价格"],
+                }).render(document.getElementById('data-grid-wrap'));
+            }
+
+            function padding_data(data) {
+                $('.download').show();
+                $('#data-grid').show();
+                console.log(data);
+                $('.load-main').hide();
+                $('.data-echarts').css('display', 'grid');
+                // padding raw data
+                padding_raw_data(data['list']);
+                // hot_rank
+                render_hot_rank(data['hot_rank']);
+                // cdrscsl
+                render_cdrscsl(data['cdrscsl']);
+                // star_price_rate
+                render_star_price_rate(data['star_price_rate']);
+                // author_rank
+                render_author_rank(data['author_rank']);
+                // press_time
+                render_press_time(data['press_time']);
+                // press_count
+                render_press_count(data['press_rank']);
+                // e_price_rank
+                render_e_price_rank(data['e_price_rank']);
+                // star-count
+                render_star_count(data['star_count'])
+            }
+
+            function add_listening_events() {
+                $('.data-source > span').on('click', () => {
+                    window.open($('.data-source > span').text());
+                })
+                $(`.download`).on('click', () => {
+                    var link = document.createElement('a');
+                    link.href = base_url + '/' + url;
+                    link.download = 'raw.json';
+                    link.click();
+                });
+                $('#data-grid').on('click', () => {
+                    if ($('#data-grid-wrap').css("display") === 'block') {
+                        $('#data-grid-wrap').removeClass("move");
+                    } else {
+                        $('#data-grid-wrap').addClass("move");
+                    }
+                })
+            }
+
+            function render_e_price_rank(data) {
+                nodeid = "e-price-rank-index";
+                eprice = data['e_price'];
+                eprice = eprice.toFixed(2);
+                var chartDom = document.getElementById(nodeid);
+                var myChart = echarts.init(chartDom, 'westeros');
+                var option;
+
+                option = {
+                    title: {
+                        text: '电子书平均价格 ￥单位(元)'
+                    },
+                    tooltip: {
+                        formatter: '{a} <br/>{b} : {c}%'
+                    },
+                    series: [
+                        {
+                            name: title,
+                            type: 'gauge',
+                            progress: {
+                                show: true
+                            },
+                            detail: {
+                                valueAnimation: true,
+                                formatter: '{value}'
+                            },
+                            data: [
+                                {
+                                    value: eprice,
+                                    name: '平均价格'
+                                }
+                            ]
+                        }
+                    ]
+                };
+
+                option && myChart.setOption(option);
+
+            }
+
+            function render_star_count(data) {
+                nodeid = "star-count-index";
+                title = "五星评分数比例"
+                var chartDom = document.getElementById(nodeid);
+                var myChart = echarts.init(chartDom, 'westeros');
+                var option;
+
+                const gaugeData = [
+                    {
+                        value: (data['p_rate'] * 100).toFixed(2),
+                        name: 'Perfect',
+                        title: {
+                            offsetCenter: ['0%', '-45%']
+                        },
+                        detail: {
+                            valueAnimation: true,
+                            offsetCenter: ['0%', '-30%']
+                        }
+                    },
+                    {
+                        value: (data['g_rate'] * 100).toFixed(2),
+                        name: 'Good',
+                        title: {
+                            offsetCenter: ['0%', '-10%']
+                        },
+                        detail: {
+                            valueAnimation: true,
+                            offsetCenter: ['0%', '5%']
+                        }
+                    },
+                    {
+                        value: (data['c_rate'] * 100).toFixed(2),
+                        name: 'Commonly',
+                        title: {
+                            offsetCenter: ['0%', '25%']
+                        },
+                        detail: {
+                            valueAnimation: true,
+                            offsetCenter: ['0%', '40%']
+                        }
+                    }
+                ];
+                option = {
+                    title: {
+                        text: title,
+                    },
+                    series: [
+                        {
+                            type: 'gauge',
+                            startAngle: 90,
+                            endAngle: -270,
+                            pointer: {
+                                show: false
+                            },
+                            progress: {
+                                show: true,
+                                overlap: false,
+                                roundCap: true,
+                                clip: false,
+                                itemStyle: {
+                                    borderWidth: 1,
+                                    borderColor: '#464646'
+                                }
+                            },
+                            axisLine: {
+                                lineStyle: {
+                                    width: 40
+                                }
+                            },
+                            splitLine: {
+                                show: false,
+                                distance: 0,
+                                length: 10
+                            },
+                            axisTick: {
+                                show: false
+                            },
+                            axisLabel: {
+                                show: false,
+                                distance: 50
+                            },
+                            data: gaugeData,
+                            title: {
+                                fontSize: 14
+                            },
+                            detail: {
+                                width: 50,
+                                height: 14,
+                                fontSize: 14,
+                                color: 'inherit',
+                                borderColor: 'inherit',
+                                borderRadius: 20,
+                                borderWidth: 1,
+                                formatter: '{value}%'
+                            }
+                        }
+                    ]
+                };
+
+                option && myChart.setOption(option);
+
+            }
+
+            function render_press_count(data) {
+                title = "出版社排行";
+
+                var chartDom = document.getElementById('press-count-index');
+                var myChart = echarts.init(chartDom, 'westeros');
+                var option;
+                render_data = [];
+                for (let index in data) {
+                    v = data[index];
+                    render_data.push({ name: index, value: v });
+                }
+
+                option = {
+                    title: {
+                        text: title,
+                    },
+                    legend: {
+                        top: 'bottom'
+                    },
+                    toolbox: {
+                        show: true,
+                        feature: {
+                            mark: { show: true },
+                            dataView: { show: true, readOnly: false },
+                            restore: { show: true },
+                            saveAsImage: { show: true }
+                        }
+                    },
+                    series: [
+                        {
+                            name: title,
+                            type: 'pie',
+                            radius: [10, 50],
+                            center: ['50%', '50%'],
+                            roseType: 'area',
+                            itemStyle: {
+                                borderRadius: 3
+                            },
+                            data: render_data
+                        }
+                    ]
+                };
+
+                option && myChart.setOption(option);
+
+            }
+
+            function render_press_time(data) {
+                title = "近期出版图书次数";
+                x_data = data['time_s'];
+                x_data.splice(0, 1);
+                y_data = data['count'];
+                var chartDom = document.getElementById('press-time-index');
+                var myChart = echarts.init(chartDom, 'westeros');
+                var option;
+
+                option = {
+                    title: {
+                        text: title,
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {},
+                    toolbox: {
+                        show: true,
+                        feature: {
+                            dataZoom: {
+                                yAxisIndex: 'none'
+                            },
+                            dataView: { readOnly: false },
+                            magicType: { type: ['line', 'bar'] },
+                            restore: {},
+                            saveAsImage: {}
+                        }
+                    },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: x_data,
+                    },
+                    yAxis: {
+                        type: 'value',
+                        axisLabel: {
+                            formatter: '{value}'
+                        }
+                    },
+                    series: [
+                        {
+                            name: 'count',
+                            type: 'line',
+                            data: y_data,
+                            markLine: {
+                                data: [
+                                    { type: 'average', name: 'Avg' },
+                                    [
+                                        {
+                                            symbol: 'none',
+                                            x: '90%',
+                                            yAxis: 'max'
+                                        },
+                                        {
+                                            symbol: 'circle',
+                                            label: {
+                                                position: 'start',
+                                                formatter: 'Max',
+                                            },
+                                            type: 'max',
+                                            name: '最高点'
+                                        }
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                };
+
+                option && myChart.setOption(option);
+
+            }
+
+            function render_author_rank(data) {
+                title = '作家排行'
+                author_list = data['author'];
+                avg_star = data['book_star_level'];
+                legend_list = ['平均星级', '出版次数'];
+                count = data['count'];
+
+                var chartDom = document.getElementById('author-rank-index');
+                var myChart = echarts.init(chartDom, 'westeros');
+                var option;
+
+                option = {
+                    title: {
+                        text: title,
+                    },
+                    angleAxis: {
+                        type: 'category',
+                        data: author_list,
+                    },
+                    radiusAxis: {},
+                    polar: {},
+                    series: [
+                        {
+                            type: 'bar',
+                            data: avg_star,
+                            coordinateSystem: 'polar',
+                            name: '平均星级',
+                            stack: 'a',
+                            emphasis: {
+                                focus: 'series'
+                            }
+                        },
+                        {
+                            type: 'bar',
+                            data: count,
+                            coordinateSystem: 'polar',
+                            name: '出版次数',
+                            emphasis: {
+                                focus: 'series'
+                            }
+                        }
+                    ],
+                    legend: {
+                        show: true,
+                        data: legend_list
+                    }
+                };
+
+                option && myChart.setOption(option);
+
+
+            }
+
+            function render_star_price_rate(data) {
+                var chartDom = document.getElementById('star-price-rate-index');
+                var myChart = echarts.init(chartDom, 'westeros');
+                var option;
+                function makeOption(type, symbol) {
+                    title = "星价比Top10";
+                    subtitle = "星级 / 折后价格";
+                    y_data = data['book_name'];
+                    legend_data = ["星价比", "折后价", "星级"];
+                    x1_data = [];
+                    for (let index in data['star_price_rate']) {
+                        x1_data.push({ value: data['star_price_rate'][index], symbol: symbol });
+                    }
+                    x2_data = [];
+                    for (let index in data['book_discounted_price']) {
+                        x2_data.push({ value: data['book_discounted_price'][index], symbol: symbol });
+                    }
+                    x3_data = [];
+                    for (let index in data['book_star_level']) {
+                        x3_data.push({ value: data['book_star_level'][index], symbol: symbol });
+                    }
+                    x_data = [];
+                    x_data.push(x1_data);
+                    x_data.push(x2_data);
+                    x_data.push(x3_data);
+                    series_data = [];
+                    for (let index = 0; index < 3; index++) {
+                        series_data.push({
+                            name: legend_data[index],
+                            id: 'bar' + index,
+                            type: type,
+                            symbolRepeat: true,
+                            symbolSize: ['80%', '60%'],
+                            barCategoryGap: '40%',
+                            universalTransition: {
+                                enabled: true,
+                                delay: function (idx, total) {
+                                    return (idx / total) * 1000;
+                                }
+                            },
+                            data: x_data[index]
+                        });
+                    }
+                    return {
+                        title: {
+                            text: title,
+                            subtext: subtitle
+                        },
+                        legend: {
+                            data: legend_data
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow'
+                            }
+                        },
+                        grid: {
+                            containLabel: true,
+                            left: 20
+                        },
+                        yAxis: {
+                            data: y_data,
+                            inverse: true,
+                            axisLine: { show: false },
+                            axisTick: { show: false },
+                            axisLabel: {
+                                margin: 30,
+                                fontSize: 14
+                            },
+                            axisPointer: {
+                                label: {
+                                    show: true,
+                                    margin: 30
+                                }
+                            }
+                        },
+                        xAxis: {
+                            splitLine: { show: false },
+                            axisLabel: { show: false },
+                            axisTick: { show: false },
+                            axisLine: { show: false }
+                        },
+                        animationDurationUpdate: 500,
+                        series: series_data,
+                    };
+                }
+                const options = [
+                    makeOption('pictorialBar'),
+                    makeOption('bar'),
+                    makeOption('pictorialBar', 'diamond')
+                ];
+                var optionIndex = 0;
+                option = options[optionIndex];
+                setInterval(function () {
+                    optionIndex = (optionIndex + 1) % options.length;
+                    myChart.setOption(options[optionIndex]);
+                }, 2500);
+            }
+
+            function render_cdrscsl(data) {
+                title = "Top5图书雷达图";
+                subtitle = "五个指标分别为评论数、折扣、推荐指数、五星评分数、星级\n(所有指标越大越好)";
+                legend_data = [];
+                radar_data = [];
+                for (let index in data) {
+                    legend_data.push(data[index].name);
+                    radar_data.push({ name: data[index].name, value: data[index].cdrscsl });
+                }
+                indicator = [
+                    { name: '评论数' },
+                    { name: '折扣' },
+                    { name: '推荐指数' },
+                    { name: '五星评分数' },
+                    { name: '星级' }
+                ];
+
+                var chartDom = document.getElementById('cdrscsl-index');
+                var myChart = echarts.init(chartDom);
+                var option;
+
+                option = {
+                    title: {
+                        text: title,
+                        subtext: subtitle,
+                    },
+                    legend: {
+                        data: legend_data,
+                        bottom: 5,
+                        left: 'center',
+                    },
+                    radar: {
+                        // shape: 'circle',
+                        indicator: indicator
+                    },
+                    series: [
+                        {
+                            name: 'indicator',
+                            type: 'radar',
+                            data: radar_data,
+                        }
+                    ]
+                };
+                option && myChart.setOption(option);
+            }
+
+            function render_hot_rank(data) {
+                title = "热度Top";
+                subtitle = "热度计算公式 = 评论数 * 0.6 + 五星评分数 * 0.3 + 推荐指数 * 0.3; ... 代表中间样本平均值";
+                y_data = data['book_name'];
+                comment_data = data['book_comment_new'];
+                star_data = data['book_star_count_new'];
+                recommend_data = data['book_recommend_new'];
+                hot_index = data['hot_index'];
+
+                var chartDom = document.getElementById('hot-index');
+                var myChart = echarts.init(chartDom);
+                var option;
+                option = {
+                    title: {
+                        text: title,
+                        subtext: subtitle,
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        }
+                    },
+                    legend: {},
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    yAxis: [
+                        {
+                            type: 'category',
+                            data: y_data,
+                        }
+                    ],
+                    xAxis: [
+                        {
+                            type: 'value'
+                        }
+                    ],
+                    series: [
+                        {
+                            name: '评论数 * 0.6',
+                            type: 'bar',
+                            stack: 'hot',
+                            emphasis: {
+                                focus: 'series'
+                            },
+                            data: comment_data,
+                        },
+                        {
+                            name: '五星评分数 * 0.3',
+                            type: 'bar',
+                            stack: 'hot',
+                            emphasis: {
+                                focus: 'series'
+                            },
+                            data: star_data
+                        },
+                        {
+                            name: '推荐指数',
+                            type: 'bar',
+                            stack: 'hot',
+                            emphasis: {
+                                focus: 'series'
+                            },
+                            data: recommend_data
+                        },
+                        {
+                            name: '热度',
+                            type: 'line',
+                            data: hot_index,
+                            emphasis: {
+                                focus: 'series'
+                            }
+                        }
+                    ]
+                };
+                option && myChart.setOption(option);
+            }
+
+            function loading() {
+                var chartDom = document.getElementById('loading');
+                var myChart = echarts.init(chartDom);
+                var option;
+
+                option = {
+                    graphic: {
+                        elements: [
+                            {
+                                type: 'group',
+                                left: 'center',
+                                top: 'center',
+                                children: new Array(7).fill(0).map((val, i) => ({
+                                    type: 'rect',
+                                    x: i * 20,
+                                    shape: {
+                                        x: 0,
+                                        y: -40,
+                                        width: 10,
+                                        height: 80
+                                    },
+                                    style: {
+                                        fill: '#5470c6'
+                                    },
+                                    keyframeAnimation: {
+                                        duration: 1000,
+                                        delay: i * 200,
+                                        loop: true,
+                                        keyframes: [
+                                            {
+                                                percent: 0.5,
+                                                scaleY: 0.3,
+                                                easing: 'cubicIn'
+                                            },
+                                            {
+                                                percent: 1,
+                                                scaleY: 1,
+                                                easing: 'cubicOut'
+                                            }
+                                        ]
+                                    }
+                                }))
+                            }
+                        ]
+                    }
+                };
+
+                option && myChart.setOption(option);
+            }
+
+        }());
+    </script>
+
+</body>
