@@ -1,5 +1,17 @@
 const BASE_URL = "https://app3774.acapp.acwing.com.cn";
 
+function refresh_() {
+    $.ajax({
+        url: `${BASE_URL}/gameclub/auth/jwt/token/refresh/`,
+        type: 'POST',
+        data: {
+            'refresh': localStorage.getItem('gc-refresh'),
+        },
+        success: rep => {
+            localStorage.setItem('gc-access', rep.access);
+        }
+    });
+}
 
 function refresh_tokens() {
     setInterval(() => {
@@ -13,7 +25,7 @@ function refresh_tokens() {
                 localStorage.setItem('gc-access', rep.access);
             }
         })
-    }, 4.5 * 60 * 1000);
+    }, 59 * 60 * 1000);
 }
 
 function clear_tokens() {

@@ -7,3 +7,5 @@ db.sqlite3
 /static
 /media
 *.pdf
+**/js/plugins
+**/plugins

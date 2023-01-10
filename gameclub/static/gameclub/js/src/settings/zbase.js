@@ -98,9 +98,15 @@ class GameClubSetting {
             this.$span_name_input.val(this.root.name);
         });
         this.$span_password_change.on('click', () => {
+            if(this.$span_password_change.hasClass("disabled-click")){
+                return false;
+            }
             window.location.href = `${BASE_URL}/gameclub/page/forget/?email=` + this.root.email;
         });
         this.$span_email_change.on('click', () => {
+            if(this.$span_email_change.hasClass("disabled-click")){
+                return false;
+            }
             window.location.href = `${BASE_URL}/gameclub/page/bind/`;
         });
         this.$span_photo_input.change(() => {

@@ -56,7 +56,7 @@ class SPGameLogin{
                     localStorage.setItem(`gc-access`, rep.access);
                 },
             });
-        }, 4.5 * 60 * 1000);
+        }, 59 * 60 * 1000);
 
     }
 

@@ -87,12 +87,6 @@ class Pool:
                 return 0
         print(len(self.players))
 
-def get_player_from_queue():
-    try:
-        return queue.get_nowait()
-    except:
-        return None
-
 pool = Pool()
 
 class SplendorMatchHandler:

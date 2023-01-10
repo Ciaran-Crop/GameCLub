@@ -1,14 +1,15 @@
 export class GameClubIndex {
-    constructor(id, os, access, refresh, redirect){
+    constructor(id, os, access, refresh, redirect) {
         this.id = id;
         this.os = os;
         this.redirect = redirect
-        if(!localStorage.getItem('gc-access')){
+        if (!localStorage.getItem('gc-access')) {
             localStorage.setItem('gc-access', access);
         }
-        if(!localStorage.getItem('gc-refresh')){
+        if (!localStorage.getItem('gc-refresh')) {
             localStorage.setItem('gc-refresh', refresh);
         }
+        refresh_();
         this.$gc_index = $(`
 <div class='gc-index'>
 </div>
@@ -18,7 +19,7 @@ export class GameClubIndex {
         this.start();
     }
 
-    start(){
+    start() {
         // create back
         this.back = new GameClubIndexBack(this);
         // create login box

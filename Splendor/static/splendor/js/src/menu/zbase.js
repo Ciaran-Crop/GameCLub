@@ -95,6 +95,9 @@ export class SplendorMenu {
         this.$signout = this.$base_menu.find("[name='signout']");
         this.$rule = this.$base_menu.find("[name='rule']");
         this.$gameclub = this.$base_menu.find("[name='gameclub']");
+        if(this.os){
+            this.$gameclub.hide();
+        }
 
         this.$menu_box.append(this.$base_menu);
 

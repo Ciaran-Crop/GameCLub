@@ -9,6 +9,7 @@ export class SplendorLogin {
         if(!localStorage.getItem(`gc-refresh`)){
             localStorage.setItem(`gc-refresh`, refresh);
         }
+        refresh_();
         this.start();
     }
     start(){

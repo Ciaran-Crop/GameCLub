@@ -34,7 +34,6 @@ class ReceiveCode(APIView):
             return redirect(BASE_NAME)
         cache.delete('applycode-' + state)
 
-
         app_id = 3774
         secret = 'aed26a7c5b2c4c16983830b8a47fa186'
 

@@ -84,7 +84,6 @@
 .tool-element-name>span:hover {
     animation: move 1.5s infinite alternate linear;
 }
-
 .tool-element-name>span {
     display: inline-block;
     white-space: nowrap;

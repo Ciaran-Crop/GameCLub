@@ -9,15 +9,18 @@ class ToolList(APIView):
 
     def get(self, request):
         data = request.GET
+        user = request.user
         if data['type'] == 'all':
-            return self.get_all_tools()
+            return self.get_all_tools(user)
         else:
             return self.success_or_error('', True)
 
-    def get_all_tools(self):
+    def get_all_tools(self, user):
         tools = Tool.objects.all()
         tools_list = []
         for tool in tools:
+            if tool.get_permissions() == tool.ONLY_AUTHOR and not tool.is_author(user.username):
+                continue
             tools_list.append({
                 'name': tool.get_name(),
                 'types': tool.get_types(),

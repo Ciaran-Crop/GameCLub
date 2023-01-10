@@ -11,7 +11,20 @@ function refresh_tokens(){
             success: rep => {
                 localStorage.setItem('gc-access', rep.access);
             }
-        })}, 4.5 * 60 * 1000);
+        })}, 59 * 60 * 1000);
+}
+
+function refresh_() {
+    $.ajax({
+        url: `${BASE_URL}/gameclub/auth/jwt/token/refresh/`,
+        type: 'POST',
+        data: {
+            'refresh': localStorage.getItem('gc-refresh'),
+        },
+        success: rep => {
+            localStorage.setItem('gc-access', rep.access);
+        }
+    });
 }
 
 function clear_tokens(){
