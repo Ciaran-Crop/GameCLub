@@ -73,7 +73,7 @@ class ReceiveCode(APIView):
         photo = info['photo']
 
         while User.objects.filter(username='{}@gameclub.net'.format(username)).exists():
-            username += str(randint(0,9))
+            username += str(random.randint(0,9))
 
         user = User.objects.create(username = '{}@gameclub.net'.format(username))
         user.save()

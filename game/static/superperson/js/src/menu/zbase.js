@@ -45,7 +45,7 @@ class SPGameMenu {
     }
     show(){
         this.back_img = this.root.login.back_img;
-        this.$sp_game_menu.css("background-image","url(" + this.back_img + ")");
+        this.$sp_game_menu.css("background","linear-gradient(rgba(0, 0, 0, 0.52), rgba(0, 0, 0, 0.52)), url(" + this.back_img + ") 0% 20% / cover repeat ");
         this.$sp_game_menu.show();
     }
 
