@@ -3,6 +3,8 @@
     height: 100%;
     min-height: 700px;
     color: whitesmoke;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .menu-player-info {
@@ -72,7 +74,6 @@
 
 .menu-setting-wrap {
     position: absolute;
-    z-index: 2000;
     background: rgba(0 0 0 /10%);
     top: 0;
     width: 100%;
@@ -211,7 +212,6 @@ input[name='room_pass'] {
 
 .menu-ranklist-wrap {
     position: absolute;
-    z-index: 2000;
     background: rgba(0 0 0 /10%);
     top: 0;
     width: 100%;
@@ -222,7 +222,7 @@ input[name='room_pass'] {
     background: white;
     color: black;
     top: 50%;
-    position: relative;
+    position: absolute;
     left: 50%;
     transform: translate(-50%, -50%);
     box-sizing: border-box;
@@ -242,10 +242,6 @@ input[name='room_pass'] {
     font-weight: bolder;
     border-bottom: 1px solid #938b8b;
     margin-bottom: 10px;
-    width: 700px;
-    display: flex;
-    justify-content: space-between;
-    align-items: stretch;
 }
 .ranklist-title img:hover {
     transition: .5s;
@@ -371,3 +367,16 @@ input[name='room_pass'] {
     border-radius: 10px;
     display: none;
 }
+
+.ranklist-title > img {
+    width: inherit;
+    height: inherit;
+    position: absolute;
+    right: 1vw;
+}
+
+.ranklist-title > span {
+    position: absolute;
+    left: 1vw;
+}
+

@@ -2,6 +2,7 @@ class SplendorChat {
     constructor(playground) {
         this.playground = playground;
         this.am = this.playground.am;
+        this.chat_state = false;
         this.start();
     }
     start() {
@@ -27,51 +28,37 @@ class SplendorChat {
     }
 
     to_has_message(){
+        if(this.$history.css('display') === 'block'){
+            return false;
+        }
         this.$chat_img.css('background', 'url('+ BASE_URL+'/static/splendor/images/playground/up_to.svg)');
         this.$chat_img.css('background-size', 'cover');
     }
 
     add_listening_events(){
-        this.$history.on('mouseenter', () => {
-            this.$history.fadeIn();
-            this.$history.scrollTop(this.$history[0].scrollHeight);
-            this.$input.hide();
-            this.to_clear();
-        }).on('mouseleave', () => {
-            this.$history.hide();
-            this.$input.hide();
-            this.to_clear();
-        });
-        this.$chat_img.on('mouseenter', () => {
-            this.$history.fadeIn();
-            this.$history.scrollTop(this.$history[0].scrollHeight);
-            this.$input.hide();
-            this.to_clear();
-        }).on('mouseleave', () => {
-            this.$history.hide();
-            this.$input.hide();
-            this.to_clear();
+        this.$chat_img.on('click', () => {
+            if(!this.chat_state){
+                this.chat_state = true;
+                this.$history.fadeIn();
+                this.$history.scrollTop(this.$history[0].scrollHeight);
+                this.$chat_img.addClass("chat-img-rotate");
+                this.to_clear();
+            }else{
+                this.chat_state = false;
+                this.$history.hide();
+                this.$chat_img.removeClass("chat-img-rotate");
+                this.to_clear();
+            }
+            return false;
         });
         this.playground.$canvas.keydown((e) => {
             if(e.which === 13){
-                this.$input.show();
                 this.$input.focus();
-                this.$history.fadeIn();
-                this.$history.scrollTop(this.$history[0].scrollHeight);
-                this.$chat_img.hide();
-            }else if(e.which === 27){
-                this.$input.hide();
-                this.$history.hide();
-                this.$chat_img.show();
-                this.playground.$canvas.focus();
                 return false;
             }
         });
         this.$input.keydown((e) => {
             if(e.which === 27){
-                this.$input.hide();
-                this.$history.hide();
-                this.$chat_img.show();
                 this.playground.$canvas.focus();
                 return false;
             }else if(e.which === 13){
@@ -85,8 +72,28 @@ class SplendorChat {
                 }
                 return false;
             }
-
         });
+
+        this.playground.$canvas.focus(() => {
+            this.focus_canvas();
+            return false;
+        });
+        this.$input.focus(() => {
+            this.focus_input();
+            return false;
+        }).blur(() => {
+            this.playground.$canvas.focus();
+            return false;
+        });
+    }
+
+    focus_input(){
+        this.$history.fadeIn();
+        this.$history.scrollTop(this.$history[0].scrollHeight);
+    }
+
+    focus_canvas(){
+        this.$history.hide();
     }
 
     send_message(email, message) {

@@ -1,43 +1,69 @@
 export class SplendorMenu {
-    constructor(id, os, room_id, need_pass){
+    constructor(id, os, room_id, need_pass) {
         this.id = id;
         this.os = os;
+        console.log(this.os);
         this.room_id = room_id;
         this.need_pass = need_pass
         this.$menu_div = $('#' + this.id);
-        this.start();
+        if(this.os){
+            this.os.api.window.resize(76, 83);
+            this.os.api.window.on_close(() => {
+                this.destory();
+            });
+        }
+        this.loading_assets();
     }
 
-    start(){
-        this.start_ws();
-        this.start_room();
-        this.get_info();
-        this.create_settings();
+    destory(){
+        try {
+            this.loading.audio_assets.pause();
+            this.$menu_div.empty();
+            this.playground.destory();
+        } catch (error) {
+            window.location.reload();
+        }
+        
     }
 
-    start_ws(){
+    loading_assets() {
+        this.loading = new Loading(this);
+    }
+
+    start() {
+        if (this.os) {
+            this.getinfo_acwing();
+        } else {
+            this.start_ws();
+            this.start_room();
+            this.get_info();
+            this.create_settings();
+        }
+    }
+
+    start_ws() {
         this.socket = new SplendorRoomSocket(this);
     }
 
-    start_room(){
+    start_room() {
         this.room = new SplendorRoom(this);
     }
 
-    create_settings(){
+    create_settings() {
         this.single_setting = {
-            'single_mode': {'name': '模式', 'content': ['单人']},
-            'single_player_number': {'name': '人数', 'content': ['2人','3人','4人']},
-            'single_round_second': {'name': '回合秒数', 'content': ['10s', '15s', '30s', '35s']},
+            'single_mode': { 'name': '模式', 'content': ['单人'] },
+            'single_player_number': { 'name': '人数', 'content': ['2人', '3人', '4人'] },
+            'single_round_second': { 'name': '回合秒数', 'content': ['10s', '15s', '30s', '35s'] },
         };
         this.room_setting = {
-            'room_mode': {'name': '模式', 'content': ['多人']},
-            'room_player_number': {'name': '人数', 'content':['2人', '3人', '4人']},
-            'room_round_second': {'name': '回合秒数', 'content': ['10s', '15s', '30s', '35s', '45s', '60s']},
-            'room_pass': {'name':'房间密码', 'content': ['none']},
+            'room_mode': { 'name': '模式', 'content': ['多人'] },
+            'room_player_number': { 'name': '人数', 'content': ['2人', '3人', '4人'] },
+            'room_round_second': { 'name': '回合秒数', 'content': ['10s', '15s', '30s', '35s', '45s', '60s'] },
+            'room_pass': { 'name': '房间密码', 'content': ['none'] },
         };
     }
 
-    create_element(){
+    create_element() {
         // base_wrap
         this.$base_wrap = $(`
 <div class='menu-wrap'>
@@ -56,7 +82,7 @@ export class SplendorMenu {
     </div>
 </div>
 `);
-        if(this.room_id){
+        if (this.room_id) {
             this.room.create_room(this.player_info, this.room_id, this.need_pass, false, null);
         }
         this.$player_name = this.$base_wrap.find('.player-info-left > span:first');
@@ -95,8 +121,9 @@ export class SplendorMenu {
         this.$signout = this.$base_menu.find("[name='signout']");
         this.$rule = this.$base_menu.find("[name='rule']");
         this.$gameclub = this.$base_menu.find("[name='gameclub']");
-        if(this.os){
+        if (this.os) {
             this.$gameclub.hide();
+            this.$rule.hide();
         }
 
         this.$menu_box.append(this.$base_menu);
@@ -193,7 +220,7 @@ export class SplendorMenu {
     <div class='menu-ranklist-box'>
         <div class='ranklist-title'>
             <span>排行榜</span>
-            <img src="/static/gameclub/images/settings/cancel.svg">
+            <img src="${BASE_URL}/static/gameclub/images/settings/cancel.svg">
         </div>
         <div class='ranklist-box'>
             <div class="rubik-loader"></div>
@@ -223,7 +250,7 @@ export class SplendorMenu {
         this.add_listening_events();
     }
 
-    add_listening_events(){
+    add_listening_events() {
         // base_menu
         this.$single.on('click', () => {
             this.$base_menu.hide();
@@ -244,6 +271,10 @@ export class SplendorMenu {
             window.location.href = "https://app3774.acapp.acwing.com.cn/";
         });
         this.$signout.on('click', () => {
+            if(this.os){
+                this.os.api.window.close();
+                return false;
+            }
             clear_tokens();
             window.location.reload();
         });
@@ -287,15 +318,15 @@ export class SplendorMenu {
         });
     }
 
-    create_room(config){
+    create_room(config) {
         this.socket.create_room(config);
     }
 
-    receive_create_room(config){
+    receive_create_room(config) {
         this.room.create_room(this.player_info, this.room_id, this.need_pass, true, config);
     }
 
-    match_success(content){
+    match_success(content) {
         this.stop_match_timing(this.time_func_id);
         this.$match_loading.find('button').hide();
         this.$match_loading.find('div:last').css('color', 'rgb(68, 157, 68)');
@@ -304,35 +335,35 @@ export class SplendorMenu {
         console.log('match_success');
     }
 
-    start_game(config, players, room_id){
+    start_game(config, players, room_id) {
         let player = null;
-        for(let i = 0;i < players.length;i++){
-            if(players[i].email === this.email){
+        for (let i = 0; i < players.length; i++) {
+            if (players[i].email === this.email) {
                 players[i]['character'] = 'me';
                 player = players[i];
-            }else{
+            } else {
                 players[i]['character'] = 'enemy';
             }
         }
-        console.log('start_game', config, players, room_id);
+        // console.log('start_game', config, players, room_id);
         this.playground = new SplendorPlayground(this, config, players, room_id, player);
         this.room.hide();
         this.hide();
     }
 
     stop_game() {
-        if(this.playground){
+        if (this.playground) {
             this.playground.close();
             this.playground = null;
             this.show();
         }
     }
 
-    stop_match_timing(func_id){
+    stop_match_timing(func_id) {
         clearInterval(func_id);
     }
 
-    start_match_timing(){
+    start_match_timing() {
         let i = 1;
         this.$match_loading.find('div:last').text('');
         return setInterval(() => {
@@ -340,7 +371,7 @@ export class SplendorMenu {
             let second = temp % 60;
             let min = Math.floor(temp / 60);
             let mess = '匹配中... ';
-            if(min > 0) mess += (min + 'm');
+            if (min > 0) mess += (min + 'm');
             mess += (second + 's');
             this.$match_loading.find('div:last').text(mess);
             i += 1;
@@ -348,43 +379,43 @@ export class SplendorMenu {
             , 1000);
     }
 
-    stop_match(){
+    stop_match() {
         this.stop_match_timing(this.time_func_id);
         this.socket.stop_match(this.email, this.score);
         this.$match_loading.hide();
         console.log('stop_match');
     }
 
-    match_game(info){
-        console.log('matching...', info);
+    match_game(info) {
+        // console.log('matching...', info);
         this.socket.match(info.email, info.score);
     }
 
-    show_ranklist(){
+    show_ranklist() {
         this.$ranklist.show();
-        if(this.rank_list){
+        if (this.rank_list) {
             this.$rubik_loader.hide();
             this.$ranklist_content.show();
             this.$ranklist_row_me.show();
-        }else{
+        } else {
             this.get_ranklist();
         }
     }
 
-    get_ranklist(){
+    get_ranklist() {
         $.ajax({
             url: `${BASE_URL}/splendor/auth/get_ranklist/`,
             type: 'post',
-            headers : {
+            headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('gc-access'),
             },
-            data : {
+            data: {
                 'range_min': 1,
                 'range_max': 100,
             },
-            success : rep => {
+            success: rep => {
                 this.padding_ranklist(rep);
-                if(this.$ranklist.css('display') !== 'none'){
+                if (this.$ranklist.css('display') !== 'none') {
                     this.$rubik_loader.hide();
                     this.$ranklist_content.show();
                     this.$ranklist_row_me.show();
@@ -393,7 +424,7 @@ export class SplendorMenu {
         });
     }
 
-    padding_ranklist(rep){
+    padding_ranklist(rep) {
         let me_rank = -1;
         let ranks = rep.content;
         this.rank_list = ranks;
@@ -405,38 +436,38 @@ export class SplendorMenu {
             let score = value.score;
             let email = value.email;
             let element = this.create_ranklist_row(ranknumber, photo, name, score);
-            if(ranknumber === 1){
+            if (ranknumber === 1) {
                 element.addClass('ranklist-content-first');
             }
-            if(ranknumber === 2){
+            if (ranknumber === 2) {
                 element.addClass('ranklist-content-second');
             }
-            if(ranknumber === 3){
+            if (ranknumber === 3) {
                 element.addClass('ranklist-content-third');
             }
-            if(ranknumber === length){
+            if (ranknumber === length) {
                 element.addClass('ranklist-content-last-row');
             }
-            if(this.email === email){
+            if (this.email === email) {
                 me_rank = ranknumber;
                 element.addClass('ranklist-content-box-me');
             }
             this.$ranklist_content.append(element);
         });
-        if(me_rank === -1) me_rank = '未上榜';
+        if (me_rank === -1) me_rank = '未上榜';
         this.$ranklist_row_me.append($(`
 <span>${me_rank}</span>
-<img src='${this.photo}'>
+<img src='${BASE_URL}${this.photo}'>
 <span>${this.name}</span>
 <span>${this.score}</span>
 `));
     }
 
-    create_ranklist_row(ranknumber, photo, name, score){
+    create_ranklist_row(ranknumber, photo, name, score) {
         let ranklist_row = $(`
 <div class="ranklist-content-row">
     <span>${ranknumber}</span>
-    <img src='${photo}'>
+    <img src='${BASE_URL}${photo}'>
     <span>${name}</span>
     <span>${score}</span>
 </div>
@@ -444,8 +475,8 @@ export class SplendorMenu {
         return ranklist_row;
     }
 
-    contain_setting(ele, setting){
-        for(let index in setting){
+    contain_setting(ele, setting) {
+        for (let index in setting) {
             let key = index;
             let value = setting[key];
             let name = value['name'];
@@ -454,14 +485,14 @@ export class SplendorMenu {
         }
     }
 
-    get_config(ele){
+    get_config(ele) {
         let elements = ele.children('div');
         let config = {};
-        for(let i = 0; i < elements.length;i++){
+        for (let i = 0; i < elements.length; i++) {
             let element = $(elements[i]);
             let name = element.find('input')[0].name;
             let val = '';
-            if(name === 'room_pass') val = element.find('input').val();
+            if (name === 'room_pass') val = element.find('input').val();
             else val = element.find('input:checked').val();
             config[name] = val;
         }
@@ -469,7 +500,7 @@ export class SplendorMenu {
 
     }
 
-    start_single_game(config){
+    start_single_game(config) {
         let playernumber = parseInt(config['single_player_number']);
         let play_round_time = parseInt(config['single_round_second']);
         config['single_player_number'] = playernumber;
@@ -479,7 +510,7 @@ export class SplendorMenu {
         me['game_score'] = 0;
         me['character'] = 'me';
         players.push(me);
-        for(let i = 1;i < playernumber;i++){
+        for (let i = 1; i < playernumber; i++) {
             players.push({
                 'email': 'robot' + i,
                 'name': 'robot' + i,
@@ -489,13 +520,13 @@ export class SplendorMenu {
                 'character': 'robot',
             });
         }
-        console.log('start_single_game', config, players);
+        // console.log('start_single_game', config, players);
         this.playground = new SplendorPlayground(this, config, players, 'splendor-room_single', me);
         this.room.hide();
         this.hide();
     }
 
-    padding_info(rep){
+    padding_info(rep) {
         this.player_info = rep;
         this.name = rep.name;
         this.email = rep.email;
@@ -505,15 +536,42 @@ export class SplendorMenu {
         this.create_element();
         this.$player_name.text(this.name);
         this.$player_score.text('Score: ' + this.score);
-        this.$player_photo.attr('src', this.photo);
-        this.$base_wrap.css('background-image', 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(' + this.back + ')');
+        this.$player_photo.attr('src', BASE_URL +  this.photo);
+        this.$base_wrap.css('background-image', 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(' + BASE_URL + this.back + ')');
     }
 
-    get_info(){
+    login_acwing(rep){
+        let app_id = rep.appid;
+        let redirect_uri = rep.redirect_uri;
+        let scope = rep.scope;
+        let state = rep.state;
+        this.os.api.oauth2.authorize(app_id, redirect_uri, scope, state, (rep) => {
+            localStorage.setItem('gc-access', rep.access_token);
+            localStorage.setItem('gc-refresh', rep.refresh_token);
+            this.start_ws();
+            this.start_room();
+            this.get_info();
+            this.create_settings();
+        });
+    }
+
+    getinfo_acwing(){
+        $.ajax({
+            url: `${BASE_URL}/splendor/auth/apply_code/`,
+            type: 'get',
+            success: rep => {
+                if(rep.result === 'success'){
+                    this.login_acwing(rep);
+                }
+            }
+        });
+    }
+
+    get_info() {
         $.ajax({
             url: `${BASE_URL}/splendor/auth/get_info/`,
             type: 'post',
-            headers : {
+            headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('gc-access'),
             },
             success: rep => {
@@ -526,15 +584,15 @@ export class SplendorMenu {
         });
     }
 
-    show(){
+    show() {
         this.$base_wrap.show();
     }
 
-    hide(){
+    hide() {
         this.$base_wrap.hide();
     }
 
-    create_setting_config_element(config_name_input, config_name, config_selects){
+    create_setting_config_element(config_name_input, config_name, config_selects) {
         let setting_config_element = $(`
 <div class='menu-setting-element'>
     <div class='menu-setting-name'>
@@ -547,18 +605,18 @@ export class SplendorMenu {
     </div>
 </div>
 `);
-        if(config_name === '房间密码'){
+        if (config_name === '房间密码') {
             let password_input = $(`
 <input type='text' maxlength='4' oninput = "value=value.replace(/[^\\d]/g,'')" name='room_pass'>
 <span>(不填视为不设置密码)</span>
 `);
             setting_config_element.find('.menu-setting-select-box').append(password_input);
-        }else{
+        } else {
             config_selects.forEach((value, index, array) => {
                 let button_radio = $(`
 <input type="radio" id="${config_name_input}${index}" value='${value}' name="${config_name_input}"><label for="${config_name_input}${index}">${value}</label>
 `);
-                if(index === 0){
+                if (index === 0) {
                     button_radio.attr('checked', 'true');
                 }
                 setting_config_element.find('.menu-setting-select-box').append(button_radio);

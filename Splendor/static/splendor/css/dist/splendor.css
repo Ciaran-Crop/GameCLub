@@ -1,4 +1,13 @@
-.rubik-loader {
+.loading-span {
+    text-align: center;
+}
+
+.loading_assets {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}.rubik-loader {
     width: 64px;
     height: 400px;
     margin: auto;
@@ -71,6 +80,8 @@ a:hover {
     height: 100%;
     min-height: 700px;
     color: whitesmoke;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .menu-player-info {
@@ -140,7 +151,6 @@ a:hover {
 
 .menu-setting-wrap {
     position: absolute;
-    z-index: 2000;
     background: rgba(0 0 0 /10%);
     top: 0;
     width: 100%;
@@ -279,7 +289,6 @@ input[name='room_pass'] {
 
 .menu-ranklist-wrap {
     position: absolute;
-    z-index: 2000;
     background: rgba(0 0 0 /10%);
     top: 0;
     width: 100%;
@@ -290,7 +299,7 @@ input[name='room_pass'] {
     background: white;
     color: black;
     top: 50%;
-    position: relative;
+    position: absolute;
     left: 50%;
     transform: translate(-50%, -50%);
     box-sizing: border-box;
@@ -310,10 +319,6 @@ input[name='room_pass'] {
     font-weight: bolder;
     border-bottom: 1px solid #938b8b;
     margin-bottom: 10px;
-    width: 700px;
-    display: flex;
-    justify-content: space-between;
-    align-items: stretch;
 }
 .ranklist-title img:hover {
     transition: .5s;
@@ -439,36 +444,52 @@ input[name='room_pass'] {
     border-radius: 10px;
     display: none;
 }
+
+.ranklist-title > img {
+    width: inherit;
+    height: inherit;
+    position: absolute;
+    right: 1vw;
+}
+
+.ranklist-title > span {
+    position: absolute;
+    left: 1vw;
+}
+
 .playground {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     outline: none;
     background: url(/static/splendor/assets/bg.jpg);
     background-size: cover;
     user-select: none;
+    position: absolute;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 canvas {
     position: absolute;
     left: 0;
     z-index: 1;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
 }
 
 .top-board {
-    width: 100vw;
+    width: 100%;
     height: 6vh;
     color: whitesmoke;
     font-size: 1.5vw;
-    position: fixed;
+    position: absolute;
     z-index: 1000;
     line-height: 6vh;
 }
 
 .top-board-center {
     display: inline-block;
-    margin-left: 50vw;
+    margin-left: 5%;
 }
 
 .top-board-out {
@@ -487,7 +508,7 @@ canvas {
 }
 
 .card-click {
-    position: fixed;
+    position: absolute;
     z-index: 40000;
     color: black;
     user-select: none;
@@ -497,22 +518,20 @@ canvas {
 .element {
     background: whitesmoke;
     width: 3vw;
-    height: 3vw;
+    height: 6vh;
     border-radius: 50%;
-    font-size: 1.3vw;
+    font-size: 1vw;
     text-align: center;
-    line-height: 3vw;
-    padding: 1vw;
+    line-height: 6vh;
     color: cadetblue;
     cursor: pointer;
 }
 
 .element-book {
-    width: 2vw;
-    height: 2vw;
+    width: 3vw;
+    height: 6vh;
     font-size: 1vw;
-    line-height: 2vw;
-    padding: 1vw;
+    line-height: 6vh;
 }
 
 .no-click {
@@ -524,10 +543,10 @@ canvas {
 }
 
 .token-click {
-    position: fixed;
+    position: absolute;
     z-index: 10000;
     display: none;
-    margin-left: 83vw;
+    margin-left: 50%;
     padding-top: 0.5vw;
 }
 
@@ -550,22 +569,23 @@ button.cancel {
 }
 
 .game-score-list {
-    position: fixed;
+    position: absolute;
     z-index: 10000;
-    right: 0;
+    right: 1%;
+    height: 100%;
     color: whitesmoke;
-    margin-top: 12vh;
+    margin: 0;
     padding-right: 0.1vw;
     font-size: 1.3vw;
     text-align: center;
 }
 
 .game-score {
-    padding-bottom: 17.5vh;
+    position: absolute;
 }
 
 .error-message {
-    position: fixed;
+    position: absolute;
     display: none;
     z-index: 30000;
     color: white;
@@ -577,9 +597,9 @@ button.cancel {
 
 .player-tick {
     color: whitesmoke;
-    position: fixed;
+    position: absolute;
     z-index: 20000;
-    right: 17vw;
+    right: 16.5%;
     font-size: 3vw;
     font-style: italic;
     display: none;
@@ -587,9 +607,9 @@ button.cancel {
 
 .pass-click {
     color: whitesmoke;
-    position: fixed;
+    position: absolute;
     z-index: 10000;
-    left: 55vw;
+    left: 15%;
     height: 4vh;
     line-height: 4vh;
     background: #3370ff;
@@ -600,7 +620,7 @@ button.cancel {
 }
 
 .statistics-wrap {
-    position: fixed;
+    position: absolute;
     z-index: 40000;
     background: rgba(0 0 0 /50%);
     top: 0;
@@ -626,10 +646,10 @@ button.cancel {
 }
 
 .statistics-element > img {
+    border-radius: 50%;
     width: 4.5vw;
     height: 4.5vw;
-    padding: 0 1vw;
-    border-radius: 50%;
+    vertical-align: top;
 }
 
 .statistics-title {
@@ -643,7 +663,7 @@ button.cancel {
 
 .statistics-element > span {
     display: inline-block;
-    width: 5vw;
+    width: 16%;
     font-size: 2vw;
     line-height: 4.5vw;
     padding: 0 1vw;
@@ -653,8 +673,8 @@ button.cancel {
 }
 
 .statistics-element {
-    padding: 1vw;
     height: 4.5vw;
+    line-height: 4.5vw;
 }
 
 .statistics-click {
@@ -703,22 +723,21 @@ button.cancel {
 
 .chat-input {
     position: absolute;
-    right: 0.2vw;
+    right: 3vw;
     bottom: 0.2vw;
-    width: 16vw;
+    width: 13%;
     height: 2.5vw;
     color: black;
     font-size: 1vw;
     background-color: rgba(255,255,230, 0.2);
     border-radius: 0.5vw;
     z-index: 10000;
-    display: none;
 }
 
 .chat-history {
     position: absolute;
     z-index: 10000;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.8);
     width: 15vw;
     height: 30vw;
     right: 0.2vw;
@@ -748,23 +767,24 @@ button.cancel {
     cursor: pointer;
     transition-duration: 0.3s;
     transition-timing-function: linear;
+    background-color: rgba(0,0,0,50%) !important;
 }
 
-.chat-img:hover {
+.chat-img-rotate {
     transform: rotate(180deg);
     transition-duration: 0.3s;
     transition-timing-function: linear;
 }
 
 .playground-icon {
-    position: fixed;
+    position: absolute;
     z-index: 10000;
     width: 2vw;
     height: 2vw;
-    background: url(/static/splendor/images/playground/setting.svg);
+    background: url(https://app3774.acapp.acwing.com.cn/static/splendor/images/playground/setting.svg);
     background-size: contain;
-    right: 2vw;
-    top: 2.5vw;
+    right: 10%;
+    top: 1.5%;
     cursor: pointer;
 }
 
@@ -774,7 +794,7 @@ button.cancel {
 }
 
 .playground-setting-wrap {
-    position: fixed;
+    position: absolute;
     background: rgba(0,0,0, 0.8);
     color: whitesmoke;
     right: 1vw;
@@ -830,6 +850,8 @@ button.cancel {
     width: 100%;
     height: 100%;
     color: white;
+    white-space: nowrap;
+    overflow: hidden;
 }
 .room-box {
     position: absolute;

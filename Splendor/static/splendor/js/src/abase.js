@@ -1,5 +1,11 @@
 const BASE_URL = "https://app3774.acapp.acwing.com.cn";
 
+function requestCORSIfNotSameOrigin(img, url) {
+    if ((new URL(url, window.location.href)).origin !== window.location.origin) {
+      img.crossOrigin = "";
+    }
+  }
+
 function refresh_() {
     $.ajax({
         url: `${BASE_URL}/gameclub/auth/jwt/token/refresh/`,
@@ -154,4 +160,3 @@ const shader_token_scale_x = 70 / base_width;
 const shader_token_scale_y = 70 / base_height;
 const shader_noble_scale_x = 140 / base_width;
 const shader_noble_scale_y = 140 / base_height;
-

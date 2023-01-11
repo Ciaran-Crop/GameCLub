@@ -48,6 +48,10 @@ class SplendorRoom{
     }
 
     cancel_room(){
+        if(this.root.os){
+            this.root.os.api.window.close();
+            return false;
+        }
         window.location.href = `${BASE_URL}/splendor/`;
     }
 
@@ -106,7 +110,7 @@ class SplendorRoom{
         this.player_info = player_info;
         this.need_pass = need_pass;
         this.config = config;
-        this.$room_wrap.css('background-image', 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(' + player_info.back + ')');
+        this.$room_wrap.css('background-image', 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(' + BASE_URL + player_info.back + ')');
         if(is_owner){
             this.players.push(player_info);
             this.$box.find('.room-title > span').text('房间 ' + this.room_id + "(" + config['room_player_number'] + "人房)");
@@ -155,7 +159,7 @@ class SplendorRoom{
         let element = $(`
 <div class='player-element'>
     <div class='player-photo'>
-        <img src='${player_info.photo}'>
+        <img src='${BASE_URL}${player_info.photo}'>
     </div>
     <div class='player-name'>
         <span>${player_info.name}</span>

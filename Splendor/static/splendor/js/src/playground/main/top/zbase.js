@@ -52,7 +52,7 @@ this.$pass_click = $(`
 `);
         for(let i in this.playground.players){
             let p = this.playground.players[i];
-            this.$game_score.append(`<div class='game-score' name=${p.email}>
+            this.$game_score.append(`<div class='game-score' name=${p.email} style="top:${i * 22 + 10}%">
             0
             </div>`);
         }
@@ -76,6 +76,10 @@ this.$pass_click = $(`
             this.$top_board.find('.top-board-center > span').text(min + ':' + sec);
         }, 1000);
         this.$top_board.find('.top-board-out').on('click', () => {
+            if(this.playground.menu.os){
+                this.playground.menu.os.api.window.close();
+                return false;
+            }
             window.location.href = `${BASE_URL}/splendor/`;
         });
         this.$token_click.find('.cancel').on('click', () => {
@@ -124,7 +128,7 @@ this.$pass_click = $(`
 
     add_tick(player){
         this.clear_interval('tick');
-        this.$player_tick.css('top', player.index * 22 + 10 + 'vh');
+        this.$player_tick.css('top', player.index * 22 + 10 + '%');
         this.$player_tick.show();
         if(player.character === 'me') this.$pass_click.show();
         if(player.character === 'robot'){

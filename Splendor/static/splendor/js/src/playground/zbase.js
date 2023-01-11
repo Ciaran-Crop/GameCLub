@@ -15,6 +15,12 @@ class SplendorPlayground {
         this.start();
     }
 
+    destroy(){
+        for(let index = 0;index < GAME_OBJECTS.length;index++){
+            GAME_OBJECTS[index].splice(i, 1);
+        }
+    }
+
     start() {
         this.init_canvas_context();
         this.init_shader_manager();
@@ -30,7 +36,9 @@ class SplendorPlayground {
         this.tokens_manager = new TokensManager(this);
         this.nobles_manager = new NoblesManager(this);
         this.state = 'round';
-        this.players_manager.next_player();
+        setTimeout(() => {
+            this.players_manager.next_player();
+        }, 1000);
     }
 
     init_audio_manager(){
@@ -163,7 +171,7 @@ class SplendorPlayground {
             let element = $(`
 <div class='statistics-element'>
     <span>${rank}</span>
-    <img src='${p.photo}'>
+    <img src='${BASE_URL}${p.photo}'>
     <span>${p.name}</span>
     <span>${p.game_score}</span>
     <span>${p.score}</span>
@@ -173,6 +181,10 @@ class SplendorPlayground {
             content.append(element);
         }
         this.$statistics.find('.statistics-click').on('click', () => {
+            if(this.menu.os){
+                this.menu.os.api.window.close();
+                return false;
+            }
             window.location.href = `${BASE_URL}/splendor/`;
         });
 
@@ -183,8 +195,9 @@ class SplendorPlayground {
     process_mouse_event(e) {
         if (!this.players_manager.is_me_round()) return false;
         if (this.state !== 'round' && this.state !== 'last_round') return false;
-        let clientX = e.clientX;
-        let clientY = e.clientY;
+        let rect = this.gl.canvas.getBoundingClientRect();
+        let clientX = e.clientX - rect.left;
+        let clientY = e.clientY - rect.top;
         let is_card = this.cards_manager.click_card(clientX, clientY);
         if (is_card !== null) {
             this.top_board.click_card(is_card);
