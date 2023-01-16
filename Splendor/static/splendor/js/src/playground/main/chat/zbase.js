@@ -111,7 +111,7 @@ class SplendorChat {
     render_message(message, email){
         let me = this.playground.players_manager.get_me();
         if(email === me.email){
-            return $(`<div style="color: LightPink">${message}</div>`);
+            return $(`<div style="color: LightPink;white-space: break-spaces;">${message}</div>`);
         }
         return $(`<div style="color: red">${message}</div>`);
     }

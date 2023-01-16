@@ -72,6 +72,13 @@ class ReceiveCode(APIView):
         username = info['username']
         photo = info['photo']
 
+        user_profiles = UserProfile.objects.filter(name = username)
+        if user_profiles.exists():
+            user_profile = user_profiles[0]
+            user = user_profile.user
+            refresh = RefreshToken.for_user(user)
+            return redirect(reverse(BASE_NAME) + "?access=" + str(refresh.access_token) + '&refresh=' + str(refresh))
+
         while User.objects.filter(username='{}@gameclub.net'.format(username)).exists():
             username += str(random.randint(0,9))
 

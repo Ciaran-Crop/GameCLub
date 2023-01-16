@@ -112,7 +112,7 @@ button.cancel {
 .game-score-list {
     position: absolute;
     z-index: 10000;
-    right: 1%;
+    right: 2%;
     height: 100%;
     color: whitesmoke;
     margin: 0;
